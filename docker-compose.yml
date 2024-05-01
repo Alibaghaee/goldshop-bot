@@ -1,0 +1,48 @@
+version: '3.7'
+services:
+    mmd_tala_bot_master_server:
+        container_name: mmd_tala_bot_master_server
+        restart: on-failure
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        command: sh -c "composer dump-autoload  && php artisan optimize:clear && php artisan storage:link && php artisan serve --host=0.0.0.0"
+        ports:
+            - "0.0.0.0:8000:8000"
+        volumes:
+            - ./:/app
+        depends_on:
+            - db
+#        networks:
+#          - ali
+    db:
+        container_name: mmd_tala_bot_master_server_db
+        image: mysql:5.7.22
+        restart: on-failure
+        environment:
+            MYSQL_DATABASE: mmd_tala_bot_master_server
+            MYSQL_USER: root
+            MYSQL_PASSWORD: root
+            MYSQL_ROOT_PASSWORD: root
+        ports:
+            - "0.0.0.0:3306:33060"
+        volumes:
+            - .mydb:/var/lib/mysql
+#        networks:
+#          - ali
+
+    phpmyadmin:
+        image: phpmyadmin
+        restart: always
+        ports:
+            - 8080:80
+        environment:
+            UPLOAD_LIMIT: 100000000
+#        networks:
+#          - ali
+
+networks:
+  default:
+    external:
+      name : mmd_tala_bot_master
+

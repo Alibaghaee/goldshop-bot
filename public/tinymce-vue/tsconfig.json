@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "declaration": true,
+    "outDir": "./lib",
+    "preserveConstEnums": true,
+    "strictNullChecks": true,
+    "target": "es5",
+    // "lib": ["es2020.string"] // fix the mathAll issue
+    "types": [
+      "node"
+    ],
+    "strict": true,
+    "baseUrl": ".",
+    "skipLibCheck": true // -> https://github.com/vuejs/vue-next/issues/1102
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "src/demo/*"
+  ]
+}

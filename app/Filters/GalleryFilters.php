@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Filters;
+
+use App\Filters\QueryFilters;
+use App\Filters\Traits\GlobalFilters;
+use Illuminate\Database\Eloquent\Builder;
+
+class GalleryFilters extends QueryFilters
+{
+    use GlobalFilters;
+
+    /**
+     * Filter by title.
+     *
+     * @param  string $title
+     * @return Builder
+     */
+    public function title($title)
+    {
+        return $this->builder->where('title', 'like', '%' . $title . '%');
+    }
+
+}

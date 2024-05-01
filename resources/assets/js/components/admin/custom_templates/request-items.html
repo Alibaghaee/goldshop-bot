@@ -1,0 +1,62 @@
+<div class="w-full">
+  <div class="rhc-title flex justify-between">
+    <div class="text-xl font-light text-blue-lighter" v-if="isFilterOpen">{{ $t('Search In') }} {{ page_title }}</div>
+    <div class="text-xl font-light flex items-center" v-else>
+      <svg class="fill-current w-6 h-6 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 256"><path d="M0 256h384v-42.666H0V256zm0-106.666h384v-42.667H0v42.667zM0 0v42.665h384V0H0z"/></svg>
+      <div>{{ page_title }}</div>
+      <span v-if="model.entity.title" class="ml-2 opacity-75">({{ model.entity.room.title }} : {{ model.entity.title }})</span>
+    </div>
+    <div class="flex">
+      <a :href="model.index_uri" :title="$t('Back')" class="cursor-pointer rhc-btn rhc-btn-teal flex items-center mr-8 -my-2">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 342 342" class="fill-current w-4 h-4"><path d="M342 149.625H82.296L201.998 29.923 171 0 0 171l171 171 29.922-29.924L82.296 192.375H342v-42.75z"/></svg>
+      </a>
+
+      <a class="cursor-pointer hover:text-grey-light flex items-center" :class="{ 'text-blue-lighter' : isFilterOpen }"" :title="$t('Search')" @click="isFilterOpen = !isFilterOpen">
+          <svg viewBox="0 0 384 384" class="w-6 h-6 fill-current" width="100%" height="100%"><path d="M384 360.7L270.7 247.3c20.8-26 33.3-59.1 33.3-95.1C304 68.1 235.9 0 152 0 68 0 0 68.2 0 152.2s68.1 152.2 152 152.2c36.2 0 69.4-12.7 95.5-33.8L360.7 384l23.3-23.3zM55.8 248.6C30.1 222.9 16 188.7 16 152.3S30.2 81.7 55.8 56s59.9-40 96.2-40c36.3 0 70.5 14.2 96.2 39.9s39.8 59.9 39.8 96.3-14.2 70.6-39.8 96.3c-25.7 25.7-59.9 39.9-96.2 39.9-36.3.1-70.5-14.1-96.2-39.8z"></path></svg>
+      </a>
+    </div>
+
+  </div>
+  <vue-slide-up-down :active="isFilterOpen">
+      <filter-bar :errors="filterBarErrors" :options="data.options"></filter-bar>
+  </vue-slide-up-down>
+
+  <div class="mb-4" v-show="showTopPagination">
+      <vuetable-pagination-info ref="paginationInfoTop"></vuetable-pagination-info>
+      <vuetable-pagination ref="paginationTop" @vuetable-pagination:change-page="onChangePage"></vuetable-pagination>
+  </div>
+
+  <div class="block overflow-x-auto">
+    <vuetable ref="vuetable"
+      :api-url="apiUri"
+      :fields="field_defs"
+      pagination-path="meta"
+      :per-page="perpage"
+      :multi-sort="true"
+      :sort-order="sortOrder"
+      :append-params="moreParams"
+      :detail-row-component="detailComponentName"
+      @vuetable:cell-clicked="onCellClicked"
+      @vuetable:pagination-data="onPaginationData"
+      @vuetable:load-error="setErrors"
+    >
+    </vuetable>
+  </div>
+
+
+  <div>
+    <vuetable-pagination-info ref="paginationInfo"></vuetable-pagination-info>
+
+    <div class="flex flex-wrap justify-between">
+      <vuetable-pagination ref="pagination" @vuetable-pagination:change-page="onChangePage"></vuetable-pagination>
+
+      <div class="rahco-center">
+        <label for="perpage" class="w-auto mr-2">per page:</label>
+        <input type="number" id="perpage" class="rhc-form-control h-full w-24" v-model.number="perpage" @keyup="onChangePerPage" @change="onChangePerPage">
+      </div>
+
+      <vuetable-pagination-dropdown ref="paginationdropdown" @vuetable-pagination:change-page="onChangePage"></vuetable-pagination-dropdown>
+    </div>
+  </div>
+
+</div>

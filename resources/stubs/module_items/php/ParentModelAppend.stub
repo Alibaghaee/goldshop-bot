@@ -1,0 +1,16 @@
+protected $appends = ['index_uri', 'item_create_uri'];
+
+    public function items()
+    {
+        return $this->hasMany('App\Models\General\{{modelName}}');
+    }
+
+    public function getItemsUriAttribute()
+    {
+        return route('{{parentModelNamePluralLowerCase}}.{{modelNamePluralLowerCase}}.index', ['{{parentModelNameSingularLowerCase}}' => $this->id]);
+    }
+
+    public function getItemCreateUriAttribute()
+    {
+        return route('{{parentModelNamePluralLowerCase}}.{{modelNamePluralLowerCase}}.create', ['{{parentModelNameSingularLowerCase}}' => $this->id]);
+    }

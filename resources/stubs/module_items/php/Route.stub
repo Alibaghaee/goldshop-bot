@@ -1,0 +1,2 @@
+Route::resource('{{parentModelNamePluralLowerCase}}.{{modelNamePluralLowerCase}}', '{{modelName}}Controller');
+    // {{dont_delete_this_comment}}

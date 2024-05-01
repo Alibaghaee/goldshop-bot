@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\General\Blacklist;
+use Illuminate\Console\Command;
+
+class StopBlacklistsWithNoSendable extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'blacklist:check-end';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'stop blacklists with no sendable';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
+        $queue = Blacklist::checkableForEnd()->get();
+
+        foreach ($queue as $blacklist) {
+            $blacklist->checkForEnd();
+        }
+    }
+}

@@ -1,0 +1,149 @@
+<?php
+
+namespace App\Http\Controllers\General;
+
+use App\Filters\{{modelName}}Filters;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\{{modelName}}\{{modelName}}Collection;
+use App\Traits\Controllers\AdminGuard;
+use App\Models\General\{{modelName}};
+use Illuminate\Http\Request;
+
+class {{modelName}}Controller extends Controller
+{
+    use AdminGuard;
+
+    /**
+     * Display a listing of the {{modelNameSingularLowerCase}}.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request, {{modelName}}Filters $filters)
+    {
+        if (request()->expectsJson()) {
+            return new {{modelName}}Collection({{modelName}}::filter($filters)->paginate(get_per_page($request)));
+        }
+
+        return view('admin.globals.index');
+    }
+
+    /**
+     * Show the form for creating a new {{modelNameSingularLowerCase}}.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('admin.globals.create', [
+            'model' => new {{modelName}},
+        ]);
+    }
+
+    /**
+     * Store a newly created {{modelNameSingularLowerCase}} in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        // validate
+        $data = $this->validateStore($request);
+
+        // create
+        {{modelName}}::create($data);
+
+        // return response
+        if ($request->wantsJson()) {
+            success_flash();
+            return response(['redirect' => route('{{modelNamePluralLowerCase}}.index')]);
+        }
+
+        return redirect()
+            ->route('{{modelNamePluralLowerCase}}.index')
+            ->with('flash', 'با موفقیت ثبت شد.');
+    }
+
+    /**
+     * Display the specified {{modelNameSingularLowerCase}}.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show({{modelName}} ${{modelNameSingularLowerCase}})
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified {{modelNameSingularLowerCase}}.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit({{modelName}} ${{modelNameSingularLowerCase}})
+    {
+        return view('admin.globals.edit', [
+            'model'     => ${{modelNameSingularLowerCase}},
+            'edit_form' => true,
+        ]);
+    }
+
+    /**
+     * Update the specified {{modelNameSingularLowerCase}} in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, {{modelName}} ${{modelNameSingularLowerCase}})
+    {
+        // validate
+        $data = $this->validateStore($request);
+
+        // create
+        ${{modelNameSingularLowerCase}}->update($data);
+
+        success_flash();
+        return response(['redirect' => route('{{modelNamePluralLowerCase}}.index')]);
+    }
+
+    /**
+     * Remove the specified {{modelNameSingularLowerCase}} from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy({{modelName}} ${{modelNameSingularLowerCase}})
+    {
+        return response([
+            'result' => ${{modelNameSingularLowerCase}}->delete(),
+        ]);
+    }
+
+    /**
+     * Validate the {{modelNameSingularLowerCase}} store request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    protected function validateStore(Request $request)
+    {
+        return $request->validate([
+            //
+        ]);
+    }
+
+    /**
+     * Validate the {{modelNameSingularLowerCase}} update request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    protected function validateUpdate(Request $request, {{modelName}} ${{modelNameSingularLowerCase}})
+    {
+        return $request->validate([
+            //
+        ]);
+    }
+}

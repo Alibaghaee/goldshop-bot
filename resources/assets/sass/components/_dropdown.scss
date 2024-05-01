@@ -1,0 +1,33 @@
+/* Dropdown Button */
+.dropbtn {
+  @apply text-white
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  @apply relative inline;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  @apply bg-white absolute shadow-lg z-10 hidden;
+  min-width: 250px;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  @apply text-grey-darkest block no-underline py-4 px-6;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {
+  @apply bg-grey-light;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+  @apply block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+// .dropdown:hover .dropbtn {background-color: #3e8e41;}

@@ -1,0 +1,24 @@
+//mixins
+@mixin transition($property, $time, $timing-function) {
+  -webkit-transition: $property $time $timing-function;
+  -moz-transition: $property $time $timing-function;
+  -ms-transition: $property $time $timing-function;
+  -o-transition: $property $time $timing-function;
+  transition: $property $time $timing-function;
+} 
+@mixin link($base-color){
+    @include transition(all ,.1s, ease);
+    color: $base-color !important;
+    &:hover{
+        color: darken( $base-color, 15% ) !important;
+        text-decoration: none;
+    }
+}
+@mixin link2($base-color , $hover-color){
+    @include transition(all ,.1s, ease);
+    color: $base-color !important;
+    &:hover{
+        color: $hover-color !important;
+        text-decoration: none;
+    }
+}

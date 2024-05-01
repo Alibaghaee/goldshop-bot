@@ -1,0 +1,169 @@
+.owl-carousel {
+    .owl-dots {
+        position: absolute;
+        bottom: 5px;
+        text-align: center;
+        left: 0;
+        right: 0;
+    }
+    .owl-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 100%;
+        margin-right: 5px;
+        display: inline-block;
+        /*for making them horizontal, if you want vertical then you can use- display: block*/
+        background: white;
+    }
+    .owl-dot.active {
+        @apply bg-green;
+    }
+}
+#slider-1, #slider-2 {
+    // border-top: 6px solid $i-color-two;
+    .owl-prev, .owl-next {
+        position: absolute;
+        top: 50%;
+        left: 50px;
+        -ms-transform: translate(0, -50%);
+        transform: translate(0, -50%);
+        padding: 2px 20px;
+        background-color: #c40c16;
+        color: white;
+        font-size: 54px;
+        line-height: 48px;
+    }
+    .owl-next {
+        left: inherit;
+        right: 55px;
+    }
+    .fa {
+        position: relative;
+        top: -1px;
+    }
+    .caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        font-size: 35px;
+        padding: 30px 50px;
+        direction: ltr;
+        @apply text-white bg-blue-lighter;
+    }
+}
+#slider-2 {
+    border: 0;
+    .owl-dots {
+        bottom: -25px;
+    }
+}
+.section-2 {
+    .media-right, .media>.pull-right {
+        padding-right: 0;
+        margin-left: 30px;
+    }
+    .media-content {
+        margin-bottom: 22px;
+    }
+}
+.left-bottom-corner {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+.red {
+    @apply text-pink;
+}
+#slider-1 {
+    .owl-prev, .owl-next {
+        position: absolute;
+        top: 50%;
+        left: 50px;
+        -ms-transform: translate(0, -50%);
+        transform: translate(0, -50%);
+        padding: 2px 20px;
+        background-color: #c40c16;
+        color: white;
+        font-size: 54px;
+        line-height: 48px;
+    }
+    .owl-next {
+        left: inherit;
+        right: 55px;
+    }
+    .fa {
+        position: relative;
+        top: -1px;
+    }
+    .owl-dots {
+        position: absolute;
+        bottom: -28px;
+        text-align: center;
+        left: 0;
+        right: 0;
+        min-width: 150px;
+        margin: auto;
+        padding: 4px 0 1px 0;
+        border-radius: 0 0 4px 4px;
+        display: table;
+        @apply bg-grey-light;
+    }
+    .owl-dot {
+        width: 15px;
+        height: 15px;
+        border: 1px solid white; // border-radius: 0;
+        background: transparent;
+        margin: 0 7px 0 7px;
+        display: inline-block;
+        /*for making them horizontal, if you want vertical then you can use- display: block*/
+    }
+    .owl-dot.active {
+        border: 0;
+        background: white;
+    }
+}
+#slider-2 {
+    @extends('#slider-1'); // border-top: 6px solid $i-color-two;
+}
+#slider-2 {
+    border: 0;
+    .owl-dots {
+        bottom: -25px;
+    }
+}
+#slider-3, #slider-4, #slider-5 {
+    .owl-prev, .owl-next {
+        @apply bg-grey-light;
+        position: absolute;
+        right: 0;
+        top: -30px;
+        font-size: 12px;
+        padding: 3px 10px;
+        color: #ffffff;
+        @include transition(all, .3s, ease);
+        &:hover {
+            @apply bg-grey;
+        }
+    }
+    .owl-prev {
+        right: 26px;
+    }
+}
+#slider-6 {
+    .owl-prev, .owl-next {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        -webkit-transform: translate(0, -50%);
+        transform: translate(0, -55%);
+        font-size: 72px;
+        line-height: 48px;
+        //-webkit-text-stroke: 3px rgb(255, 255, 255);
+        @apply text-teal mx-6;
+    }
+    .owl-next {
+        left: inherit;
+        right: 0;
+    }
+}

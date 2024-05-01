@@ -1,0 +1,20 @@
+{
+    "Forgot Your Password?": "رمز عبور خود را فراموش کرده اید؟",
+    "Login": "ورود",
+    "Email": "ایمیل",
+    "Password": "گذرواژه",
+    "Confirm Password": "تکرار گذرواژه",
+    "Remember Me": "مرا به خاطر بسپار",
+    "Register": "ثبت نام",
+    "Mobile": "تلفن همراه",
+    "Confirm": "تایید",
+    "Forgot Password": "فراموشی رمز عبور",
+    "Reset Password": "بازنشانی رمز عبور",
+    "Send Password Reset Link": "ارسال ایمیل بازنشانی رمز عبور",
+    "Send Password Reset OTP": "ارسال کد",
+    "Admin Login": "ورود مدیران",
+    "Code": "کد",
+    "User Login": "ورود کاربران",
+    "OTP User Login": "ورود با رمز یک بار مصرف",
+    "National Code": "کد ملی"
+}

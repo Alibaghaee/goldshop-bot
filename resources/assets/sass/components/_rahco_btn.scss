@@ -1,0 +1,93 @@
+.rhc-btn{
+    @apply shadow text-white py-2 px-6 rounded bg-blue h-10 no-underline;
+    &:hover{
+        @apply bg-blue-light;
+    }
+    &.rhc-action-btn{
+        @apply mx-1 cursor-pointer
+    }
+    &.rhc-btn-sm{
+        @apply p-4 h-8 flex items-center justify-center;
+    }
+    &.rhc-btn-rounded-full{
+        @apply rounded-full;
+    }
+}
+
+.rhc-btn-grey{
+    @apply bg-grey;
+    &:hover{
+        @apply bg-grey-light;
+    }
+}
+
+.rhc-btn-red{
+    @apply bg-red;
+    &:hover{
+        @apply bg-red-light;
+    }
+}
+
+.rhc-btn-orange{
+    @apply bg-orange;
+    &:hover{
+        @apply bg-orange-light;
+    }
+}
+
+.rhc-btn-yellow{
+    @apply bg-yellow text-grey-darker;
+    &:hover{
+        @apply bg-yellow-light;
+    }
+}
+
+.rhc-btn-green{
+    @apply bg-green;
+    &:hover{
+        @apply bg-green-light;
+    }
+}
+
+.rhc-btn-teal{
+    @apply bg-teal;
+    &:hover{
+        @apply bg-teal-light;
+    }
+}
+
+.rhc-btn-indigo{
+    @apply bg-indigo;
+    &:hover{
+        @apply bg-indigo-light;
+    }
+}
+
+.rhc-btn-purple{
+    @apply bg-purple;
+    &:hover{
+        @apply bg-purple-light;
+    }
+}
+
+.rhc-btn-pink{
+    @apply bg-pink;
+    &:hover{
+        @apply bg-pink-light;
+    }
+}
+
+.rhc-btn-disabled{
+    @apply bg-grey cursor-not-allowed;
+    cursor: not-allowed !important;
+    &:hover{
+        @apply bg-grey;
+    }
+}
+
+.rhc-btn-white{
+    @apply bg-white text-grey-darkest;
+    &:hover{
+        @apply bg-grey-light;
+    }
+}

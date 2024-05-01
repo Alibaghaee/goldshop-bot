@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Filters;
+
+use App\Filters\QueryFilters;
+use App\Filters\Traits\GlobalFilters;
+use Illuminate\Database\Eloquent\Builder;
+
+class NotifyFilters extends QueryFilters
+{
+    use GlobalFilters;
+
+    /**
+     * Filter by title.
+     *
+     * @param  string $title
+     * @return Builder
+     */
+    public function title($title)
+    {
+        return $this->builder->where('title', 'like', '%' . $title . '%');
+    }
+
+    /**
+     * Filter by note.
+     *
+     * @param  string $note
+     * @return Builder
+     */
+    public function note($note)
+    {
+        return $this->builder->where('note', 'like', '%' . $note . '%');
+    }
+
+}

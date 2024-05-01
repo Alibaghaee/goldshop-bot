@@ -1,0 +1,75 @@
+<?php
+
+namespace Modules;
+
+use App\Models\General\Module;
+use App\Traits\Seeds\DataFill;
+use Illuminate\Database\Seeder;
+
+class {{modelName}}ModuleTableSeeder extends Seeder
+{
+    use DataFill;
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    private $default_actions_icon;
+
+    public function __construct()
+    {
+        $this->default_actions_icon = '';
+    }
+
+    public function run()
+    {
+        $module_name     = '{{modelNamePluralLowerCase}}';
+        $controller_name = '{{modelNamePluralLowerCase}}';
+        $module_icon     = '';
+
+        $module['module'] = [
+            'title' => '...',
+            'name'  => $module_name,
+            'icon'  => $module_icon,
+        ];
+
+        $module['controllers'] = [
+            [
+                'controller' => [
+                    'name'    => $controller_name,
+                    'title'   => '...',
+                    'icon'    => '',
+                    'visible' => false,
+                ],
+                'actions'    => [
+                    [
+                        'name'    => 'index',
+                        'title'   => 'لیست ...',
+                        'visible' => true,
+                    ],
+                    [
+                        'name'    => 'create',
+                        'title'   => 'ایجاد ...',
+                        'visible' => true,
+                    ],
+                    [
+                        'name'  => 'show',
+                        'title' => 'نمایش ...',
+                    ],
+                    [
+                        'name'  => 'edit',
+                        'title' => 'ویرایش ...',
+                    ],
+                    [
+                        'name'  => 'destroy',
+                        'title' => 'پاک کردن ...',
+                    ],
+                ],
+            ],
+        ];
+
+        $module = $this->dataFill($module);
+
+        Module::createModule($module);
+    }
+}

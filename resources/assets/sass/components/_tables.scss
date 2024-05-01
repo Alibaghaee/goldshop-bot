@@ -1,0 +1,48 @@
+table {
+    border-collapse: collapse;
+    @apply w-full;
+}
+
+th, td {
+    @apply text-right p-4 font-normal;
+}
+
+tr:nth-child(even){
+    @apply bg-grey-lighter;
+}
+
+th {
+    @apply bg-grey-light text-black font-bold;
+}
+
+
+// responsive
+@media(max-width: 992px){
+    table {
+        thead {
+            clip: rect(0 0 0 0);
+            @apply p-0 border-none absolute h-1 w-1 -m-1 overflow-hidden;
+        }
+        
+        tr {
+          @apply border border-solid border-grey-light block mb-4;
+        }
+        
+        td {
+          @apply border-b border-solid border-grey-light block;
+        }
+        
+        td::before {
+          /*
+          * aria-label has no advantage, it won't be read inside a table
+          content: attr(aria-label);
+          */
+          content: attr(data-label);
+          @apply float-left font-bold;
+        }
+        
+        td:last-child {
+          @apply border-b-0; 
+        }
+    }
+}

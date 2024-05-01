@@ -1,0 +1,75 @@
+/** @format */
+
+//@import url("https://v1.fontapi.ir/css/VazirFD");
+
+body {
+    font-family: Vazir FD, sans-serif;
+    direction: rtl;
+    /* background-image:  url('../assets/img/section.jpg') */
+}
+
+
+.swiper {
+    width: 100%;
+    height: 100%;
+}
+
+.swiper-slide {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.swiper-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ham-menu {
+    height: 3rem;
+    width: 3rem;
+    padding: 0.5rem;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.ham-menu .line {
+    border-radius: 1em;
+    width: 2rem;
+    height: 0.25rem;
+}
+
+.ham-menu .line1 {
+    transform-origin: 0% 0%;
+    transition: transform 100ms ease-in-out;
+
+}
+
+.ham-menu .line3 {
+    transform-origin: 0% 100%;
+    transition: transform 100ms ease-in-out;
+}
+
+.clip-path {
+    clip-path: polygon(42% 0%, 100% 0%, 100% 100%, 50% 100%);
+}
+
+@media screen and (max-width: 768px) {
+    .clip-path {
+        clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+    }
+}
+
+/* .sidebar-active {
+  right: 0px !important;
+} */
+
+
+/* .unest{
+  all: unset;
+} */

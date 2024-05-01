@@ -1,0 +1,26 @@
+<?php
+
+namespace Data;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class {{modelNamePlural}}TableSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        ${{modelNamePluralLowerCase}} = [
+            [
+                // 'created_at' => now(),
+                // 'updated_at' => now(),
+            ],
+        ];
+
+        // DB::table('{{modelNamePluralLowerCase}}')->insert(${{modelNamePluralLowerCase}});
+    }
+}

@@ -1,0 +1,22 @@
+<div class="text-sm mb-8">
+    <div class="font-medium">برچسب های قابل استفاده در متن قرارداد:</div>
+    <div class="mb-3 text-grey">با استفاده از این برچسب ها اطلاعات مشتری به صورت خودکار در خروجی PDF قرارداد درج می شود. با این ویژگی می توان از یک الگوی قرارداد بدون نیاز به تغییر متن، برای مشتریان دیگر نیز استفاده کرد.</div>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#نام_مشتری</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#نام_خانوادگی_مشتری</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#نام_پدر</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#شماره_شناسنامه</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#کد_ملی</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#تاریخ_تولد</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#محل_تولد</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#آدرس</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#کد_پستی</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#ایمیل</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#موبایل</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#تلفن</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#فکس</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#نام_شرکت</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#کد_اقتصادی</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#شناسه_ملی_شرکت</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#شناسه_ثبت</span>
+    <span class="bg-grey-light px-2 rounded mb-2 ml-1 inline-block">#سایت</span>
+</div>

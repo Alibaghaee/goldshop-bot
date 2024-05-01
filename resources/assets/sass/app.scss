@@ -1,0 +1,290 @@
+@tailwind preflight;
+@tailwind components;
+@import "components/font_face";
+@import "components/checkbox";
+@import "components/rahco_styles";
+@import "components/vuejs_styles";
+@import "components/tables";
+@tailwind utilities;
+body {
+    @apply .min-h-screen;
+    direction: rtl;
+    font-family: vazir;
+    display: grid;
+}
+.bg-indigo-dark-2,
+.border-indigo-dark-2 {
+    background-color: #202750;
+}
+.v--modal-overlay .v--modal-box {
+    position: absolute !important;
+}
+
+[v-cloak] > * {
+    display: none;
+}
+
+// [v-cloak]::before {
+//     @apply flex justify-center items-center m-auto w-4 h-4;
+//     content: " ";
+//     background-image: url('data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==');
+// }
+
+[v-cloak],
+.loader {
+    border: 5px solid #f3f3f3; /* Light grey */
+    border-top: 5px solid #09f; /* Blue */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    top: 47%;
+    left: 48%;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+th:first-child {
+    @apply rounded-r;
+}
+th:last-child {
+    @apply rounded-l;
+}
+.vuetable th.sortable:hover {
+    color: #12283a !important;
+}
+.rhc-title {
+    @apply text-xl mb-4 px-4 rounded flex items-center bg-blue text-white py-3 leading-none;
+}
+input:disabled {
+    @apply bg-grey-lightest text-grey;
+    &:hover {
+        @apply border-grey-lighter;
+    }
+}
+.multiselect--disabled {
+    border-radius: 0.25rem;
+    .multiselect__tags {
+        border-width: 2px !important;
+        border-color: #f1f5f8 !important;
+        background-color: #f8fafc !important;
+    }
+    .multiselect__single {
+        background-color: transparent !important;
+    }
+}
+.vpd-input-group {
+    .vpd-icon-btn {
+        @apply rounded;
+    }
+    .form-control {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        @apply bg-grey-lighter border-2 border-grey-lighter rounded w-full px-4 py-2 text-grey-darker leading-tight;
+    }
+    &.disabled {
+        .vpd-icon-btn {
+            background-color: #dae1e7 !important;
+        }
+        .form-control {
+            @apply bg-grey-lightest text-grey;
+        }
+    }
+}
+.outline-none {
+    outline: none;
+}
+
+.sortable-chosen {
+    @apply bg-blue-light text-white;
+}
+
+// tree list
+.tree-node-inner {
+    @apply bg-white shadow rounded p-2 px-3 text-black cursor-pointer border-r-0 border-solid border-blue-light;
+}
+.he-tree {
+    @apply bg-grey-lighter rounded shadow p-4;
+}
+.draggable-placeholder-inner {
+    @apply bg-blue-lightest border border-blue-light border-dashed;
+}
+.tree-node.open {
+    .tree-node-children .tree-node-inner {
+        @apply shadow-inner text-grey-darker;
+    }
+}
+
+.tox-notification--warning {
+    display: none !important;
+}
+.hover-full-opacity {
+    transition: all 0.3s ease;
+    &:hover {
+        @apply opacity-100;
+    }
+}
+.ltr {
+    direction: ltr;
+}
+
+.rtl {
+    direction: rtl;
+}
+.fa-date {
+    @apply ltr;
+}
+.control-label {
+    @apply block text-grey-dark mb-1 pr-4;
+    @screen md {
+        @apply text-right mb-0;
+    }
+}
+.v--modal-box {
+    overflow: inherit !important;
+}
+.multiselect--active {
+    z-index: 10;
+}
+.multiselect__content-wrapper {
+    z-index: 20;
+}
+
+.spinner {
+    animation: rotating 2s linear infinite;
+    z-index: 2;
+    // position: absolute;
+    // top: 50%;
+    // left: 50%;
+    // margin: -25px 0 0 -25px;
+    // width: 50px;
+    // height: 50px;
+
+    & .path {
+        stroke: white;
+        stroke-linecap: round;
+        animation: dash 1.5s ease-in-out infinite;
+    }
+}
+
+@keyframes rotating {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes dash {
+    0% {
+        stroke-dasharray: 1, 150;
+        stroke-dashoffset: 0;
+    }
+    50% {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: -35;
+    }
+    100% {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: -124;
+    }
+}
+
+.component-fade-enter-active,
+.component-fade-leave-active {
+    transition: opacity 0.2s ease;
+}
+
+.component-fade-enter,
+.component-fade-leave-to {
+    opacity: 0;
+}
+
+.flip-list-move {
+    transition: transform 1s;
+}
+
+.list-complete-item {
+    transition: all 1s;
+}
+
+.list-complete-enter,
+.list-complete-leave-to {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.list-complete-leave-active {
+    position: absolute;
+    right: 0;
+    left: 0;
+}
+
+.list-enter-active,
+.list-leave-active {
+    transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+.list-item {
+    display: inline-block;
+    margin-right: 10px;
+}
+.list-enter-active,
+.list-leave-active {
+    transition: all 1s;
+}
+.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+// circle progress bar
+
+.circular-chart {
+    display: block;
+    margin: 0px auto;
+    max-width: 80%;
+    max-height: 150px;
+}
+
+.circle-bg {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 4.9;
+}
+
+.circle {
+    fill: none;
+    stroke-width: 4;
+    stroke-linecap: round;
+    animation: progress 1s ease-out forwards;
+}
+
+@keyframes progress {
+    0% {
+        stroke-dasharray: 0 100;
+    }
+}
+
+.circular-chart.blue .circle {
+    stroke: #3c9ee5;
+}
+
+.percentage {
+    fill: #333;
+    font-size: 0.6em;
+    text-anchor: middle;
+    font-weight: 600;
+}

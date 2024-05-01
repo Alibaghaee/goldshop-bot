@@ -1,0 +1,152 @@
+<?php
+
+namespace App\Http\Controllers\General;
+
+use App\Filters\{{modelName}}Filters;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\{{modelName}}\{{modelName}}Collection;
+use App\Traits\Controllers\AdminGuard;
+use App\Models\General\{{parentModelName}};
+use App\Models\General\{{modelName}};
+use Illuminate\Http\Request;
+
+class {{modelName}}Controller extends Controller
+{
+    use AdminGuard;
+
+    /**
+     * Display a listing of the {{modelNameSingularLowerCase}}.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index({{parentModelName}} ${{parentModelNameSingularLowerCase}}, Request $request, {{modelName}}Filters $filters)
+    {
+        if (request()->expectsJson()) {
+            return new {{modelName}}Collection(${{parentModelNameSingularLowerCase}}->items()->filter($filters)->paginate(get_per_page($request)));
+        }
+
+        return view('admin.globals.index-items', ['model' => ${{parentModelNameSingularLowerCase}}]);
+    }
+
+    /**
+     * Show the form for creating a new {{modelNameSingularLowerCase}}.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create({{parentModelName}} ${{parentModelNameSingularLowerCase}})
+    {
+        return view('admin.globals.create', [
+            'model' => new {{modelName}},
+            '{{parentModelNameSingularLowerCase}}' => ${{parentModelNameSingularLowerCase}},
+        ]);
+    }
+
+    /**
+     * Store a newly created {{modelNameSingularLowerCase}} in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store({{parentModelName}} ${{parentModelNameSingularLowerCase}}, Request $request)
+    {
+        // validate
+        $data = $this->validateStore($request);
+
+        // create
+        ${{parentModelNameSingularLowerCase}}->items()->create($data);
+
+        // return response
+        if ($request->wantsJson()) {
+            success_flash();
+            return response(['redirect' => route('{{parentModelNamePluralLowerCase}}.{{modelNamePluralLowerCase}}.index', ['{{parentModelNameSingularLowerCase}}' => ${{parentModelNameSingularLowerCase}}->id])]);
+        }
+
+        return redirect()
+            ->route('{{parentModelNamePluralLowerCase}}.{{modelNamePluralLowerCase}}.index', ['{{parentModelNameSingularLowerCase}}' => ${{parentModelNameSingularLowerCase}}->id])
+            ->with('flash', 'با موفقیت ثبت شد.');
+    }
+
+    /**
+     * Display the specified {{modelNameSingularLowerCase}}.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show({{parentModelName}} ${{parentModelNameSingularLowerCase}}, {{modelName}} ${{modelNameSingularLowerCase}})
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified {{modelNameSingularLowerCase}}.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit({{parentModelName}} ${{parentModelNameSingularLowerCase}}, {{modelName}} ${{modelNameSingularLowerCase}})
+    {
+        return view('admin.globals.edit', [
+            'model'                                => ${{modelNameSingularLowerCase}},
+            'edit_form'                            => true,
+            '{{parentModelNameSingularLowerCase}}' => ${{parentModelNameSingularLowerCase}},
+        ]);
+    }
+
+    /**
+     * Update the specified {{modelNameSingularLowerCase}} in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update({{parentModelName}} ${{parentModelNameSingularLowerCase}}, {{modelName}} ${{modelNameSingularLowerCase}}, Request $request)
+    {
+        // validate
+        $data = $this->validateStore($request);
+
+        // create
+        ${{modelNameSingularLowerCase}}->update($data);
+
+        success_flash();
+        return response(['redirect' => route('{{parentModelNamePluralLowerCase}}.{{modelNamePluralLowerCase}}.index', ['{{parentModelNameSingularLowerCase}}' => ${{parentModelNameSingularLowerCase}}->id])]);
+    }
+
+    /**
+     * Remove the specified {{modelNameSingularLowerCase}} from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy({{parentModelName}} ${{parentModelNameSingularLowerCase}}, {{modelName}} ${{modelNameSingularLowerCase}})
+    {
+        return response([
+            'result' => ${{modelNameSingularLowerCase}}->delete(),
+        ]);
+    }
+
+    /**
+     * Validate the {{modelNameSingularLowerCase}} store request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    protected function validateStore(Request $request)
+    {
+        return $request->validate([
+            //
+        ]);
+    }
+
+    /**
+     * Validate the {{modelNameSingularLowerCase}} update request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    protected function validateUpdate(Request $request, {{modelName}} ${{modelNameSingularLowerCase}})
+    {
+        return $request->validate([
+            //
+        ]);
+    }
+}

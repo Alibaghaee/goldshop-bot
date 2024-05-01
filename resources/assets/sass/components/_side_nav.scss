@@ -1,0 +1,35 @@
+.sidenav {
+  @apply bg-green;
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  overflow-x: hidden;
+  transition: 0.3s;
+  padding-top: 60px;
+  text-align:center;
+}
+
+.sidenav a {
+  @apply text-white p-4;
+  text-decoration: none;
+  font-size: 25px;
+  display: block;
+  transition: 0.3s;
+  white-space: nowrap;
+}
+
+.sidenav a:hover{
+  @apply text-purple-dark;
+}
+
+.sidenav .closebtn {
+  @apply absolute flex h-12 items-end ml-2 mt-4 pin-l pin-t text-4xl text-white w-12;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
