@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Bot;
 
 use App\Http\Controllers\Controller;
+use App\Observers\GoldScraperObserver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Spatie\Crawler\Crawler;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
@@ -54,11 +56,10 @@ class TestController extends Controller
     }
 
 
-
     public function setHook()
     {
         Telegram::bot('mmd_tala_bot')->removeWebhook();
-        $telegram = Telegram::bot('mmd_tala_bot')->setWebhook(['url' => 'https://gold.rahco.ir/api/h/23124/test1']);
+        $telegram = Telegram::bot('mmd_tala_bot')->setWebhook(['url' => 'https://gold.rahco.ir/api/h/23124/hook']);
 
         return $telegram;
     }
@@ -67,7 +68,33 @@ class TestController extends Controller
     {
         $updates = Telegram::bot('mmd_tala_bot')->getWebhookUpdate();
 
+        info('########################################\n####\\n');
         info($updates);
+        return 'ok';
+
+
+    }
+
+    public function testTala()
+    {
+//        $c=0;
+//        for ($i = 1; $i < 1000; $i++) {
+//            $c++;
+//            $response = Http::get('https://www.estjt.ir/price/');
+//            if ($response->status()!==200|| $response->requestTimeout()){
+//                return $response->status();
+//                break;
+//            }
+//
+//
+//        }
+        $url='https://www.estjt.ir/price/';
+        Crawler::create()
+            ->setCrawlObserver(new GoldScraperObserver())
+            ->setMaximumDepth(0)
+            ->setTotalCrawlLimit(1)
+            ->startCrawling($url);
+
         return 'ok';
     }
 }

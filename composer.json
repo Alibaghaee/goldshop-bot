@@ -12,7 +12,8 @@
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.5",
         "morilog/jalali": "^3.4",
-        "snapp-market-pro/moadian": "^1.1"
+        "snapp-market-pro/moadian": "^1.1",
+        "spatie/crawler": "^8.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
