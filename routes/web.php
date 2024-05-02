@@ -155,116 +155,115 @@ Route::middleware(['auth:admin', \App\Http\Middleware\PermissionMiddleware::clas
 
 });
 
-Route::get('/',function (){
+Route::prefix('{locale?}')->middleware([\App\Http\Middleware\Locale::class])->group(function () {
+    Auth::routes();
+    Route::post('/postal_code', [\App\Http\Controllers\Site\HomeController::class,'postalCode'])->name('home.postal_code');
+
+    Route::put('/post/comment/guest-store/{content}', 'Site\ContentController@storeGuestComment')
+        ->name('guest.content.comment.store');
+
+    // for Entekhab-Reshte
+    Route::get('/bank/request', 'Site\BankController@request');
+    Route::any('/bank/response', 'Site\BankController@response');
+
+    Route::middleware(['auth:web'])->group(function () {
+        Route::get('pay_page/', 'Site\PayPageController@index')->name('pay_page.index');
+        Route::get('pay_page/{package}', 'Site\PayPageController@show')->name('pay_page.show');
+        Route::post('pay_page/{package}', 'Site\PayPageController@pay')->name('pay_page.pay');
+        Route::resource('profile', 'Site\ProfileController')->only(['edit', 'update']);
+        Route::get('registration/receipt/{purchase}', 'Site\ReceiptController@receipt')->name('registration.receipt');
+        Route::get('registration/pdf/{purchase}', 'Site\ReceiptController@pdf')->name('registration.pdf');
+        Route::get('fill_out_profile/{package}', 'Site\FillOutProfileController@edit')->name('fill_out_profile.edit');
+        Route::post('fill_out_profile/{package}', 'Site\FillOutProfileController@update')->name('fill_out_profile.update');
+        Route::post('fill_out_profile/confirm/{package}', 'Site\FillOutProfileController@confirm')->name('fill_out_profile.confirm');
+        Route::post('video_track', 'Site\VideoTrackController@store')->name('video_track.store');
+    });
+
+    Route::group([], function () { //middleware(['auth:web', 'active.mobile', 'payed'])->
+//        Route::get('', [\App\Http\Controllers\Site\HomeController::class,'index'])->name('home.index');
+        Route::get('', function (){
+
+            return redirect()->route('dashboard');
+        })->name('home.index');
+
+        Route::post('search', [\App\Http\Controllers\Site\HomeController::class,'search']);
+        Route::get('search/index', [\App\Http\Controllers\Site\HomeController::class,'searchIndex'])->name('search.index');
+
+        Route::post('contact-us', [\App\Http\Controllers\Site\HomeController::class,'contactUs'])->middleware('throttle:10,60');
+        Route::get('menu/{content}', [\App\Http\Controllers\Site\HomeController::class,'showMenuItem'])->name('home.showMenuItem');
 
 
-    return redirect()->route('dashboard');
+
+        Route::resource('/content', 'Site\ContentController')->only(['index', 'show']);
+
+        Route::middleware(['guest'])->group(function () {
+            Route::get('/content/menu/{content}', 'Site\ContentController@showMenu');
+
+            Route::get('c/{content}', 'Site\ContentController@show')->name('content.short_link_show');
+        });
+    });
+
+    Route::middleware(['guest'])->group(function () {
+
+        Route::get('registration/{package}', 'Site\RegistrationController@index')->name('registration.index');
+        Route::post('registration/check_national_code', 'Site\RegistrationController@check_national_code')->name('registration.check_national_code');
+        Route::post('registration/confirm/{package}', 'Site\RegistrationController@confirm')->name('registration.confirm');
+        Route::post('registration/{package}', 'Site\RegistrationController@store')->name('registration.store');
+     });
+
+    // Route::resource('refund', 'Site\RefundController');
+
+    // Route::get('/faq', 'Site\FaqController@index');
+    // Route::get('/pages/{category_id}/{category_item_id?}', 'Site\ContentController@index');
+    Route::resource('/page', 'Site\ContentController')->only(['index', 'show']);
+    // Route::resource('/gallery', 'Site\GalleryController');
+    // Route::resource('/order', 'Site\OrderController');
+
+    Route::get('/tag/content/{slug}', 'Site\TagController@searchContents');
+    Route::get('/tag/{slug}', 'Site\TagController@search');
+
+    Route::get('/otp/request', 'Site\OtpController@showRequestForm')->name('otp.request');
+    Route::get('/otp/login', 'Site\OtpController@showOtpLoginForm')->name('otp.login');
+
+
+    Route::get('/otp/request/active-mobile', 'Site\OtpController@showRequestActiveMobileForm')
+        ->name('otp.request.active.mobile')->middleware('auth:web');
+    Route::post('/otp/active-mobile', 'Site\OtpController@otpActiveMobile')
+        ->name('otp.login.active.mobile')->middleware('auth:web');
+
+
+    Route::middleware('throttle:6,2')->group(function () {
+        Route::post('/otp/request', 'Site\OtpController@sendOtp');
+        Route::post('/otp/login', 'Site\OtpController@otpLogin');
+    });
 });
 
-//Route::prefix('{locale?}')->middleware([\App\Http\Middleware\Locale::class])->group(function () {
-//    Auth::routes();
-//    Route::post('/postal_code', [\App\Http\Controllers\Site\HomeController::class,'postalCode'])->name('home.postal_code');
-//
-//    Route::put('/post/comment/guest-store/{content}', 'Site\ContentController@storeGuestComment')
-//        ->name('guest.content.comment.store');
-//
-//    // for Entekhab-Reshte
-//    Route::get('/bank/request', 'Site\BankController@request');
-//    Route::any('/bank/response', 'Site\BankController@response');
-//
-//    Route::middleware(['auth:web'])->group(function () {
-//        Route::get('pay_page/', 'Site\PayPageController@index')->name('pay_page.index');
-//        Route::get('pay_page/{package}', 'Site\PayPageController@show')->name('pay_page.show');
-//        Route::post('pay_page/{package}', 'Site\PayPageController@pay')->name('pay_page.pay');
-//        Route::resource('profile', 'Site\ProfileController')->only(['edit', 'update']);
-//        Route::get('registration/receipt/{purchase}', 'Site\ReceiptController@receipt')->name('registration.receipt');
-//        Route::get('registration/pdf/{purchase}', 'Site\ReceiptController@pdf')->name('registration.pdf');
-//        Route::get('fill_out_profile/{package}', 'Site\FillOutProfileController@edit')->name('fill_out_profile.edit');
-//        Route::post('fill_out_profile/{package}', 'Site\FillOutProfileController@update')->name('fill_out_profile.update');
-//        Route::post('fill_out_profile/confirm/{package}', 'Site\FillOutProfileController@confirm')->name('fill_out_profile.confirm');
-//        Route::post('video_track', 'Site\VideoTrackController@store')->name('video_track.store');
-//    });
-//
-//    Route::group([], function () { //middleware(['auth:web', 'active.mobile', 'payed'])->
-//        Route::get('', [\App\Http\Controllers\Site\HomeController::class,'index'])->name('home.index');
-//
-//        Route::post('search', [\App\Http\Controllers\Site\HomeController::class,'search']);
-//        Route::get('search/index', [\App\Http\Controllers\Site\HomeController::class,'searchIndex'])->name('search.index');
-//
-//        Route::post('contact-us', [\App\Http\Controllers\Site\HomeController::class,'contactUs'])->middleware('throttle:10,60');
-//        Route::get('menu/{content}', [\App\Http\Controllers\Site\HomeController::class,'showMenuItem'])->name('home.showMenuItem');
-//
-//
-//
-//        Route::resource('/content', 'Site\ContentController')->only(['index', 'show']);
-//
-//        Route::middleware(['guest'])->group(function () {
-//            Route::get('/content/menu/{content}', 'Site\ContentController@showMenu');
-//
-//            Route::get('c/{content}', 'Site\ContentController@show')->name('content.short_link_show');
-//        });
-//    });
-//
-//    Route::middleware(['guest'])->group(function () {
-//
-//        Route::get('registration/{package}', 'Site\RegistrationController@index')->name('registration.index');
-//        Route::post('registration/check_national_code', 'Site\RegistrationController@check_national_code')->name('registration.check_national_code');
-//        Route::post('registration/confirm/{package}', 'Site\RegistrationController@confirm')->name('registration.confirm');
-//        Route::post('registration/{package}', 'Site\RegistrationController@store')->name('registration.store');
-//     });
-//
-//    // Route::resource('refund', 'Site\RefundController');
-//
-//    // Route::get('/faq', 'Site\FaqController@index');
-//    // Route::get('/pages/{category_id}/{category_item_id?}', 'Site\ContentController@index');
-//    Route::resource('/page', 'Site\ContentController')->only(['index', 'show']);
-//    // Route::resource('/gallery', 'Site\GalleryController');
-//    // Route::resource('/order', 'Site\OrderController');
-//
-//    Route::get('/tag/content/{slug}', 'Site\TagController@searchContents');
-//    Route::get('/tag/{slug}', 'Site\TagController@search');
-//
-//    Route::get('/otp/request', 'Site\OtpController@showRequestForm')->name('otp.request');
-//    Route::get('/otp/login', 'Site\OtpController@showOtpLoginForm')->name('otp.login');
-//
-//
-//    Route::get('/otp/request/active-mobile', 'Site\OtpController@showRequestActiveMobileForm')
-//        ->name('otp.request.active.mobile')->middleware('auth:web');
-//    Route::post('/otp/active-mobile', 'Site\OtpController@otpActiveMobile')
-//        ->name('otp.login.active.mobile')->middleware('auth:web');
-//
-//
-//    Route::middleware('throttle:6,2')->group(function () {
-//        Route::post('/otp/request', 'Site\OtpController@sendOtp');
-//        Route::post('/otp/login', 'Site\OtpController@otpLogin');
-//    });
-//});
-//
-//
-//Route::get('/get_image/{width}/{height}/{type}/{filepath}', 'Site\ResizeImageController@resize')
-//    ->where(['filepath' => '[ \w\\.\\/\\-\\@\(\)]+']);
-//
-//Route::get('/get_captcha/{config?}', function (\Mews\Captcha\Captcha $captcha, $config = 'default') {
-//    return $captcha->src($config);
-//});
+
+Route::get('/get_image/{width}/{height}/{type}/{filepath}', 'Site\ResizeImageController@resize')
+    ->where(['filepath' => '[ \w\\.\\/\\-\\@\(\)]+']);
+
+Route::get('/get_captcha/{config?}', function (\Mews\Captcha\Captcha $captcha, $config = 'default') {
+    return $captcha->src($config);
+});
 
 
-//Route::get('fa/users/users/wallet/receipt/error', 'WalletController@receiptError')->name('wallet.receipt.error');
-//Route::get('fa/users/users/wallet/receipt/{purchase}', 'WalletController@receipt')->name('wallet.receipt.success');
-//
-//Route::any('/bank/response/wallet', 'WalletController@response');
-//
-//Route::get('users/users/wallet/{uuid}', 'WalletController@getPurchase')->name('wallet.charge');
-//
-//Route::get('users/users/wallet/purchase/{wallet}', 'WalletController@purchase')->name('wallet.charge.purchase');
-//
-//Route::get('guide-info/download', 'Site\GuideInfoController@exportPdf')
-//    ->name('guide.info.pdf');
+Route::get('fa/users/users/wallet/receipt/error', 'WalletController@receiptError')->name('wallet.receipt.error');
+Route::get('fa/users/users/wallet/receipt/{purchase}', 'WalletController@receipt')->name('wallet.receipt.success');
+
+Route::any('/bank/response/wallet', 'WalletController@response');
+
+Route::get('users/users/wallet/{uuid}', 'WalletController@getPurchase')->name('wallet.charge');
+
+Route::get('users/users/wallet/purchase/{wallet}', 'WalletController@purchase')->name('wallet.charge.purchase');
+
+Route::get('guide-info/download', 'Site\GuideInfoController@exportPdf')
+    ->name('guide.info.pdf');
 
 
 Route::get('/storage/link', function () {
     \Artisan::call('storage:link');
     \Artisan::call('cache:clear');
+
 });
 
 

@@ -12,7 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->validateCsrfTokens(except: [
+            'h/23124/hook',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

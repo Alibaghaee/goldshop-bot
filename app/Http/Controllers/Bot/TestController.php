@@ -52,4 +52,22 @@ class TestController extends Controller
 
         dd($body);
     }
+
+
+
+    public function setHook()
+    {
+        Telegram::bot('mmd_tala_bot')->removeWebhook();
+        $telegram = Telegram::bot('mmd_tala_bot')->setWebhook(['url' => 'https://gold.rahco.ir/api/h/23124/test1']);
+
+        return $telegram;
+    }
+
+    public function hook()
+    {
+        $updates = Telegram::bot('mmd_tala_bot')->getWebhookUpdate();
+
+        info($updates);
+        return 'ok';
+    }
 }
