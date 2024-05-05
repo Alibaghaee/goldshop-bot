@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Bot;
 
+use App\Events\UpdateHookEvent;
 use App\Http\Controllers\Controller;
 use App\Observers\GoldScraperObserver;
 use Illuminate\Http\Request;
@@ -68,6 +69,8 @@ class TestController extends Controller
     {
         $updates = Telegram::bot('mmd_tala_bot')->getWebhookUpdate();
 
+
+        event(new UpdateHookEvent(collect(json_decode($updates,true))));
         info('########################################\n####\\n');
         info($updates);
         return 'ok';
