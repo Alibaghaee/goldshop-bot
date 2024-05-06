@@ -23,16 +23,15 @@ return new class extends Migration {
             $table->string('from_last_name');
             $table->string('from_language_code');
 
-            $table->unsignedBigInteger('chat_id');
-            $table->string('chat_first_name');
-            $table->string('chat_last_name');
-            $table->string('chat_type');
+
             $table->timestamp('date');
             $table->text('text');
 
 
             $table->string('status')->default('pending');
 
+
+            $table->unsignedBigInteger('chat_bot_id')->nullable();
             $table->timestamps();
         });
     }

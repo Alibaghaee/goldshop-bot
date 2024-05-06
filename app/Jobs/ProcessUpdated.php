@@ -2,7 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Models\ChatBot;
 use App\Models\MessageBot;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -51,6 +53,58 @@ class ProcessUpdated implements ShouldQueue
 //            ],
 //        ];
 
+//        [
+//            "update_id" => 674847652,
+//            "message" => [
+//                "message_id" => 43,
+//                "from" => [
+//                    "id" => 6259458432,
+//                    "is_bot" => false,
+//                    "first_name" => "Nafas",
+//                    "last_name" => "Rahco",
+//                    "language_code" => "en",
+//                ],
+//                "chat" => [
+//                    "id" => 6259458432,
+//                    "first_name" => "Nafas",
+//                    "last_name" => "Rahco",
+//                    "type" => "private",
+//                ],
+//                "date" => 1715008646,
+//                "reply_to_message" => [
+//                    "message_id" => 42,
+//                    "from" => [
+//                        "id" => 6949811914,
+//                        "is_bot" => true,
+//                        "first_name" => "mmd_tala",
+//                        "username" => "mmd_tala_bot",
+//                    ],
+//                    "chat" => [
+//                        "id" => 6259458432,
+//                        "first_name" => "Nafas",
+//                        "last_name" => "Rahco",
+//                        "type" => "private",
+//                    ],
+//                    "date" => 1715008610,
+//                    "text" => "با سلام خدمت شما دوست عزیز. از طریق این بات می توانید سفارش خود را به سادگی ثبت کنید. برای بازگشت بین مراحل از دستور /back کنید. اگر آماده هستید با فشردن دکمه اشتراگ گذاری شماره همراه ادامه دهید.",
+//                    "entities" => [
+//                        [
+//                            "offset" => 117,
+//                            "length" => 5,
+//                            "type" => "bot_command",
+//                        ],
+//                    ],
+//                ],
+//                "contact" => [
+//                    "phone_number" => "989391431953",
+//                    "first_name" => "Nafas",
+//                    "last_name" => "Rahco",
+//                    "user_id" => 6259458432,
+//                ],
+//            ],
+//        ];
+
+
         $message = MessageBot::make();
 
         $message->update_id = $this->updates->get('update_id');
@@ -61,13 +115,36 @@ class ProcessUpdated implements ShouldQueue
         $message->from_last_name = $this->updates->get('message')['from']['last_name'];
         $message->from_language_code = $this->updates->get('message')['from']['language_code'];
 
-        $message->chat_id = $this->updates->get('message')['chat']['id'];
-        $message->chat_first_name = $this->updates->get('message')['chat']['first_name'];
-        $message->chat_last_name = $this->updates->get('message')['chat']['last_name'];
-        $message->chat_type = $this->updates->get('message')['chat']['type'];
+
         $message->date = $this->updates->get('message')['date'];
-        $message->text = $this->updates->get('message')['text'];
+
+        if (array_key_exists('contact', $this->updates->get('message')) &&
+            array_key_exists('phone_number', $this->updates->get('message')['contact'])) {
+
+            $message->text = 'contact:_' . (string)$this->updates->get('message')['contact']['phone_number'];
+        } elseif (array_key_exists('text', $this->updates->get('message'))) {
+
+            $message->text = $this->updates->get('message')['text'];
+        } else {
+
+            $message->text = '';
+        }
+
+
+        if (ChatBot::where('chat_id', $this->updates->get('message')['chat']['id'])->exists()) {
+            $message->chat_bot_id = ChatBot::where('chat_id', $this->updates->get('message')['chat']['id'])->first()->id;
+        } else {
+
+            $message->chat_bot_id = ChatBot::create([
+                'chat_id' => $this->updates->get('message')['chat']['id'],
+                'chat_first_name' => $this->updates->get('message')['chat']['first_name'],
+                'chat_last_name' => $this->updates->get('message')['chat']['last_name'],
+                'chat_type' => $this->updates->get('message')['chat']['type'],
+            ])->id;
+        }
 
         $message->save();
+
+
     }
 }
