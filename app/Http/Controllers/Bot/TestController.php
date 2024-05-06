@@ -70,12 +70,12 @@ class TestController extends Controller
         $updates = Telegram::bot('mmd_tala_bot')->getWebhookUpdate();
 
 
-        event(new UpdateHookEvent(collect(json_decode($updates,true))));
         info('########################################\n####\\n');
         info($updates);
+
+        event(new UpdateHookEvent(collect(json_decode($updates,true))));
+
         return 'ok';
-
-
     }
 
     public function testTala()

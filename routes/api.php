@@ -14,5 +14,5 @@ Route::get('/user', function (Request $request) {
 Route::get('test1', [\App\Http\Controllers\Bot\TestController::class, 'test1']);
 Route::get('test2', [\App\Http\Controllers\Bot\TestController::class, 'test2']);
 Route::get('set-hook', [\App\Http\Controllers\Bot\TestController::class, 'setHook']);
-Route::get('h/23124/hook', [\App\Http\Controllers\Bot\TestController::class, 'hook']);
+Route::post('h/23124/hook', [\App\Http\Controllers\Bot\TestController::class, 'hook']);
 Route::get('testTala', [\App\Http\Controllers\Bot\TestController::class, 'testTala']);

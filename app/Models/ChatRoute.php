@@ -8,4 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class ChatRoute extends Model
 {
     use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'chat_session_id',
+        'action',
+    ];
 }

@@ -72,7 +72,7 @@ class MessageBot extends Model
     public static function checkLockConversation()
     {
 
-        return false;
+        return true;
     }
 
 
@@ -235,13 +235,13 @@ class MessageBot extends Model
 
     public function getHasUserAttribute()
     {
-        return $this->chatBot()?->user()?->exists();
+        return $this->chatBot?->user()?->exists();
     }
 
     public function getValidUserAttribute()
     {
 
-        return $this->chatBot()?->user()?->active_mobile;
+        return $this->chatBot?->user?->active_mobile;
     }
 
     public function getLastActionAttribute()
