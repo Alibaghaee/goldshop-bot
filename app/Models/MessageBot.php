@@ -134,11 +134,9 @@ class MessageBot extends Model
         $phone = explode(':', $this->text);
         if (array_key_exists(1, $phone) && !$this->has_user) {
 
-            $this->chatBot()?->user()?->create([
-                'phone' => str_replace('_98','0',$phone[1])
-            ]);
 
-
+            $user = \App\Models\User::create(['phone' => str_replace('_98', '0', $phone[1])]);
+            $this->chatBot?->user()->associate($user)->save();
         }
 
         $this->startBot();
@@ -148,14 +146,14 @@ class MessageBot extends Model
     {
         if (!$this->has_user) {
 
-            $this->needPhone();
+            return $this->needPhone();
 
         }
 
         if (!$this->valid_user) {
 
 
-            $this->needUserCheck();
+            return $this->needUserCheck();
         }
 
         $reply_markup = Keyboard::make()
@@ -216,9 +214,8 @@ class MessageBot extends Model
 
     public function setRouteAction(string $value)
     {
-        $this->getCleanChatSession()->chatRoutes()->create([
-            'action' => $value
-        ]);
+        $chatRoutes = \App\Models\ChatRoute::create([  'action' => $value]);
+        $this->getCleanChatSession()->chatRoutes()->associate($chatRoutes);
     }
 
     public function getCleanChatSession()
@@ -247,7 +244,7 @@ class MessageBot extends Model
     public function getLastActionAttribute()
     {
 
-        return $this->getCleanChatSession()->chatRoutes()?->latest()?->action;
+        return $this->getCleanChatSession()->chatRoutes?->sortByDesc('created_at')?->first()?->action;
     }
 
     public function chatSessionCheck()
