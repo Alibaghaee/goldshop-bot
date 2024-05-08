@@ -15,8 +15,19 @@ class ChatBot extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'chat_id', 'chat_first_name', 'chat_last_name', 'chat_type',
+        'chat_id', 'chat_first_name', 'chat_last_name', 'chat_type','chat_session_id',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function (ChatBot $chatBot){
+
+            $chatBot->chatSession()->create();
+
+        });
+    }
 
     /**
      * Define an inverse one-to-one or many relationship to User.
@@ -29,12 +40,12 @@ class ChatBot extends Model
     }
 
     /**
-     * Define a one-to-one relationship to ChatSession.
+     * Define a inverse one-to-one relationship to ChatSession.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function chatSession()
     {
-        return $this->hasOne(ChatSession::class);
+        return $this->belongsTo(ChatSession::class);
     }
 }

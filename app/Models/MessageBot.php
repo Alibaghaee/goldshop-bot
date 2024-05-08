@@ -214,15 +214,15 @@ class MessageBot extends Model
 
     public function setRouteAction(string $value)
     {
-        $chatRoutes = \App\Models\ChatRoute::create([  'action' => $value]);
-        $this->getCleanChatSession()->chatRoutes()->associate($chatRoutes);
+
+        $this->getCleanChatSession()?->chatRoutes()->create(['action' => $value]);
     }
 
     public function getCleanChatSession()
     {
-        if ($this->chatSessionCheck()) {
-
+        if ((!$this->has_chat_session) || $this->chatSessionCheck()) {
             $this->chatSessionClear();
+
             return $this->chatBot?->chatSession()->create();
         } else {
 
@@ -250,6 +250,11 @@ class MessageBot extends Model
     public function chatSessionCheck()
     {
         return $this->chatBot?->chatSession?->updated_at <= now()->subHour();
+    }
+
+    public function getHasChatSessionAttribute()
+    {
+        return $this->chatBot?->chatSession()->exists();
     }
 
     public function chatSessionClear()

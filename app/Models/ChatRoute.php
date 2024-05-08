@@ -18,4 +18,18 @@ class ChatRoute extends Model
         'chat_session_id',
         'action',
     ];
+
+    protected $touches=[
+        'chatSession'
+    ];
+
+    /**
+     * Define an inverse one-to-one or many relationship to ChatSession.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function chatSession()
+    {
+        return $this->belongsTo(ChatSession::class);
+    }
 }

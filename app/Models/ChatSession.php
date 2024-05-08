@@ -20,6 +20,8 @@ class ChatSession extends Model
     ];
 
 
+
+
     /**
      * The attributes that should be cast.
      *
