@@ -15,18 +15,20 @@ class ChatBot extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'chat_id', 'chat_first_name', 'chat_last_name', 'chat_type','chat_session_id',
+        'chat_id', 'chat_first_name', 'chat_last_name', 'chat_type', 'chat_session_id',
     ];
 
     protected static function boot()
     {
         parent::boot();
 
-        static::created(function (ChatBot $chatBot){
+        static::creating(function (ChatBot $chatBot) {
 
-            $chatBot->chatSession()->create();
+
+            $chatBot->setAttribute('chat_session_id', ChatSession::create()->id);
 
         });
+
     }
 
     /**

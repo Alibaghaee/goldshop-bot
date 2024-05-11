@@ -53,7 +53,11 @@ class MessageBot extends Model
         parent::boot();
 
         static::created(function (MessageBot $message) {
-            $message->chatSessionClear();
+            if ($message->chatSessionCheck()) {
+
+
+                $message->chatSessionClear();
+            }
             if (!$message->from_is_bot && self::checkLockConversation()) {
 
                 if ($message->callback_query) {
@@ -62,22 +66,27 @@ class MessageBot extends Model
 
                         $message->startTrade();
                     }
+                    if (trim($message->callback_query_text) === '/sell' || trim($message->callback_query_text) === '/buy') {
+
+                        $message->tradeAmount();
+                    }
+
+                    if (trim($message->callback_query_text) === '/trade_abshode' || trim($message->callback_query_text) === '/trade_coin') {
+
+                        $message->setTradeItem();
+                    }
                 } else {
 
                     if (trim($message->text) === '/start') {
 
                         $message->startBot();
-                    }
-
-                    if ($message->last_action === 'need_phone') {
+                    } elseif ($message->last_action === 'need_phone') {
                         if (str_contains(trim($message->text), 'contact:')) {
 
 
                             $message->receivePhone();
                         }
-                    }
-
-                    if ($message->last_action === 'need_user_check') {
+                    } elseif ($message->last_action === 'need_user_check') {
                         $message->receiveName();
                     }
                 }
@@ -161,12 +170,20 @@ class MessageBot extends Model
         if (array_key_exists(1, $phone) && !$this->has_user) {
 
 
-            $user = \App\Models\User::create(['phone' => str_replace('_98', '0', $phone[1])]);
+            $user = \App\Models\User::create(['phone' => str_replace('_98', '0', $phone[1]), 'last_chat_id' => $this->chatBot?->chat_id]);
             $this->chatBot?->user()->associate($user)->save();
         }
 
         $this->startBot();
     }
+
+    public function setTradeItem()
+    {
+
+
+        return $this->tradeType();
+    }
+
 
     public function startBot()
     {
@@ -225,12 +242,15 @@ class MessageBot extends Model
 
     public function tradeType()
     {
+        $this->setRouteAction('set_trade_type');
+
         $reply_markup = Keyboard::make()
             ->setResizeKeyboard(true)
             ->setOneTimeKeyboard(true)
+            ->inline()
             ->row([
-                Keyboard::button(['text' => "فروش به ما", 'request_contact' => false]),
-                Keyboard::button(['text' => "خرید از ما", 'request_contact' => false]),
+                Keyboard::inlineButton(['text' => "فروش به ما", 'request_contact' => false, 'callback_data' => '/sell']),
+                Keyboard::inlineButton(['text' => "خرید از ما", 'request_contact' => false, 'callback_data' => '/buy']),
             ]);
 
         $data = [
@@ -265,7 +285,7 @@ class MessageBot extends Model
     public function setRouteAction(string $value)
     {
 
-        $this->getCleanChatSession()?->chatRoutes()->create(['action' => $value]);
+        $this->getCleanChatSession()?->chatRoutes()->create(['action' => $value])->save();
     }
 
     public function getCleanChatSession()
@@ -273,7 +293,11 @@ class MessageBot extends Model
         if ((!$this->has_chat_session) || $this->chatSessionCheck()) {
             $this->chatSessionClear();
 
-            return $this->chatBot?->chatSession()->create();
+            $chatSession = ChatSession::create();
+
+            $this->chatBot?->chatSession()->associate($chatSession);
+
+            return $this->chatBot?->chatSession;
         } else {
 
             return $this->chatBot?->chatSession;
@@ -294,7 +318,7 @@ class MessageBot extends Model
     public function getLastActionAttribute()
     {
 
-        return $this->getCleanChatSession()->chatRoutes?->sortByDesc('created_at')?->first()?->action;
+        return $this->getCleanChatSession()->chatRoutes?->sortByDesc('id')?->first()?->action;
     }
 
     public function chatSessionCheck()
@@ -309,10 +333,10 @@ class MessageBot extends Model
 
     public function chatSessionClear()
     {
-        if ($this->chatSessionCheck()) {
 
-            $this->chatBot?->chatSession?->delete();
-        }
+
+        $this->chatBot?->chatSession?->delete();
+
     }
 
     /**

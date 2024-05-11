@@ -31,125 +31,7 @@ class ProcessUpdated implements ShouldQueue
      */
     public function handle(): void
     {
-//        $data = [
-//            "update_id" => 674847639,
-//            "message" => [
-//                "message_id" => 25,
-//                "from" => [
-//                    "id" => 6259458432,
-//                    "is_bot" => false,
-//                    "first_name" => "Nafas",
-//                    "last_name" => "Rahco",
-//                    "language_code" => "en",
-//                ],
-//                "chat" => [
-//                    "id" => 6259458432,
-//                    "first_name" => "Nafas",
-//                    "last_name" => "Rahco",
-//                    "type" => "private",
-//                ],
-//                "date" => 1714637429,
-//                "text" => "hi ali",
-//            ],
-//        ];
 
-//        [
-//            "update_id" => 674847652,
-//            "message" => [
-//                "message_id" => 43,
-//                "from" => [
-//                    "id" => 6259458432,
-//                    "is_bot" => false,
-//                    "first_name" => "Nafas",
-//                    "last_name" => "Rahco",
-//                    "language_code" => "en",
-//                ],
-//                "chat" => [
-//                    "id" => 6259458432,
-//                    "first_name" => "Nafas",
-//                    "last_name" => "Rahco",
-//                    "type" => "private",
-//                ],
-//                "date" => 1715008646,
-//                "reply_to_message" => [
-//                    "message_id" => 42,
-//                    "from" => [
-//                        "id" => 6949811914,
-//                        "is_bot" => true,
-//                        "first_name" => "mmd_tala",
-//                        "username" => "mmd_tala_bot",
-//                    ],
-//                    "chat" => [
-//                        "id" => 6259458432,
-//                        "first_name" => "Nafas",
-//                        "last_name" => "Rahco",
-//                        "type" => "private",
-//                    ],
-//                    "date" => 1715008610,
-//                    "text" => "با سلام خدمت شما دوست عزیز. از طریق این بات می توانید سفارش خود را به سادگی ثبت کنید. برای بازگشت بین مراحل از دستور /back کنید. اگر آماده هستید با فشردن دکمه اشتراگ گذاری شماره همراه ادامه دهید.",
-//                    "entities" => [
-//                        [
-//                            "offset" => 117,
-//                            "length" => 5,
-//                            "type" => "bot_command",
-//                        ],
-//                    ],
-//                ],
-//                "contact" => [
-//                    "phone_number" => "989391431953",
-//                    "first_name" => "Nafas",
-//                    "last_name" => "Rahco",
-//                    "user_id" => 6259458432,
-//                ],
-//            ],
-//        ];
-
-//        [
-//            "update_id" => 674847713,
-//            "callback_query" => [
-//                "id" => "8437425184478017963",
-//                "from" => [
-//                    "id" => 6259458432,
-//                    "is_bot" => false,
-//                    "first_name" => "Nafas",
-//                    "last_name" => "Rahco",
-//                    "language_code" => "en",
-//                ],
-//                "message" => [
-//                    "message_id" => 209,
-//                    "from" => [
-//                        "id" => 6949811914,
-//                        "is_bot" => true,
-//                        "first_name" => "mmd_tala",
-//                        "username" => "mmd_tala_bot",
-//                    ],
-//                    "chat" => [
-//                        "id" => 6259458432,
-//                        "first_name" => "Nafas",
-//                        "last_name" => "Rahco",
-//                        "type" => "private",
-//                    ],
-//                    "date" => 1715410677,
-//                    "text" => "گزینه مورد نظر خودتو بگو",
-//                    "reply_markup" => [
-//                        "inline_keyboard" => [
-//                            [
-//                                [
-//                                    "text" => "فروش به ما",
-//                                    "callback_data" => "/sell",
-//                                ],
-//                                [
-//                                    "text" => "خرید از ما",
-//                                    "callback_data" => "/buy",
-//                                ],
-//                            ],
-//                        ],
-//                    ],
-//                ],
-//                "chat_instance" => "-7330454606667000231",
-//                "data" => "/buy",
-//            ],
-//        ],
         $message = MessageBot::make();
 
         $message->update_id = $this->updates->get('update_id');
@@ -219,18 +101,20 @@ class ProcessUpdated implements ShouldQueue
                 $message->chat_bot_id = ChatBot::where('chat_id', $this->updates->get('callback_query')['message']['chat']['id'])->first()->id;
             } else {
 
+                $user = User::where('last_chat_id', $this->updates->get('callback_query')['message']['chat']['id'])->first();
+
                 $message->chat_bot_id = ChatBot::create([
                     'chat_id' => $this->updates->get('callback_query')['message']['chat']['id'],
                     'chat_first_name' => $this->updates->get('callback_query')['message']['chat']['first_name'],
                     'chat_last_name' => $this->updates->get('callback_query')['message']['chat']['last_name'],
                     'chat_type' => $this->updates->get('callback_query')['message']['chat']['type'],
+                    'user_id' => $user?->id
                 ])->id;
             }
         }
 
 
         $message->save();
-
 
     }
 }

@@ -24,7 +24,7 @@ use Morilog\Jalali\Jalalian;
 
 class User extends Authenticatable
 {
-    use Notifiable, Uri, View, Filterable, DomainScopeTrait, HasNewsLetter;
+    use Notifiable, Uri, View, Filterable, HasNewsLetter;
 
     protected $route_name = 'users';
 
