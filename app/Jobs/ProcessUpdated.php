@@ -104,44 +104,130 @@ class ProcessUpdated implements ShouldQueue
 //            ],
 //        ];
 
-
+//        [
+//            "update_id" => 674847713,
+//            "callback_query" => [
+//                "id" => "8437425184478017963",
+//                "from" => [
+//                    "id" => 6259458432,
+//                    "is_bot" => false,
+//                    "first_name" => "Nafas",
+//                    "last_name" => "Rahco",
+//                    "language_code" => "en",
+//                ],
+//                "message" => [
+//                    "message_id" => 209,
+//                    "from" => [
+//                        "id" => 6949811914,
+//                        "is_bot" => true,
+//                        "first_name" => "mmd_tala",
+//                        "username" => "mmd_tala_bot",
+//                    ],
+//                    "chat" => [
+//                        "id" => 6259458432,
+//                        "first_name" => "Nafas",
+//                        "last_name" => "Rahco",
+//                        "type" => "private",
+//                    ],
+//                    "date" => 1715410677,
+//                    "text" => "گزینه مورد نظر خودتو بگو",
+//                    "reply_markup" => [
+//                        "inline_keyboard" => [
+//                            [
+//                                [
+//                                    "text" => "فروش به ما",
+//                                    "callback_data" => "/sell",
+//                                ],
+//                                [
+//                                    "text" => "خرید از ما",
+//                                    "callback_data" => "/buy",
+//                                ],
+//                            ],
+//                        ],
+//                    ],
+//                ],
+//                "chat_instance" => "-7330454606667000231",
+//                "data" => "/buy",
+//            ],
+//        ],
         $message = MessageBot::make();
 
         $message->update_id = $this->updates->get('update_id');
-        $message->message_id = $this->updates->get('message')['message_id'];
-        $message->from_id = $this->updates->get('message')['from']['id'];
-        $message->from_is_bot = $this->updates->get('message')['from']['is_bot'];
-        $message->from_first_name = $this->updates->get('message')['from']['first_name'];
-        $message->from_last_name = $this->updates->get('message')['from']['last_name'];
-        $message->from_language_code = $this->updates->get('message')['from']['language_code'];
+
+        if ($this->updates->has('message')) {
 
 
-        $message->date = $this->updates->get('message')['date'];
+            $message->message_id = $this->updates->get('message')['message_id'];
+            $message->from_id = $this->updates->get('message')['from']['id'];
+            $message->from_is_bot = $this->updates->get('message')['from']['is_bot'];
+            $message->from_first_name = $this->updates->get('message')['from']['first_name'];
+            $message->from_last_name = $this->updates->get('message')['from']['last_name'];
+            $message->from_language_code = $this->updates->get('message')['from']['language_code'];
 
-        if (array_key_exists('contact', $this->updates->get('message')) &&
-            array_key_exists('phone_number', $this->updates->get('message')['contact'])) {
 
-            $message->text = 'contact:_' . (string)$this->updates->get('message')['contact']['phone_number'];
-        } elseif (array_key_exists('text', $this->updates->get('message'))) {
+            $message->date = $this->updates->get('message')['date'];
 
-            $message->text = $this->updates->get('message')['text'];
-        } else {
+            if (array_key_exists('contact', $this->updates->get('message')) &&
+                array_key_exists('phone_number', $this->updates->get('message')['contact'])) {
 
-            $message->text = '';
+                $message->text = 'contact:_' . (string)$this->updates->get('message')['contact']['phone_number'];
+            } elseif (array_key_exists('text', $this->updates->get('message'))) {
+
+                $message->text = $this->updates->get('message')['text'];
+            } else {
+
+                $message->text = '';
+            }
+
+
+            if (ChatBot::where('chat_id', $this->updates->get('message')['chat']['id'])->exists()) {
+                $message->chat_bot_id = ChatBot::where('chat_id', $this->updates->get('message')['chat']['id'])->first()->id;
+            } else {
+
+                $message->chat_bot_id = ChatBot::create([
+                    'chat_id' => $this->updates->get('message')['chat']['id'],
+                    'chat_first_name' => $this->updates->get('message')['chat']['first_name'],
+                    'chat_last_name' => $this->updates->get('message')['chat']['last_name'],
+                    'chat_type' => $this->updates->get('message')['chat']['type'],
+                ])->id;
+            }
+        } elseif ($this->updates->has('callback_query')) {
+
+
+            $message->callback_query = true;
+            $message->callback_query_text = $this->updates->get('callback_query')['data'];
+            $message->message_id = $this->updates->get('callback_query')['message']['message_id'];
+            $message->from_id = $this->updates->get('callback_query')['from']['id'];
+            $message->from_is_bot = $this->updates->get('callback_query')['from']['is_bot'];
+            $message->from_first_name = $this->updates->get('callback_query')['from']['first_name'];
+            $message->from_last_name = $this->updates->get('callback_query')['from']['last_name'];
+            $message->from_language_code = $this->updates->get('callback_query')['from']['language_code'];
+
+
+            $message->date = $this->updates->get('callback_query')['message']['date'];
+
+            if (array_key_exists('text', $this->updates->get('callback_query')['message'])) {
+
+                $message->text = $this->updates->get('callback_query')['message']['text'];
+            } else {
+
+                $message->text = '';
+            }
+
+
+            if (ChatBot::where('chat_id', $this->updates->get('callback_query')['message']['chat']['id'])->exists()) {
+                $message->chat_bot_id = ChatBot::where('chat_id', $this->updates->get('callback_query')['message']['chat']['id'])->first()->id;
+            } else {
+
+                $message->chat_bot_id = ChatBot::create([
+                    'chat_id' => $this->updates->get('callback_query')['message']['chat']['id'],
+                    'chat_first_name' => $this->updates->get('callback_query')['message']['chat']['first_name'],
+                    'chat_last_name' => $this->updates->get('callback_query')['message']['chat']['last_name'],
+                    'chat_type' => $this->updates->get('callback_query')['message']['chat']['type'],
+                ])->id;
+            }
         }
 
-
-        if (ChatBot::where('chat_id', $this->updates->get('message')['chat']['id'])->exists()) {
-            $message->chat_bot_id = ChatBot::where('chat_id', $this->updates->get('message')['chat']['id'])->first()->id;
-        } else {
-
-            $message->chat_bot_id = ChatBot::create([
-                'chat_id' => $this->updates->get('message')['chat']['id'],
-                'chat_first_name' => $this->updates->get('message')['chat']['first_name'],
-                'chat_last_name' => $this->updates->get('message')['chat']['last_name'],
-                'chat_type' => $this->updates->get('message')['chat']['type'],
-            ])->id;
-        }
 
         $message->save();
 

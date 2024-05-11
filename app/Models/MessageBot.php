@@ -18,7 +18,18 @@ class MessageBot extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'update_id', 'message_id', 'from_id', 'from_is_bot', 'from_first_name', 'from_last_name', 'from_language_code', 'date', 'text',];
+        'update_id',
+        'message_id',
+        'from_id',
+        'from_is_bot',
+        'from_first_name',
+        'from_last_name',
+        'from_language_code',
+        'date',
+        'text',
+        'callback_query',
+        'callback_query_text',
+    ];
 
     /**
      * The attributes that should be cast.
@@ -28,6 +39,7 @@ class MessageBot extends Model
     protected $casts = [
         'date' => 'datetime',
         'from_is_bot' => 'boolean',
+        'callback_query' => 'boolean',
     ];
 
 
@@ -44,21 +56,32 @@ class MessageBot extends Model
             $message->chatSessionClear();
             if (!$message->from_is_bot && self::checkLockConversation()) {
 
+                if ($message->callback_query) {
 
-                if (trim($message->text) === '/start') {
+                    if (trim($message->callback_query_text) === '/start_trade') {
 
-                    $message->startBot();
-                }
+                        $message->startTrade();
+                    }
+                } else {
 
+                    if (trim($message->text) === '/start') {
 
-                if ($message->last_action === 'need_phone') {
-                    if (str_contains(trim($message->text), 'contact:')) {
-
-
-                        $message->receivePhone();
+                        $message->startBot();
                     }
 
+                    if ($message->last_action === 'need_phone') {
+                        if (str_contains(trim($message->text), 'contact:')) {
+
+
+                            $message->receivePhone();
+                        }
+                    }
+
+                    if ($message->last_action === 'need_user_check') {
+                        $message->receiveName();
+                    }
                 }
+
 
             } else {
 
@@ -98,6 +121,8 @@ class MessageBot extends Model
 
     public function needUserCheck()
     {
+        $this->setRouteAction('need_user_check');
+
         $data = [
             'chat_id' => $this->chatBot->chat_id,
             'text' => "دوست عزیز شماره شما برای ثبت سفارش مجاز نشده است لطفا پس از بررسی با ادمین مجددا بررسی کنید.\nشماره ادمین سیستم:+989381807373\nایدی ادمین:@mohammadmostaviii" . "\n" . "برای دسترسی اسان تر لطفا نام خانوادگی خود را وارد کنید",
@@ -118,6 +143,7 @@ class MessageBot extends Model
 
     public function receiveName()
     {
+        $this->chatBot?->user->tryActiveMobile();
 
         $data = [
             'chat_id' => $this->chatBot->chat_id,
@@ -144,6 +170,29 @@ class MessageBot extends Model
 
     public function startBot()
     {
+        $this->setRouteAction('start_bot');
+
+        $reply_markup = Keyboard::make()
+            ->setResizeKeyboard(true)
+            ->setOneTimeKeyboard(false)
+            ->inline()
+            ->row([
+                Keyboard::inlineButton(['text' => 'شروع معامله', 'request_contact' => false, 'callback_data' => '/start_trade']),
+            ]);
+
+        $data = [
+            'chat_id' => $this->chatBot->chat_id,
+            'text' => "به ربات معامله گر خوش آمدید \n پس از آمادگی دکمه شروع معامله را انتخاب کنید. ",
+            'reply_markup' => $reply_markup,
+        ];
+
+        (new TelegramServiceController())->send($data);
+    }
+
+    public function startTrade()
+    {
+        $this->setRouteAction('start_trade');
+
         if (!$this->has_user) {
 
             return $this->needPhone();
@@ -159,9 +208,10 @@ class MessageBot extends Model
         $reply_markup = Keyboard::make()
             ->setResizeKeyboard(true)
             ->setOneTimeKeyboard(false)
+            ->inline()
             ->row([
-                Keyboard::button(['text' => 'آبشده', 'request_contact' => false]),
-                Keyboard::button(['text' => 'سکه', 'request_contact' => false]),
+                Keyboard::inlineButton(['text' => 'آبشده', 'request_contact' => false, 'callback_data' => '/trade_abshode']),
+                Keyboard::inlineButton(['text' => 'سکه', 'request_contact' => false, 'callback_data' => '/trade_coin']),
             ]);
 
         $data = [

@@ -448,7 +448,7 @@ class User extends Authenticatable
 
     public function scopeFindWithSubscripCode($query, $code)
     {
-        return $query->where('subscrip_code',  $code );
+        return $query->where('subscrip_code', $code);
     }
 
 
@@ -490,5 +490,12 @@ class User extends Authenticatable
             return true;
         }
         return false;
+    }
+
+
+    public function tryActiveMobile()
+    {
+        $this->active_mobile = true;
+        $this->save();
     }
 }

@@ -25,23 +25,30 @@ class TestController extends Controller
         $reply_markup = Keyboard::make()
             ->setResizeKeyboard(true)
             ->setOneTimeKeyboard(true)
+            ->inline()
             ->row([
-                Keyboard::button('۱'),
-                Keyboard::button('۲'),
-                Keyboard::button('۳'),
+                Keyboard::inlineButton(['text' => 'به اشتراک گذاری شماره تلفن همراه', 'request_contact' => true, 'callback_data' => '/request_contact']),
+
             ]);
 
 
-        $messageSend = [];
-        if (array_key_exists(0, $telegram->getUpdates())) {
+        $messageSend = $telegram->sendMessage([
 
-            $messageSend = $telegram->sendMessage([
-//            'chat_id' => $id,
-                'chat_id' => $telegram->getUpdates()[0]['message']['chat']['id'],
-                'text' => 'گزینه مورد نظر خودتو بگو',
-                'reply_markup' => $reply_markup
-            ]);
-        }
+            'chat_id' => '6259458432',
+            'text' => 'با سلام خدمت شما دوست عزیز. از طریق این بات می توانید سفارش خود را به سادگی ثبت کنید. برای بازگشت بین مراحل از دستور /back کنید. اگر آماده هستید با فشردن دکمه اشتراگ گذاری شماره همراه ادامه دهید.',
+            'reply_markup' => $reply_markup
+
+        ]);
+//        $messageSend = [];
+//        if (array_key_exists(0, $telegram->getUpdates())) {
+//
+//            $messageSend = $telegram->sendMessage([
+////            'chat_id' => $id,
+//                'chat_id' => $telegram->getUpdates()[0]['message']['chat']['id'],
+//                'text' => 'گزینه مورد نظر خودتو بگو',
+//                'reply_markup' => $reply_markup
+//            ]);
+//        }
         return $messageSend;
     }
 
@@ -73,7 +80,7 @@ class TestController extends Controller
         info('########################################\n####\\n');
         info($updates);
 
-        event(new UpdateHookEvent(collect(json_decode($updates,true))));
+        event(new UpdateHookEvent(collect(json_decode($updates, true))));
 
         return 'ok';
     }
@@ -91,7 +98,7 @@ class TestController extends Controller
 //
 //
 //        }
-        $url='https://www.estjt.ir/price/';
+        $url = 'https://www.estjt.ir/price/';
         Crawler::create()
             ->setCrawlObserver(new GoldScraperObserver())
             ->setMaximumDepth(0)
