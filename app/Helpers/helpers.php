@@ -8,6 +8,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
+use Morilog\Jalali\Jalalian;
 
 if (!function_exists('get_page_title')) {
     /**
@@ -1140,5 +1141,21 @@ if (! function_exists('array_prepend')) {
     function array_prepend($array, $value, $key = null)
     {
         return Arr::prepend($array, $value, $key);
+    }
+}
+
+if (! function_exists('now_fa')) {
+
+    function now_fa($format='Y-m-d H:m:s')
+    {
+        return Jalalian::fromDateTime(now())->format($format);
+    }
+}
+
+if (! function_exists('time_fa')) {
+
+    function time_fa($time,$format='Y-m-d H:m:s')
+    {
+        return Jalalian::fromDateTime($time)->format($format);
     }
 }
