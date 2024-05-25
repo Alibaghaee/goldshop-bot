@@ -113,8 +113,10 @@ class ProcessUpdated implements ShouldQueue
             }
         }
 
+        if ($this->updates->has('message')){
 
-        $message->save();
+            $message->save();
+        }
 
     }
 }

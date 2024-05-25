@@ -116,6 +116,40 @@ class ChatSession extends Model
         $this->save();
     }
 
+    public function setWeightAttribute(string $value)
+    {
+        return $this->setAttribute('data->weight', $value);
+    }
+
+    public function getWeightAttribute()
+    {
+        return is_array($this->data) ? (array_key_exists('weight', $this->data) ? $this->data['weight'] : null) : null;
+    }
+
+
+    public function setWeight(string $value)
+    {
+        $this->weight = $value;
+        $this->save();
+    }
+
+    public function setPriceAttribute(string $value)
+    {
+        return $this->setAttribute('data->price', $value);
+    }
+
+    public function getPriceAttribute()
+    {
+        return is_array($this->data) ? (array_key_exists('price', $this->data) ? $this->data['price'] : null) : null;
+    }
+
+
+    public function setPrice(string $value)
+    {
+        $this->price = $value;
+        $this->save();
+    }
+
     public function setTotalInvoiceAttribute(string $value)
     {
         return $this->setAttribute('data->total_invoice', $value);

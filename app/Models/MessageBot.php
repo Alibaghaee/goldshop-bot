@@ -70,6 +70,8 @@ class MessageBot extends Model
 
     public static $SETUP_COIN_TRADE = 'setup_coin_trade';
 
+    public static $SETUP_ABSHODE_TRADE = 'setup_abshode_trade';
+
     public static $RECIVE_PHONE = 'receive_phone';
 
     public static $SET_TRADE_TYPE = 'set_trade_type';
@@ -77,6 +79,13 @@ class MessageBot extends Model
     public static $START_TRADE_ACTION = 'start_trade';
 
     public static $START_ACTION = 'start_bot';
+
+
+    public static $REQUIRE_TRADE_ABSHODE_WEIGHT = 'require_trade_abshode_weight';
+
+    public static $REQUIRE_TRADE_ABSHODE_PRICE = 'require_trade_abshode_price';
+
+    public static $RECEIVE_REQUIRE_TRADE_ABSHODE = 'receive_require_trade_abshode';
 
     public static $BACK = '/back';
 
@@ -118,11 +127,20 @@ class MessageBot extends Model
 
                         $message->setTradeItem();
                     }
+                    if (trim($message->callback_query_text) === self::$WEIGHT || trim($message->callback_query_text) === self::$PRICE) {
+
+                        $message->setRequireTradeAbshode();
+                    }
 
                     if (trim($message->callback_query_text) === self::$CONFIRM) {
                         if ($message->last_action === self::$SETUP_COIN_TRADE) {
 
                             $message->endSetupCoinTrade();
+                        }
+
+                        if ($message->last_action === self::$SETUP_ABSHODE_TRADE) {
+
+                            $message->endSetupAbshodeTrade();
                         }
                     }
 
@@ -142,6 +160,9 @@ class MessageBot extends Model
                     } elseif ($message->last_action === self::$SET_TRADE_AMOUNT && $message->session_item === self::$COIN) {
 
                         $message->receiveTradeCoinAmount();
+                    } elseif (($message->last_action === self::$REQUIRE_TRADE_ABSHODE_WEIGHT || $message->last_action === self::$REQUIRE_TRADE_ABSHODE_PRICE) && $message->session_item === self::$ABSHODE) {
+
+                        $message->receiveRequireTradeAbshode();
                     }
                 }
 
@@ -159,6 +180,87 @@ class MessageBot extends Model
     {
 
         return true;
+    }
+
+    public function endSetupAbshodeTrade()
+    {
+        if ((int)$this->session_total_invoice !== (int)$this->getTotalCoinPrice($this->session_type)) {
+            $this->chatSessionClear();
+            return $this->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$START_TRADE]);
+        }
+        $this->chatSessionClear();
+        return $this->sendAloneText("معاملات شما با موفقیت انجام شد. از حسن اعتماد شما متشکریم. منتظر تماس پشتیبانی باشید.");
+    }
+
+    public function setupAbshodeTrade()
+    {
+        if (is_null($this->session_price)) {
+
+            $this->sendAloneText('قیمت یافت نشد!!!');
+
+
+            $this->setRouteAction(self::$REQUIRE_TRADE_ABSHODE_PRICE);
+
+            $text = "لطفا مبلغ مورد نظر را وارد نمایید\n👇👇👇";
+            return $this->sendAloneText($text, true);
+        }
+        if (is_null($this->session_weight)) {
+
+            $this->sendAloneText('وزن یافت نشد!!!');
+
+            $this->setRouteAction(self::$REQUIRE_TRADE_ABSHODE_WEIGHT);
+
+            $text = "لطفا وزن مورد نظر را وارد نمایید\n👇👇👇";
+            return $this->sendAloneText($text, true);
+        }
+        $this->setRouteAction(self::$SETUP_ABSHODE_TRADE);
+
+        $gram = $this->getGramPrice($this->session_type);
+        $abshode = $this->getAbshode($this->session_type);
+        $totalAbshode = (int)$this->getTotalAbshode($this->session_type) * (int)$this->session_weight;
+
+        $lable = $this->session_type === self::$SELL ? "🔵" : "🔴";
+        $time = time_fa($this->created_at);
+        $text = "نوع خرید: {$this->session_item_fa}\nعملیات مورد نظر: {$this->session_type_fa}\nوزن: {$this->session_weight}\nقیمت {$this->session_type_fa} هر گرم: $gram $lable\nقیمت {$this->session_type_fa} آبشده: {$abshode} $lable\nقیمت کل: $totalAbshode\nشماره مشتری: +{$this->chatBot?->user?->phone}\nنام و نام خانوادگی مشتری: {$this->chatBot?->user?->fullname}\nتاریخ معامله: $time";
+
+        $this->sendTextWithInlineBtn($text, ["بله تایید میکنم" => self::$CONFIRM], true);
+
+    }
+
+    public function receiveRequireTradeAbshode()
+    {
+
+        $this->setRouteAction(self::$RECEIVE_REQUIRE_TRADE_ABSHODE);
+
+        if ($this->last_action === self::$REQUIRE_TRADE_ABSHODE_WEIGHT) {
+
+            $this->setWeight(trim($this->callback_query_text));
+            $text = 'وزن مورد نظر با موفقیت دریافت شد';
+        } else {
+            $this->setPrice(trim($this->callback_query_text));
+            $text = 'مبلغ مورد نظر با موفقیت دریافت شد';
+        }
+        $this->sendAloneText($text);
+
+        $this->setupAbshodeTrade();
+    }
+
+
+    public function setRequireTradeAbshode()
+    {
+
+
+        if (trim($this->callback_query_text) === self::$WEIGHT) {
+
+            $this->setRouteAction(self::$REQUIRE_TRADE_ABSHODE_WEIGHT);
+
+            $text = "لطفا وزن مورد نظر را وارد نمایید\n👇👇👇";
+        } else {
+            $this->setRouteAction(self::$REQUIRE_TRADE_ABSHODE_PRICE);
+            $text = "لطفا مبلغ مورد نظر را وارد نمایید\n👇👇👇";
+        }
+
+        $this->sendAloneText($text, true);
     }
 
 
@@ -310,6 +412,7 @@ class MessageBot extends Model
 
         $this->setStartTrade(true);
 
+        $this->chatSessionClear();
 
         $this->sendTextWithInlineBtn('لطفا نوع معامله را مشخص کنید', ["آبشده" => self::$ABSHODE, 'سکه' => self::$COIN], true);
     }
@@ -373,9 +476,24 @@ class MessageBot extends Model
         return '1000000';
     }
 
+    public function getGramPrice(string $type)
+    {
+        return '1000000';
+    }
+
+    public function getAbshode(string $type)
+    {
+        return '1000000';
+    }
+
     public function getTotalCoinPrice(string $type)
     {
         return $this->getCoinPrice($type) * $this->session_coin_amount;
+    }
+
+    public function getTotalAbshode(string $type)
+    {
+        return (int)$this->getAbshode($type) * (int)$this->session_price;
     }
 
     public function getHasUserAttribute()
@@ -500,6 +618,31 @@ class MessageBot extends Model
     }
 
 
+    public function setWeight(string $value)
+    {
+
+        $this->getCleanChatSession()->setWeight($value);
+    }
+
+    public function getSessionWeightAttribute()
+    {
+
+        return $this->getCleanChatSession()->weight;
+    }
+
+    public function setPrice(string $value)
+    {
+
+        $this->getCleanChatSession()->setPrice($value);
+    }
+
+    public function getSessionPriceAttribute()
+    {
+
+        return $this->getCleanChatSession()->price;
+    }
+
+
     public function destroyMessage()
     {
         (new TelegramServiceController())->deleteMessage($this->chatBot->chat_id, $this->message_id);
@@ -605,12 +748,14 @@ class MessageBot extends Model
         $action = $this->getCleanChatSession()->chatRoutes
             ->where('action', '!=', self::$BACK)
             ->where('action', '!=', self::$RECIVE_COIN_AMOUNT)
+            ->where('action', '!=', self::$RECEIVE_REQUIRE_TRADE_ABSHODE)
             ?->sortByDesc('id')
             ->skip(1)->first()?->action;
 
         $this->getCleanChatSession()->chatRoutes
             ->where('action', '!=', self::$BACK)
             ->where('action', '!=', self::$RECIVE_COIN_AMOUNT)
+            ->where('action', '!=', self::$RECEIVE_REQUIRE_TRADE_ABSHODE)
             ?->sortByDesc('id')
             ->take(2)->each->delete();
 
