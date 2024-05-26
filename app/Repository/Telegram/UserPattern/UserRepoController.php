@@ -8,59 +8,7 @@ use App\Repository\Telegram\MessageBotRepoController;
 class UserRepoController extends MessageBotRepoController
 {
 
-    public static $START_TRADE = '/start_trade';
 
-    public static $SELL = '/sell';
-
-    public static $BUY = '/buy';
-
-    public static $ABSHODE = '/trade_abshode';
-
-    public static $COIN = '/trade_coin';
-
-    public static $START = '/start';
-
-    public static $NEED_PHONE = 'need_phone';
-
-    public static $NEED_USER_CHECK = 'need_user_check';
-
-    public static $WEIGHT = '/weight';
-
-    public static $PRICE = '/price';
-
-    public static $SET_TRADE_AMOUNT = 'set_trade_amount';
-
-    public static $RECIVE_COIN_AMOUNT = 'receive_coin_amount';
-
-    public static $CONFIRM = 'confirm';
-
-    public static $SETUP_COIN_TRADE = 'setup_coin_trade';
-
-    public static $SETUP_ABSHODE_TRADE = 'setup_abshode_trade';
-
-    public static $RECIVE_PHONE = 'receive_phone';
-
-    public static $SET_TRADE_TYPE = 'set_trade_type';
-
-    public static $START_TRADE_ACTION = 'start_trade';
-
-    public static $START_ACTION = 'start_bot';
-
-
-    public static $REQUIRE_TRADE_ABSHODE_WEIGHT = 'require_trade_abshode_weight';
-
-    public static $REQUIRE_TRADE_ABSHODE_PRICE = 'require_trade_abshode_price';
-
-    public static $RECEIVE_REQUIRE_TRADE_ABSHODE = 'receive_require_trade_abshode';
-
-    public static $BACK = '/back';
-
-
-    public static function checkLockConversation()
-    {
-
-        return true;
-    }
 
     public function __construct(MessageBot $message)
     {
@@ -141,18 +89,14 @@ class UserRepoController extends MessageBotRepoController
 
     }
 
-    public function chatSessionClear()
+    public static function checkLockConversation()
     {
 
-
-        $this->message->chatSessionClear();
+        return true;
     }
 
 
-    public function chatSessionCheck()
-    {
-        return $this->message->chatSessionCheck();
-    }
+
 
     public function endSetupAbshodeTrade()
     {

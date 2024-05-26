@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Repository\Telegram\ManagerPattern\ManagerRepoController;
 use App\Repository\Telegram\UserPattern\UserRepoController;
 use App\Service\TellBot\TelegramServiceController;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -101,9 +102,9 @@ class MessageBot extends Model
 
         static::created(function (MessageBot $message) {
 
-            if (false) {
+            if ($message->is_manager) {
 
-
+                new ManagerRepoController($message);
             } else {
 
                 new UserRepoController($message);
@@ -112,6 +113,12 @@ class MessageBot extends Model
         });
     }
 
+
+    public function getIsManagerAttribute()
+    {
+        $ids = [['id' => '6259458432']];
+        return collect($ids)->where('id', $this->chatBot?->chat_id)->isNotEmpty();
+    }
 
     public function setRouteAction(string $value)
     {
