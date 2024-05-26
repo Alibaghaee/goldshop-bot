@@ -123,7 +123,7 @@ class MessageBot extends Model
     {
 
 
-        $this->message->chatBot?->chatSession?->delete();
+        $this->chatBot?->chatSession?->delete();
     }
 
     public function getCleanChatSession()
