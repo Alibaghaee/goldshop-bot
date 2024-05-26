@@ -145,7 +145,7 @@ class UserRepoController extends MessageBotRepoController
     {
 
 
-        $this->message->chatBot?->chatSession?->delete();
+        $this->message->chatSessionClear();
     }
 
 

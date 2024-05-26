@@ -119,6 +119,12 @@ class MessageBot extends Model
         $this->getCleanChatSession()?->chatRoutes()->create(['action' => $value])->save();
     }
 
+    public function chatSessionClear()
+    {
+
+
+        $this->message->chatBot?->chatSession?->delete();
+    }
 
     public function getCleanChatSession()
     {
