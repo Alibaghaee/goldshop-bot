@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Repository\Telegram\UserPattern\UserRepoController;
 use App\Service\TellBot\TelegramServiceController;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -99,352 +100,16 @@ class MessageBot extends Model
         parent::boot();
 
         static::created(function (MessageBot $message) {
-            if ($message->chatSessionCheck()) {
 
-
-                $message->chatSessionClear();
-            }
-            if (!$message->from_is_bot && self::checkLockConversation()) {
-
-                if ($message->callback_query) {
-                    $message->destroyMessage();
-                    if (trim($message->callback_query_text) === self::$START_TRADE) {
-
-                        $message->startTrade();
-                    }
-
-                    if (trim($message->callback_query_text) === self::$BACK) {
-
-                        $message->redirectBack();
-                    }
-
-                    if (trim($message->callback_query_text) === self::$SELL || trim($message->callback_query_text) === self::$BUY) {
-
-                        $message->setTradeType();
-                    }
-
-                    if (trim($message->callback_query_text) === self::$ABSHODE || trim($message->callback_query_text) === self::$COIN) {
-
-                        $message->setTradeItem();
-                    }
-                    if (trim($message->callback_query_text) === self::$WEIGHT || trim($message->callback_query_text) === self::$PRICE) {
-
-                        $message->setRequireTradeAbshode();
-                    }
-
-                    if (trim($message->callback_query_text) === self::$CONFIRM) {
-                        if ($message->last_action === self::$SETUP_COIN_TRADE) {
-
-                            $message->endSetupCoinTrade();
-                        }
-
-                        if ($message->last_action === self::$SETUP_ABSHODE_TRADE) {
-
-                            $message->endSetupAbshodeTrade();
-                        }
-                    }
-
-                } else {
-
-                    if (trim($message->text) === self::$START) {
-
-                        $message->startBot();
-                    } elseif ($message->last_action === self::$NEED_PHONE) {
-                        if (str_contains(trim($message->text), 'contact:')) {
-
-
-                            $message->receivePhone();
-                        }
-                    } elseif ($message->last_action === self::$NEED_USER_CHECK) {
-                        $message->receiveName();
-                    } elseif ($message->last_action === self::$SET_TRADE_AMOUNT && $message->session_item === self::$COIN) {
-
-                        $message->receiveTradeCoinAmount();
-                    } elseif (($message->last_action === self::$REQUIRE_TRADE_ABSHODE_WEIGHT || $message->last_action === self::$REQUIRE_TRADE_ABSHODE_PRICE) && $message->session_item === self::$ABSHODE) {
-
-                        $message->receiveRequireTradeAbshode();
-                    }
-                }
+            if (false) {
 
 
             } else {
 
-                $message->lockConversation();
+                new UserRepoController($message);
             }
 
         });
-    }
-
-
-    public static function checkLockConversation()
-    {
-
-        return true;
-    }
-
-    public function endSetupAbshodeTrade()
-    {
-        if ((int)$this->session_total_invoice !== (int)$this->getTotalCoinPrice($this->session_type)) {
-            $this->chatSessionClear();
-            return $this->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$START_TRADE]);
-        }
-        $this->chatSessionClear();
-        return $this->sendAloneText("معاملات شما با موفقیت انجام شد. از حسن اعتماد شما متشکریم. منتظر تماس پشتیبانی باشید.");
-    }
-
-    public function setupAbshodeTrade()
-    {
-        if (is_null($this->session_price)) {
-
-            $this->sendAloneText('قیمت یافت نشد!!!');
-
-
-            $this->setRouteAction(self::$REQUIRE_TRADE_ABSHODE_PRICE);
-
-            $text = "لطفا مبلغ مورد نظر را وارد نمایید\n👇👇👇";
-            return $this->sendAloneText($text, true);
-        }
-        if (is_null($this->session_weight)) {
-
-            $this->sendAloneText('وزن یافت نشد!!!');
-
-            $this->setRouteAction(self::$REQUIRE_TRADE_ABSHODE_WEIGHT);
-
-            $text = "لطفا وزن مورد نظر را وارد نمایید\n👇👇👇";
-            return $this->sendAloneText($text, true);
-        }
-        $this->setRouteAction(self::$SETUP_ABSHODE_TRADE);
-
-        $gram = $this->getGramPrice($this->session_type);
-        $abshode = $this->getAbshode($this->session_type);
-        $totalAbshode = (int)$this->getTotalAbshode($this->session_type) * (int)$this->session_weight;
-
-        $lable = $this->session_type === self::$SELL ? "🔵" : "🔴";
-        $time = time_fa($this->created_at);
-        $text = "نوع خرید: {$this->session_item_fa}\nعملیات مورد نظر: {$this->session_type_fa}\nوزن: {$this->session_weight}\nقیمت {$this->session_type_fa} هر گرم: $gram $lable\nقیمت {$this->session_type_fa} آبشده: {$abshode} $lable\nقیمت کل: $totalAbshode\nشماره مشتری: +{$this->chatBot?->user?->phone}\nنام و نام خانوادگی مشتری: {$this->chatBot?->user?->fullname}\nتاریخ معامله: $time";
-
-        $this->sendTextWithInlineBtn($text, ["بله تایید میکنم" => self::$CONFIRM], true);
-
-    }
-
-    public function receiveRequireTradeAbshode()
-    {
-
-        $this->setRouteAction(self::$RECEIVE_REQUIRE_TRADE_ABSHODE);
-
-        if ($this->last_action === self::$REQUIRE_TRADE_ABSHODE_WEIGHT) {
-
-            $this->setWeight(trim($this->callback_query_text));
-            $text = 'وزن مورد نظر با موفقیت دریافت شد';
-        } else {
-            $this->setPrice(trim($this->callback_query_text));
-            $text = 'مبلغ مورد نظر با موفقیت دریافت شد';
-        }
-        $this->sendAloneText($text);
-
-        $this->setupAbshodeTrade();
-    }
-
-
-    public function setRequireTradeAbshode()
-    {
-
-
-        if (trim($this->callback_query_text) === self::$WEIGHT) {
-
-            $this->setRouteAction(self::$REQUIRE_TRADE_ABSHODE_WEIGHT);
-
-            $text = "لطفا وزن مورد نظر را وارد نمایید\n👇👇👇";
-        } else {
-            $this->setRouteAction(self::$REQUIRE_TRADE_ABSHODE_PRICE);
-            $text = "لطفا مبلغ مورد نظر را وارد نمایید\n👇👇👇";
-        }
-
-        $this->sendAloneText($text, true);
-    }
-
-
-    public function needPhone()
-    {
-        $this->setRouteAction(self::$NEED_PHONE);
-
-
-        $this->sendTextWithBtn(
-            'با سلام خدمت شما دوست عزیز. از طریق این بات می توانید سفارش خود را به سادگی ثبت کنید. برای بازگشت بین مراحل از دستور <<↪️ بازگشت>> کنید. اگر آماده هستید با فشردن دکمه اشتراگ گذاری شماره همراه ادامه دهید.',
-            ['به اشتراک گذاری شماره تلفن همراه'],
-            true
-        );
-
-
-    }
-
-    public function needUserCheck()
-    {
-        $this->setRouteAction(self::$NEED_USER_CHECK);
-
-
-        $this->sendAloneText(
-            "دوست عزیز شماره شما برای ثبت سفارش مجاز نشده است لطفا پس از بررسی با ادمین مجددا بررسی کنید.\nشماره ادمین سیستم:+989381807373\nایدی ادمین:@mohammadmostaviii" . "\n" . "برای دسترسی اسان تر لطفا نام خانوادگی خود را وارد کنید",
-            true);
-    }
-
-    public function lockConversation()
-    {
-        $this->sendAloneText('همکار گرامی زمان معامله به پایان رسیده لطفا با شماره 09381807373 تماس حاصل نمایید');
-
-    }
-
-    public function receiveName()
-    {
-        $this->chatBot?->user->tryActiveMobile();
-        $this->sendAloneText("با تشکر بابت اطلاعات ثبت شده. مشخصات شما برای ادمین ارسال شد. منتظر تماس پشتیبانی بمانید", true);
-
-
-    }
-
-    public function receiveTradeCoinAmount()
-    {
-
-        $text = (int)to_english_numbers($this->text);
-        if ($text === 0) {
-
-            return $this->sendAloneText("تعداد وارده معتبر نیست. لطفا دوباره تلاش کنید ...", true);
-        }
-
-        $this->setRouteAction(self::$RECIVE_COIN_AMOUNT);
-
-        if ($this->session_item === self::$COIN) {
-
-            $this->setCoinAmount($text);
-
-            return $this->setupCoinTrade();
-        }
-    }
-
-    public function setupCoinTrade()
-    {
-        $this->setRouteAction(self::$SETUP_COIN_TRADE);
-
-
-        $this->setTotalInvoice($this->getTotalCoinPrice($this->session_type));
-
-        $lable = $this->session_type === self::$SELL ? "🔵" : "🔴";
-        $time = time_fa($this->created_at);
-        $text = "نوع خرید: {$this->session_item_fa}\nعملیات مورد نظر: {$this->session_type_fa}\nتعداد: {$this->session_coin_amount}\nقیمت {$this->session_type_fa} هر سکه امامی: {$this->getCoinPrice($this->session_type)}  $lable \nقیمت کل: {$this->getTotalCoinPrice($this->session_type)}\nشماره مشتری: +{$this->chatBot?->user?->phone}\nنام و نام خانوادگی مشتری: {$this->chatBot?->user?->fullname}\nتاریخ معامله: $time";
-
-
-        $this->sendTextWithInlineBtn($text, ["بله تایید میکنم" => self::$CONFIRM], true);
-
-
-    }
-
-    public function endSetupCoinTrade()
-    {
-
-        if ((int)$this->session_total_invoice !== (int)$this->getTotalCoinPrice($this->session_type)) {
-            $this->chatSessionClear();
-            return $this->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$START_TRADE]);
-        }
-        $this->chatSessionClear();
-        return $this->sendAloneText("معاملات شما با موفقیت انجام شد. از حسن اعتماد شما متشکریم. منتظر تماس پشتیبانی باشید.");
-
-    }
-
-
-    public function receivePhone()
-    {
-        $this->setRouteAction(self::$RECIVE_PHONE);
-
-        $phone = explode(':', $this->text);
-        if (array_key_exists(1, $phone) && !$this->has_user) {
-
-            $user = \App\Models\User::create(['phone' => str_replace('_98', '0', $phone[1]), 'last_chat_id' => $this->chatBot?->chat_id]);
-            $this->chatBot?->user()->associate($user)->save();
-        }
-
-        $this->startBot();
-    }
-
-    public function setTradeItem()
-    {
-
-        $this->setItem(trim($this->callback_query_text));
-
-        return $this->tradeType();
-    }
-
-    public function setTradeType()
-    {
-
-        $this->setType(trim($this->callback_query_text));
-
-        return $this->tradeAmount();
-    }
-
-
-    public function startBot()
-    {
-        $this->setRouteAction(self::$START_ACTION);
-        $this->setStartBot(true);
-
-
-        $this->sendTextWithInlineBtn("به ربات معامله گر خوش آمدید \n پس از آمادگی دکمه شروع معامله را انتخاب کنید. ", ['شروع معامله' => self::$START_TRADE]);
-
-
-    }
-
-    public function startTrade()
-    {
-        $this->setRouteAction(self::$START_TRADE_ACTION);
-
-
-        if (!$this->has_user) {
-
-            return $this->needPhone();
-
-        }
-
-        if (!$this->valid_user) {
-
-
-            return $this->needUserCheck();
-        }
-
-        $this->setStartTrade(true);
-
-        $this->chatSessionClear();
-
-        $this->sendTextWithInlineBtn('لطفا نوع معامله را مشخص کنید', ["آبشده" => self::$ABSHODE, 'سکه' => self::$COIN], true);
-    }
-
-    public function tradeType()
-    {
-        $this->setRouteAction(self::$SET_TRADE_TYPE);
-
-        $this->sendTextWithInlineBtn('لطفا نحوه مبادله را مشخص کنید', ["فروش به ما" => self::$SELL, "خرید از ما" => self::$BUY], true);
-    }
-
-    public function tradeAmount()
-    {
-        $this->setRouteAction(self::$SET_TRADE_AMOUNT);
-
-
-        if ($this->session_item === self::$COIN) {
-            if ($this->session_type === self::$SELL) {
-                $text = "قیمت فروش هر سکه امامی: " . $this->getCoinPrice(self::$SELL) . "🔵";
-
-            } else {
-                $text = "قیمت خرید هر سکه امامی: " . $this->getCoinPrice(self::$BUY) . "🔴";
-            }
-            $text = $text . "\n" . "لطفا تعداد سکه را وارد نمایید\n👇👇👇";
-
-            $this->sendAloneText($text, true);
-
-        } else {
-
-
-            $this->sendTextWithInlineBtn("لطفا واحد عملیات مبادله را مشخص کنید.", ["وزن" => self::$WEIGHT, "مبلغ" => self::$PRICE], true);
-        }
     }
 
 
@@ -513,23 +178,12 @@ class MessageBot extends Model
         return $this->getCleanChatSession()->chatRoutes?->sortByDesc('id')?->first()?->action;
     }
 
-    public function chatSessionCheck()
-    {
-        return $this->chatBot?->chatSession?->updated_at <= now()->subHour();
-    }
 
     public function getHasChatSessionAttribute()
     {
         return $this->chatBot?->chatSession()->exists();
     }
 
-    public function chatSessionClear()
-    {
-
-
-        $this->chatBot?->chatSession?->delete();
-
-    }
 
     public function setItem(string $value)
     {
@@ -721,46 +375,6 @@ class MessageBot extends Model
         (new TelegramServiceController())->send($data);
     }
 
-
-    public function redirectBack()
-    {
-
-        $routeMap = collect([
-            ['fn' => 'startBot', 'route' => self::$START_ACTION],
-            ['fn' => 'startTrade', 'route' => self::$START_TRADE_ACTION],
-            ['fn' => 'needPhone', 'route' => self::$NEED_PHONE],
-            ['fn' => 'needUserCheck', 'route' => self::$NEED_USER_CHECK],
-            ['fn' => 'receiveTradeCoinAmount', 'route' => self::$RECIVE_COIN_AMOUNT],
-            ['fn' => 'setupCoinTrade', 'route' => self::$SETUP_COIN_TRADE],
-            ['fn' => 'receivePhone', 'route' => self::$RECIVE_PHONE],
-            ['fn' => 'tradeType', 'route' => self::$SET_TRADE_TYPE],
-            ['fn' => 'tradeAmount', 'route' => self::$SET_TRADE_AMOUNT],
-        ]);
-
-        $fn = optional($routeMap->where('route', $this->backRoute())->first())['fn'] ?? 'startBot';
-
-
-        $this->{$fn}();
-    }
-
-    public function backRoute()
-    {
-        $action = $this->getCleanChatSession()->chatRoutes
-            ->where('action', '!=', self::$BACK)
-            ->where('action', '!=', self::$RECIVE_COIN_AMOUNT)
-            ->where('action', '!=', self::$RECEIVE_REQUIRE_TRADE_ABSHODE)
-            ?->sortByDesc('id')
-            ->skip(1)->first()?->action;
-
-        $this->getCleanChatSession()->chatRoutes
-            ->where('action', '!=', self::$BACK)
-            ->where('action', '!=', self::$RECIVE_COIN_AMOUNT)
-            ->where('action', '!=', self::$RECEIVE_REQUIRE_TRADE_ABSHODE)
-            ?->sortByDesc('id')
-            ->take(2)->each->delete();
-
-        return $action;
-    }
 
     /**
      * Define an inverse one-to-one or many relationship to ChatBot.
