@@ -126,6 +126,11 @@ class MessageBot extends Model
         $this->chatBot?->chatSession?->delete();
     }
 
+    public function chatSessionCheck()
+    {
+        return $this->chatBot?->chatSession?->updated_at <= now()->subHour();
+    }
+
     public function getCleanChatSession()
     {
         if ((!$this->has_chat_session) || $this->chatSessionCheck()) {

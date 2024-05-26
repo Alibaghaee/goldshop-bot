@@ -151,7 +151,7 @@ class UserRepoController extends MessageBotRepoController
 
     public function chatSessionCheck()
     {
-        return $this->message->chatBot?->chatSession?->updated_at <= now()->subHour();
+        return $this->message->chatSessionCheck();
     }
 
     public function endSetupAbshodeTrade()
