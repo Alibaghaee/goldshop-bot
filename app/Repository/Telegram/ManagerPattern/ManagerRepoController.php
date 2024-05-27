@@ -346,6 +346,7 @@ class ManagerRepoController extends MessageBotRepoController
             ['fn' => 'startBot', 'route' => self::$START_ACTION],
             ['fn' => 'changeLockTime', 'route' => self::$CHANGE_LOCK],
             ['fn' => 'addUser', 'route' => self::$ADD_USER],
+            ['fn' => 'deleteUser', 'route' => self::$DELETE_USER],
 
         ]);
 
