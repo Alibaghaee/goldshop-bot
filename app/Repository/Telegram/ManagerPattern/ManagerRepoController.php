@@ -189,7 +189,7 @@ class ManagerRepoController extends MessageBotRepoController
     {
         $this->message->setRouteAction(self::$ADD_USER_MOBILE);
 
-        if (preg_match("/^09[0-9]{9}$/", (int)to_english_numbers(trim($this->message->text)))) {
+        if (preg_match('/^09\d{9}$/', to_english_numbers(trim($this->message->text)))) {
 
             $this->message->setUserMobile(to_english_numbers(trim($this->message->text)));
             $this->message->sendAloneText("شماره همراه کاربر با موفقیت دریافت شد\nنام کامل کاربر را وارد کنید", true);
@@ -204,16 +204,25 @@ class ManagerRepoController extends MessageBotRepoController
     {
         if (!is_null($this->message->session_user_mobile)) {
 
-            $this->message->setRouteAction(self::$ADD_USER_NAME);
+            if (User::where('mobile', $this->message->session_user_mobile)->first()) {
 
-            User::create(['mobile' => $this->message->session_user_mobile, 'name' => $this->message->text]);
+                $this->message->sendAloneText("شماره موبایل تکراری است!!!");
+
+                $this->redirectBack();
+            } else {
+                $this->message->setRouteAction(self::$ADD_USER_NAME);
+
+                User::create(['mobile' => $this->message->session_user_mobile, 'name' => $this->message->text]);
 
 
-            $this->message->sendAloneText("نام کاربر با موفقیت دریافت شد", true);
+                $this->message->sendAloneText("نام کاربر با موفقیت دریافت شد", true);
+            }
+        } else {
+
+            $this->message->sendAloneText("شماره موبایل کاربر یافت نشد!!!");
+            $this->redirectBack();
         }
-        $this->message->sendAloneText("شماره موبایل کاربر یافت نشد!!!");
 
-        $this->redirectBack();
     }
 
     public function redirectBack()
