@@ -27,15 +27,23 @@ class ManagerRepoController extends MessageBotRepoController
                     $this->changeLockTime();
                 }
 
-                if (trim($message->callback_query_text) === self::$CHANGE_LOCK) {
+                if (trim($message->callback_query_text) === self::$CHANGE_START_LOCK) {
 
-                    $this->changeLockTime();
+                    $this->changeStartLockTime();
+                }
+                if (trim($message->callback_query_text) === self::$CHANGE_STOP_LOCK) {
+
+                    $this->changeStopLockTime();
                 }
             } else {
 
                 if (trim($message->text) === self::$START) {
 
                     $this->startBot();
+                }elseif ($message->last_action === self::$CHANGE_START_LOCK) {
+                    $this->receiveStartLockTime();
+                }elseif ($message->last_action === self::$CHANGE_STOP_LOCK) {
+                    $this->receiveStopLockTime();
                 }
             }
 
@@ -72,7 +80,7 @@ class ManagerRepoController extends MessageBotRepoController
             'تغییر ساعت شروع قفل' => self::$CHANGE_START_LOCK,
             'تغییر ساعت پایان قفل' => self::$CHANGE_STOP_LOCK,
         ];
-        $this->message->sendTextWithInlineBtn("برای تنظیم قفل زمانی معاملات لطفا عملیات مورد نظر را انتخاب کنید", $btns, true);
+        $this->message->sendTextWithInlineBtn("برای تنظیم قفل زمانی معاملات لطفا عملیات مورد نظر را انتخاب کنید", $btns, true,true);
     }
 
 
