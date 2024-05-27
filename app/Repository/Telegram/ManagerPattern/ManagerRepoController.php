@@ -3,6 +3,7 @@
 namespace App\Repository\Telegram\ManagerPattern;
 
 use App\Models\MessageBot;
+use App\Models\SettingBot;
 use App\Repository\Telegram\MessageBotRepoController;
 
 class ManagerRepoController extends MessageBotRepoController
@@ -40,9 +41,11 @@ class ManagerRepoController extends MessageBotRepoController
                 if (trim($message->text) === self::$START) {
 
                     $this->startBot();
-                }elseif ($message->last_action === self::$CHANGE_START_LOCK) {
+                } elseif (trim($message->text) === self::$BACK) {
+                    $this->redirectBack();
+                } elseif ($message->last_action === self::$CHANGE_START_LOCK) {
                     $this->receiveStartLockTime();
-                }elseif ($message->last_action === self::$CHANGE_STOP_LOCK) {
+                } elseif ($message->last_action === self::$CHANGE_STOP_LOCK) {
                     $this->receiveStopLockTime();
                 }
             }
@@ -80,7 +83,7 @@ class ManagerRepoController extends MessageBotRepoController
             'تغییر ساعت شروع قفل' => self::$CHANGE_START_LOCK,
             'تغییر ساعت پایان قفل' => self::$CHANGE_STOP_LOCK,
         ];
-        $this->message->sendTextWithInlineBtn("برای تنظیم قفل زمانی معاملات لطفا عملیات مورد نظر را انتخاب کنید", $btns, true,true);
+        $this->message->sendTextWithInlineBtn("برای تنظیم قفل زمانی معاملات لطفا عملیات مورد نظر را انتخاب کنید", $btns, true, true);
     }
 
 
@@ -106,6 +109,8 @@ class ManagerRepoController extends MessageBotRepoController
                 $this->message->sendAloneText("فرمت ورودی اشتباه است!!!");
             } else {
 
+                $setting = SettingBot::where('bot_tag', SettingBot::$MMD_TALA)->firstOrCreate(['bot_tag' => SettingBot::$MMD_TALA]);
+                $setting->setStartLockTime($text);
 
                 $this->message->setRouteAction(self::$RECEIVE_START_LOCK_TIME);
 
@@ -117,6 +122,7 @@ class ManagerRepoController extends MessageBotRepoController
 
         } else {
             $this->message->sendAloneText("فرمت ورودی اشتباه است!!!");
+            $this->redirectBack();
         }
     }
 
@@ -145,6 +151,8 @@ class ManagerRepoController extends MessageBotRepoController
 
                 $this->message->setRouteAction(self::$RECEIVE_STOP_LOCK_TIME);
 
+                $setting = SettingBot::where('bot_tag', SettingBot::$MMD_TALA)->firstOrCreate(['bot_tag' => SettingBot::$MMD_TALA]);
+                $setting->setStopLockTime($text);
 
                 $this->message->sendAloneText("ساعت پایان کار ربات با موفقیت دریافت شد.");
 
@@ -153,6 +161,7 @@ class ManagerRepoController extends MessageBotRepoController
 
         } else {
             $this->message->sendAloneText("فرمت ورودی اشتباه است!!!");
+            $this->redirectBack();
         }
 
 
