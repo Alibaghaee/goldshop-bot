@@ -41,13 +41,15 @@ class ManagerRepoController extends MessageBotRepoController
 
                     $this->addUser();
                 }
+                if (trim($message->callback_query_text) === self::$BACK) {
+
+                    $this->redirectBack();
+                }
             } else {
 
                 if (trim($message->text) === self::$START) {
 
                     $this->startBot();
-                } elseif (trim($message->text) === self::$BACK) {
-                    $this->redirectBack();
                 } elseif ($message->last_action === self::$CHANGE_START_LOCK) {
                     $this->receiveStartLockTime();
                 } elseif ($message->last_action === self::$CHANGE_STOP_LOCK) {
