@@ -84,6 +84,14 @@ abstract class MessageBotRepoController
 
     public static $RECEIVE_STOP_LOCK_TIME = 'receive_stop_lock_time';
 
+    public static $ABSHODE_MARGIN = 'abshode_margin';
+
+    public static $COIN_MARGIN = 'coin_margin';
+
+    public static $SET_MARGIN = 'set_margin';
+
+    public static $RECEIVE_MARGIN = 'receive_margin';
+
     public function __construct(MessageBot $message)
     {
 

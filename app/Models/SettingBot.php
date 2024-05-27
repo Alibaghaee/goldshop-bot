@@ -18,7 +18,7 @@ class SettingBot extends Model
         'main' => 'array'
     ];
 
-    public static $MMD_TALA='mmd_tala';
+    public static $MMD_TALA = 'mmd_tala';
 
     public function setStartLockTimeAttribute(string $value)
     {
@@ -50,6 +50,38 @@ class SettingBot extends Model
     public function setStopLockTime(string $value)
     {
         $this->stop_lock_time = $value;
+        $this->save();
+    }
+
+    public function setCoinMarginAttribute(string $value)
+    {
+        return $this->setAttribute('main->coin_margin', $value);
+    }
+
+    public function getCoinMarginAttribute()
+    {
+        return is_array($this->main) ? (array_key_exists('coin_margin', $this->main) ? $this->main['coin_margin'] : null) : null;
+    }
+
+    public function setCoinMargin(string $value)
+    {
+        $this->coin_margin = $value;
+        $this->save();
+    }
+
+    public function setAbshodeMarginAttribute(string $value)
+    {
+        return $this->setAttribute('main->abshode_margin', $value);
+    }
+
+    public function getAbshodeMarginAttribute()
+    {
+        return is_array($this->main) ? (array_key_exists('abshode_margin', $this->main) ? $this->main['abshode_margin'] : null) : null;
+    }
+
+    public function setAbshodeMargin(string $value)
+    {
+        $this->abshode_margin = $value;
         $this->save();
     }
 

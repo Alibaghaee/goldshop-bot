@@ -326,6 +326,18 @@ class MessageBot extends Model
         return $this->getCleanChatSession()->user_mobile;
     }
 
+    public function setMarginType(string $value)
+    {
+
+        $this->getCleanChatSession()->setMarginType($value);
+    }
+
+    public function getSessionMarginTypeAttribute()
+    {
+
+        return $this->getCleanChatSession()->margin_type;
+    }
+
 
     public function destroyMessage()
     {

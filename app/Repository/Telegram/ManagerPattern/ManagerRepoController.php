@@ -24,6 +24,10 @@ class ManagerRepoController extends MessageBotRepoController
 
             if ($message->callback_query) {
                 $message->destroyMessage();
+                if (trim($message->callback_query_text) === self::$BACK) {
+
+                    $this->redirectBack();
+                }
                 if (trim($message->callback_query_text) === self::$CHANGE_LOCK) {
 
                     $this->changeLockTime();
@@ -41,9 +45,14 @@ class ManagerRepoController extends MessageBotRepoController
 
                     $this->addUser();
                 }
-                if (trim($message->callback_query_text) === self::$BACK) {
 
-                    $this->redirectBack();
+                if (trim($message->callback_query_text) === self::$CHANGE_MARGIN) {
+
+                    $this->changeMargin();
+                }
+                if (trim($message->callback_query_text) === self::$ABSHODE_MARGIN || trim($message->callback_query_text) === self::$COIN_MARGIN) {
+
+                    $this->setMargin();
                 }
             } else {
 
@@ -58,6 +67,8 @@ class ManagerRepoController extends MessageBotRepoController
                     $this->receiveUserMobile();
                 } elseif ($message->last_action === self::$ADD_USER_MOBILE) {
                     $this->receiveUserName();
+                } elseif ($message->last_action === self::$SET_MARGIN) {
+                    $this->receiveMargin();
                 }
             }
 
@@ -120,7 +131,7 @@ class ManagerRepoController extends MessageBotRepoController
                 $this->message->sendAloneText("فرمت ورودی اشتباه است!!!");
             } else {
 
-                $setting = SettingBot::where('bot_tag', SettingBot::$MMD_TALA)->firstOrCreate(['bot_tag' => SettingBot::$MMD_TALA]);
+                $setting = $this->settingBot();
                 $setting->setStartLockTime($text);
 
                 $this->message->setRouteAction(self::$RECEIVE_START_LOCK_TIME);
@@ -162,7 +173,7 @@ class ManagerRepoController extends MessageBotRepoController
 
                 $this->message->setRouteAction(self::$RECEIVE_STOP_LOCK_TIME);
 
-                $setting = SettingBot::where('bot_tag', SettingBot::$MMD_TALA)->firstOrCreate(['bot_tag' => SettingBot::$MMD_TALA]);
+                $setting = $this->settingBot();
                 $setting->setStopLockTime($text);
 
                 $this->message->sendAloneText("ساعت پایان کار ربات با موفقیت دریافت شد.");
@@ -229,6 +240,48 @@ class ManagerRepoController extends MessageBotRepoController
 
     }
 
+    public function changeMargin()
+    {
+        $this->message->setRouteAction(self::$CHANGE_MARGIN);
+        $btns = [
+            'آبشده' => self::$ABSHODE_MARGIN,
+            'سکه' => self::$COIN_MARGIN
+        ];
+
+
+        $this->message->sendTextWithInlineBtn("مارجین کدام را میخواهید تغییر دهید", $btns, true, true);
+
+    }
+
+    public function setMargin()
+    {
+        $this->message->setRouteAction(self::$SET_MARGIN);
+
+        $this->message->setMarginType($this->message->callback_query_text);
+
+        $this->message->sendAloneText("مقدار جدید را وارد کنید", true);
+
+    }
+
+    public function receiveMargin()
+    {
+        $this->message->setRouteAction(self::$RECEIVE_MARGIN);
+
+        $setting = $this->settingBot();
+        if ($this->message->session_margin_type === self::$COIN_MARGIN) {
+
+
+            $setting->setCoinMargin((float)to_english_numbers($this->message->text));
+        } else {
+
+            $setting->setAbshodeMargin((float)to_english_numbers($this->message->text));
+        }
+
+        $this->message->sendAloneText('مقدار جدید باموفقیت دریافت و ثبت شد');
+
+        $this->redirectBack();
+    }
+
     public function redirectBack()
     {
 
@@ -255,6 +308,8 @@ class ManagerRepoController extends MessageBotRepoController
             ->where('action', '!=', self::$RECEIVE_STOP_LOCK_TIME)
             ->where('action', '!=', self::$ADD_USER_MOBILE)
             ->where('action', '!=', self::$ADD_USER_NAME)
+            ->where('action', '!=', self::$RECEIVE_MARGIN)
+            ->where('action', '!=', self::$SET_MARGIN)
             ?->sortByDesc('id')
             ->skip(1)->first()?->action;
 
@@ -266,9 +321,16 @@ class ManagerRepoController extends MessageBotRepoController
             ->where('action', '!=', self::$RECEIVE_STOP_LOCK_TIME)
             ->where('action', '!=', self::$ADD_USER_MOBILE)
             ->where('action', '!=', self::$ADD_USER_NAME)
+            ->where('action', '!=', self::$RECEIVE_MARGIN)
+            ->where('action', '!=', self::$SET_MARGIN)
             ?->sortByDesc('id')
             ->take(2)->each->delete();
 
         return $action;
+    }
+
+    private function settingBot()
+    {
+        return SettingBot::where('bot_tag', SettingBot::$MMD_TALA)->firstOrCreate(['bot_tag' => SettingBot::$MMD_TALA]);
     }
 }

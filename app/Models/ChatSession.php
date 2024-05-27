@@ -167,6 +167,23 @@ class ChatSession extends Model
         $this->save();
     }
 
+    public function setMarginTypeAttribute(string $value)
+    {
+        return $this->setAttribute('data->margin_type', $value);
+    }
+
+    public function getMarginTypeAttribute()
+    {
+        return is_array($this->data) ? (array_key_exists('margin_type', $this->data) ? $this->data['margin_type'] : null) : null;
+    }
+
+
+    public function setMarginType(string $value)
+    {
+        $this->margin_type = $value;
+        $this->save();
+    }
+
     public function setTotalInvoiceAttribute(string $value)
     {
         return $this->setAttribute('data->total_invoice', $value);
