@@ -71,8 +71,17 @@ class ManagerRepoController extends MessageBotRepoController
 
 
                     $this->receiveDeleteUser();
-
                 }
+                if ($message->last_action === self::$RECIVE_MANUAL_ORDER_USER && str_contains(trim($message->callback_query_text), self::$MANUAL_ORDER_SUBMISSION . ':')) {
+
+
+                    $this->receiveUserAndStartManualOrder();
+                }
+                if (trim($message->callback_query_text) === self::$MANUAL_ORDER_SUBMISSION) {
+
+                    $this->startManualOrder();
+                }
+
             } else {
 
                 if (trim($message->text) === self::$START) {
@@ -90,6 +99,8 @@ class ManagerRepoController extends MessageBotRepoController
                     $this->receiveMargin();
                 } elseif ($message->last_action === self::$SET_BALANCE) {
                     $this->receiveBalance();
+                } elseif ($message->last_action === self::$START_MANUAL_ORDER) {
+                    $this->receiveManualOrderUser();
                 }
             }
 
@@ -389,6 +400,53 @@ class ManagerRepoController extends MessageBotRepoController
     }
 
 
+    public function startManualOrder()
+    {
+        $this->message->setRouteAction(self::$START_MANUAL_ORDER);
+        $this->message->sendAloneText("کاربر مورد نظر را جستجو کنید.", true);
+    }
+
+    public function receiveManualOrderUser()
+    {
+        $this->message->setRouteAction(self::$RECIVE_MANUAL_ORDER_USER);
+
+        $users = $this->userSearch(trim($this->message->text));
+        if (!($users->count() > 0)) {
+            $this->message->sendAloneText('کاربری یافت نشد!!!');
+            $users = User::all();
+        }
+        foreach ($users as $user) {
+            $btns[$user->name] = self::$MANUAL_ORDER_SUBMISSION . ':' . $user->id;
+        }
+
+        $this->message->sendTextWithInlineBtn("کاربر مورد نظر را انتخاب کنید.", $btns, true, true);
+    }
+
+    public function receiveUserAndStartManualOrder()
+    {
+        $this->message->setRouteAction(self::$RECIVE_AND_START_MANUAL_ORDER_USER);
+
+        $id = explode(':', trim($this->message->callback_query_text));
+        if (array_key_exists(1, $id)) {
+
+            $user = User::find($id[1]);
+            if (!is_null($user)) {
+
+
+            } else {
+
+                $this->message->sendAloneText('کاربر یافت نشد!!!');
+
+                $this->redirectBack();
+            }
+        } else {
+
+            $this->message->sendAloneText('کاربر یافت نشد!!!');
+
+            $this->redirectBack();
+        }
+    }
+
     public function redirectBack()
     {
 
@@ -447,5 +505,10 @@ class ManagerRepoController extends MessageBotRepoController
     private function settingBot()
     {
         return SettingBot::where('bot_tag', SettingBot::$MMD_TALA)->firstOrCreate(['bot_tag' => SettingBot::$MMD_TALA]);
+    }
+
+    private function userSearch(string $text)
+    {
+        return User::where('name', 'like', "%$text%")->get();
     }
 }

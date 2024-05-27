@@ -104,6 +104,12 @@ abstract class MessageBotRepoController
 
     public static $RECEIVE_DELETE_USER = 'receive_user';
 
+    public static $START_MANUAL_ORDER = 'start_manual_order';
+
+    public static $RECIVE_MANUAL_ORDER_USER = 'receive_manual_order_user';
+
+    public static $RECIVE_AND_START_MANUAL_ORDER_USER = 'receive_and_start_manual_order_user';
+
     public function __construct(MessageBot $message)
     {
 
