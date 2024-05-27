@@ -314,6 +314,18 @@ class MessageBot extends Model
         return $this->getCleanChatSession()->price;
     }
 
+    public function setUserMobile(string $value)
+    {
+
+        $this->getCleanChatSession()->setUserMobile($value);
+    }
+
+    public function getSessionUserMobileAttribute()
+    {
+
+        return $this->getCleanChatSession()->user_mobile;
+    }
+
 
     public function destroyMessage()
     {

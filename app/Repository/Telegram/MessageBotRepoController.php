@@ -62,6 +62,10 @@ abstract class MessageBotRepoController
 
     public static $ADD_USER = 'add_user';
 
+    public static $ADD_USER_MOBILE = 'add_user_mobile';
+
+    public static $ADD_USER_NAME = 'add_user_name';
+
     public static $CHANGE_MARGIN = 'change_margin';
 
     public static $REMOVE_USER = 'remove_user';

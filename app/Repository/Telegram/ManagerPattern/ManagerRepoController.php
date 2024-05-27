@@ -4,6 +4,7 @@ namespace App\Repository\Telegram\ManagerPattern;
 
 use App\Models\MessageBot;
 use App\Models\SettingBot;
+use App\Models\User;
 use App\Repository\Telegram\MessageBotRepoController;
 
 class ManagerRepoController extends MessageBotRepoController
@@ -36,6 +37,10 @@ class ManagerRepoController extends MessageBotRepoController
 
                     $this->changeStopLockTime();
                 }
+                if (trim($message->callback_query_text) === self::$ADD_USER) {
+
+                    $this->addUser();
+                }
             } else {
 
                 if (trim($message->text) === self::$START) {
@@ -47,6 +52,10 @@ class ManagerRepoController extends MessageBotRepoController
                     $this->receiveStartLockTime();
                 } elseif ($message->last_action === self::$CHANGE_STOP_LOCK) {
                     $this->receiveStopLockTime();
+                } elseif ($message->last_action === self::$ADD_USER) {
+                    $this->receiveUserMobile();
+                } elseif ($message->last_action === self::$ADD_USER_MOBILE) {
+                    $this->receiveUserName();
                 }
             }
 
@@ -168,12 +177,52 @@ class ManagerRepoController extends MessageBotRepoController
     }
 
 
+    public function addUser()
+    {
+        $this->message->setRouteAction(self::$ADD_USER);
+
+        $this->message->sendAloneText("شماره همراه کاربر را وارد کنید\n09XXXXXXXXX", true);
+
+    }
+
+    public function receiveUserMobile()
+    {
+        $this->message->setRouteAction(self::$ADD_USER_MOBILE);
+
+        if (preg_match("/^09[0-9]{9}$/", (int)to_english_numbers(trim($this->message->text)))) {
+
+            $this->message->setUserMobile(to_english_numbers(trim($this->message->text)));
+            $this->message->sendAloneText("شماره همراه کاربر با موفقیت دریافت شد\nنام کامل کاربر را وارد کنید", true);
+        } else {
+
+            $this->message->sendAloneText("فرمت ورودی اشتباه است!!!");
+            $this->redirectBack();
+        }
+    }
+
+    public function receiveUserName()
+    {
+        if (!is_null($this->message->session_user_mobile)) {
+
+            $this->message->setRouteAction(self::$ADD_USER_NAME);
+
+            User::create(['mobile' => $this->message->session_user_mobile, 'name' => $this->message->text]);
+
+
+            $this->message->sendAloneText("نام کاربر با موفقیت دریافت شد", true);
+        }
+        $this->message->sendAloneText("شماره موبایل کاربر یافت نشد!!!");
+
+        $this->redirectBack();
+    }
+
     public function redirectBack()
     {
 
         $routeMap = collect([
             ['fn' => 'startBot', 'route' => self::$START_ACTION],
             ['fn' => 'changeLockTime', 'route' => self::$CHANGE_LOCK],
+            ['fn' => 'addUser', 'route' => self::$ADD_USER],
 
         ]);
 
@@ -191,6 +240,8 @@ class ManagerRepoController extends MessageBotRepoController
             ->where('action', '!=', self::$RECEIVE_START_LOCK_TIME)
             ->where('action', '!=', self::$CHANGE_STOP_LOCK)
             ->where('action', '!=', self::$RECEIVE_STOP_LOCK_TIME)
+            ->where('action', '!=', self::$ADD_USER_MOBILE)
+            ->where('action', '!=', self::$ADD_USER_NAME)
             ?->sortByDesc('id')
             ->skip(1)->first()?->action;
 
@@ -200,6 +251,8 @@ class ManagerRepoController extends MessageBotRepoController
             ->where('action', '!=', self::$RECEIVE_START_LOCK_TIME)
             ->where('action', '!=', self::$CHANGE_STOP_LOCK)
             ->where('action', '!=', self::$RECEIVE_STOP_LOCK_TIME)
+            ->where('action', '!=', self::$ADD_USER_MOBILE)
+            ->where('action', '!=', self::$ADD_USER_NAME)
             ?->sortByDesc('id')
             ->take(2)->each->delete();
 
