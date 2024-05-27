@@ -60,7 +60,7 @@ class ManagerRepoController extends MessageBotRepoController
             'ثبت سفارش دستی' => self::$MANUAL_ORDER_SUBMISSION,
             'گزارش سفارشات' => self::$REPORT,
         ];
-        $this->message->sendTextWithInlineBtn("لطفا عملیات مورد نظر را انتخاب کنید", $btns);
+        $this->message->sendTextWithInlineBtn("لطفا عملیات مورد نظر را انتخاب کنید", $btns, false, true);
     }
 
     public function changeLockTime()
@@ -96,7 +96,7 @@ class ManagerRepoController extends MessageBotRepoController
 
             if (!preg_match('/^([01][0-9]|2[0-3]):([0-5][0-9])$/', $text)) {
                 $this->message->sendAloneText("فرمت ورودی اشتباه است!!!");
-            }else{
+            } else {
 
 
                 $this->message->setRouteAction(self::$RECEIVE_START_LOCK_TIME);
@@ -132,7 +132,7 @@ class ManagerRepoController extends MessageBotRepoController
 
             if (!preg_match('/^([01][0-9]|2[0-3]):([0-5][0-9])$/', $text)) {
                 $this->message->sendAloneText("فرمت ورودی اشتباه است!!!");
-            }else{
+            } else {
 
 
                 $this->message->setRouteAction(self::$RECEIVE_STOP_LOCK_TIME);

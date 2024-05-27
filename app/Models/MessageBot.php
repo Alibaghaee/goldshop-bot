@@ -343,7 +343,7 @@ class MessageBot extends Model
         (new TelegramServiceController())->send($data);
     }
 
-    public function sendTextWithInlineBtn($text, $btns, $withBackBtn = false)
+    public function sendTextWithInlineBtn($text, $btns, $withBackBtn = false, $rowList = false)
     {
         $list = [];
 
@@ -360,8 +360,16 @@ class MessageBot extends Model
         $reply_markup = Keyboard::make()
             ->setResizeKeyboard(true)
             ->setOneTimeKeyboard(true)
-            ->inline()
-            ->row($list);
+            ->inline();
+        if ($rowList) {
+            foreach ($list as $item) {
+
+                $reply_markup->row([$item]);
+            }
+        } else {
+
+            $reply_markup->row($list);
+        }
 
         $data = [
             'chat_id' => $this->chatBot->chat_id,
