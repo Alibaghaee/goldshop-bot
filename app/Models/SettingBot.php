@@ -85,4 +85,36 @@ class SettingBot extends Model
         $this->save();
     }
 
+    public function setCoinBalanceAttribute(string $value)
+    {
+        return $this->setAttribute('main->coin_balance', $value);
+    }
+
+    public function getCoinBalanceAttribute()
+    {
+        return is_array($this->main) ? (array_key_exists('coin_balance', $this->main) ? $this->main['coin_balance'] : null) : null;
+    }
+
+    public function setCoinBalance(string $value)
+    {
+        $this->coin_balance = $value;
+        $this->save();
+    }
+
+    public function setAbshodeBalanceAttribute(string $value)
+    {
+        return $this->setAttribute('main->abshode_balance', $value);
+    }
+
+    public function getAbshodeBalanceAttribute()
+    {
+        return is_array($this->main) ? (array_key_exists('abshode_balance', $this->main) ? $this->main['abshode_balance'] : null) : null;
+    }
+
+    public function setAbshodeBalance(string $value)
+    {
+        $this->abshode_balance = $value;
+        $this->save();
+    }
+
 }

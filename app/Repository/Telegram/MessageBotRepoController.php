@@ -86,11 +86,19 @@ abstract class MessageBotRepoController
 
     public static $ABSHODE_MARGIN = 'abshode_margin';
 
+    public static $ABSHODE_BALANCE = 'abshode_balance';
+
     public static $COIN_MARGIN = 'coin_margin';
+
+    public static $COIN_BALANCE = 'coin_balance';
 
     public static $SET_MARGIN = 'set_margin';
 
+    public static $SET_BALANCE = 'set_balance';
+
     public static $RECEIVE_MARGIN = 'receive_margin';
+
+    public static $RECEIVE_BALANCE = 'receive_balance';
 
     public static $DELETE_USER = 'delete_user';
 

@@ -184,6 +184,23 @@ class ChatSession extends Model
         $this->save();
     }
 
+    public function setBalanceTypeAttribute(string $value)
+    {
+        return $this->setAttribute('data->balance_type', $value);
+    }
+
+    public function getBalanceTypeAttribute()
+    {
+        return is_array($this->data) ? (array_key_exists('balance_type', $this->data) ? $this->data['balance_type'] : null) : null;
+    }
+
+
+    public function setBalanceType(string $value)
+    {
+        $this->balance_type = $value;
+        $this->save();
+    }
+
     public function setTotalInvoiceAttribute(string $value)
     {
         return $this->setAttribute('data->total_invoice', $value);

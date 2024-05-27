@@ -50,10 +50,18 @@ class ManagerRepoController extends MessageBotRepoController
 
                     $this->changeMargin();
                 }
+                if (trim($message->callback_query_text) === self::$CHANGE_BALANCE) {
+
+                    $this->changeBalance();
+                }
 
                 if (trim($message->callback_query_text) === self::$ABSHODE_MARGIN || trim($message->callback_query_text) === self::$COIN_MARGIN) {
 
                     $this->setMargin();
+                }
+                if (trim($message->callback_query_text) === self::$ABSHODE_BALANCE || trim($message->callback_query_text) === self::$COIN_BALANCE) {
+
+                    $this->setBalance();
                 }
                 if (trim($message->callback_query_text) === self::$REMOVE_USER) {
 
@@ -80,6 +88,8 @@ class ManagerRepoController extends MessageBotRepoController
                     $this->receiveUserName();
                 } elseif ($message->last_action === self::$SET_MARGIN) {
                     $this->receiveMargin();
+                } elseif ($message->last_action === self::$SET_BALANCE) {
+                    $this->receiveBalance();
                 }
             }
 
@@ -196,8 +206,6 @@ class ManagerRepoController extends MessageBotRepoController
             $this->message->sendAloneText("فرمت ورودی اشتباه است!!!");
             $this->redirectBack();
         }
-
-
     }
 
 
@@ -335,9 +343,51 @@ class ManagerRepoController extends MessageBotRepoController
 
             $this->redirectBack();
         }
+    }
 
+
+    public function changeBalance()
+    {
+        $this->message->setRouteAction(self::$CHANGE_BALANCE);
+        $btns = [
+            'آبشده' => self::$ABSHODE_BALANCE,
+            'سکه' => self::$COIN_BALANCE
+        ];
+
+
+        $this->message->sendTextWithInlineBtn("تراز کدام را میخواهید تغییر دهید", $btns, true, true);
 
     }
+
+    public function setBalance()
+    {
+        $this->message->setRouteAction(self::$SET_BALANCE);
+
+        $this->message->setBalanceType($this->message->callback_query_text);
+
+        $this->message->sendAloneText("مقدار جدید را وارد کنید", true);
+
+    }
+
+    public function receiveBalance()
+    {
+        $this->message->setRouteAction(self::$RECEIVE_BALANCE);
+
+        $setting = $this->settingBot();
+        if ($this->message->session_balance_type === self::$COIN_BALANCE) {
+
+
+            $setting->setCoinBalance((float)to_english_numbers($this->message->text));
+        } else {
+
+            $setting->setAbshodeBalance((float)to_english_numbers($this->message->text));
+        }
+
+        $this->message->sendAloneText('مقدار جدید باموفقیت دریافت و ثبت شد');
+
+        $this->redirectBack();
+    }
+
 
     public function redirectBack()
     {
@@ -347,6 +397,7 @@ class ManagerRepoController extends MessageBotRepoController
             ['fn' => 'changeLockTime', 'route' => self::$CHANGE_LOCK],
             ['fn' => 'addUser', 'route' => self::$ADD_USER],
             ['fn' => 'deleteUser', 'route' => self::$DELETE_USER],
+            ['fn' => 'changeBalance', 'route' => self::$CHANGE_BALANCE],
 
         ]);
 
@@ -369,6 +420,8 @@ class ManagerRepoController extends MessageBotRepoController
             ->where('action', '!=', self::$RECEIVE_MARGIN)
             ->where('action', '!=', self::$SET_MARGIN)
             ->where('action', '!=', self::$RECEIVE_DELETE_USER)
+            ->where('action', '!=', self::$RECEIVE_BALANCE)
+            ->where('action', '!=', self::$SET_BALANCE)
             ?->sortByDesc('id')
             ->skip(1)->first()?->action;
 
@@ -383,6 +436,8 @@ class ManagerRepoController extends MessageBotRepoController
             ->where('action', '!=', self::$RECEIVE_MARGIN)
             ->where('action', '!=', self::$SET_MARGIN)
             ->where('action', '!=', self::$RECEIVE_DELETE_USER)
+            ->where('action', '!=', self::$RECEIVE_BALANCE)
+            ->where('action', '!=', self::$SET_BALANCE)
             ?->sortByDesc('id')
             ->take(2)->each->delete();
 

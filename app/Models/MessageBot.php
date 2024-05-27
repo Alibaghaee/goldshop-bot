@@ -338,6 +338,18 @@ class MessageBot extends Model
         return $this->getCleanChatSession()->margin_type;
     }
 
+    public function setBalanceType(string $value)
+    {
+
+        $this->getCleanChatSession()->setBalanceType($value);
+    }
+
+    public function getSessionBalanceTypeAttribute()
+    {
+
+        return $this->getCleanChatSession()->balance_type;
+    }
+
 
     public function destroyMessage()
     {
