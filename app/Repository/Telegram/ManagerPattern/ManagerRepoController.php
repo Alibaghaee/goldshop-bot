@@ -215,7 +215,9 @@ class ManagerRepoController extends MessageBotRepoController
                 User::create(['mobile' => $this->message->session_user_mobile, 'name' => $this->message->text]);
 
 
-                $this->message->sendAloneText("نام کاربر با موفقیت دریافت شد", true);
+                $this->message->sendAloneText("نام کاربر با موفقیت دریافت شد");
+                $this->message->sendAloneText("کاربر جدید با مشخصات زیر اضافه شد\n:شماره موبایل {$this->message->session_user_mobile}\nنام کامل: {$this->message->text}");
+                $this->redirectBack();
             }
         } else {
 
