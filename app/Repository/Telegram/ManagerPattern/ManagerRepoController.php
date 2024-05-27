@@ -50,9 +50,20 @@ class ManagerRepoController extends MessageBotRepoController
 
                     $this->changeMargin();
                 }
+
                 if (trim($message->callback_query_text) === self::$ABSHODE_MARGIN || trim($message->callback_query_text) === self::$COIN_MARGIN) {
 
                     $this->setMargin();
+                }
+                if (trim($message->callback_query_text) === self::$REMOVE_USER) {
+
+                    $this->deleteUser();
+                }
+                if ($message->last_action === self::$DELETE_USER && str_contains(trim($message->callback_query_text), 'delete:')) {
+
+
+                    $this->receiveDeleteUser();
+
                 }
             } else {
 
@@ -282,6 +293,50 @@ class ManagerRepoController extends MessageBotRepoController
         $this->redirectBack();
     }
 
+
+    public function deleteUser()
+    {
+        $this->message->setRouteAction(self::$DELETE_USER);
+
+        $btns = [];
+        $users = User::all();
+        foreach ($users as $user) {
+            $btns[$user->name] = 'delete:' . $user->id;
+        }
+
+        $this->message->sendTextWithInlineBtn('کاربر مورد نظر را انتخاب کنید.', $btns, true, true);
+    }
+
+    public function receiveDeleteUser()
+    {
+        $this->message->setRouteAction(self::$RECEIVE_DELETE_USER);
+        $id = explode(':', trim($this->message->callback_query_text));
+        if (array_key_exists(1, $id)) {
+
+            $user = User::find($id[1]);
+            if (!is_null($user)) {
+
+                $user->delete();
+
+                $this->message->sendAloneText('کاربر با موفقیت حذف شد');
+
+                $this->redirectBack();
+            } else {
+
+                $this->message->sendAloneText('کاربر یافت نشد!!!');
+
+                $this->redirectBack();
+            }
+        } else {
+
+            $this->message->sendAloneText('کاربر یافت نشد!!!');
+
+            $this->redirectBack();
+        }
+
+
+    }
+
     public function redirectBack()
     {
 
@@ -310,6 +365,7 @@ class ManagerRepoController extends MessageBotRepoController
             ->where('action', '!=', self::$ADD_USER_NAME)
             ->where('action', '!=', self::$RECEIVE_MARGIN)
             ->where('action', '!=', self::$SET_MARGIN)
+            ->where('action', '!=', self::$RECEIVE_DELETE_USER)
             ?->sortByDesc('id')
             ->skip(1)->first()?->action;
 
@@ -323,6 +379,7 @@ class ManagerRepoController extends MessageBotRepoController
             ->where('action', '!=', self::$ADD_USER_NAME)
             ->where('action', '!=', self::$RECEIVE_MARGIN)
             ->where('action', '!=', self::$SET_MARGIN)
+            ->where('action', '!=', self::$RECEIVE_DELETE_USER)
             ?->sortByDesc('id')
             ->take(2)->each->delete();
 

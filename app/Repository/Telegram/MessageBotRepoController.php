@@ -92,6 +92,10 @@ abstract class MessageBotRepoController
 
     public static $RECEIVE_MARGIN = 'receive_margin';
 
+    public static $DELETE_USER = 'delete_user';
+
+    public static $RECEIVE_DELETE_USER = 'receive_user';
+
     public function __construct(MessageBot $message)
     {
 
