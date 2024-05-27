@@ -296,6 +296,8 @@ class ManagerRepoController extends MessageBotRepoController
 
     public function deleteUser()
     {
+
+
         $this->message->setRouteAction(self::$DELETE_USER);
 
         $btns = [];
