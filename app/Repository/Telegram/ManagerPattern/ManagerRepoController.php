@@ -93,6 +93,14 @@ class ManagerRepoController extends MessageBotRepoController
 
                     $this->endSetupCoinManualOrder();
                 }
+                if ($message->last_action === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$SETUP_ABSHODE_TRADE && trim($message->callback_query_text) === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$CONFIRM) {
+
+                    $this->endSetupAbshodeOrder();
+                }
+                if ($message->last_action === self::$RECEIVE_ORDER_TYPE && (trim($message->callback_query_text) === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$WEIGHT || trim($message->callback_query_text) === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$PRICE)) {
+
+                    $this->setRequireOrderAbshode();
+                }
 
             } else {
 
@@ -117,6 +125,9 @@ class ManagerRepoController extends MessageBotRepoController
                     $this->receivePriceAndSelectOrderType();
                 } elseif ($message->last_action === self::$RECEIVE_ORDER_TYPE) {
                     $this->receiveManualOrderCoinAmount();
+                } elseif (($message->last_action === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_WEIGHT || $message->last_action === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_PRICE) && $message->session_item_manual_order === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$ABSHODE) {
+
+                    $this->receiveRequireOrderAbshode();
                 }
             }
 
@@ -536,7 +547,6 @@ class ManagerRepoController extends MessageBotRepoController
 
     public function receiveRequireOrderAbshode()
     {
-
         $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$RECEIVE_REQUIRE_TRADE_ABSHODE);
 
         if ($this->message->last_action === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_WEIGHT) {
