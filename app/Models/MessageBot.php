@@ -91,6 +91,12 @@ class MessageBot extends Model
 
     public static $BACK = '/back';
 
+    public static $SELL_US_ORDER = 'sell_us_order';
+
+    public static $BUY_FROM_US_ORDER = 'buy_from_us_order';
+
+    public static $MANUAL_ORDER_SUBMISSION = 'manual_order_submission';
+
     /**
      * Bootstrap the model and its traits.
      *
@@ -277,6 +283,18 @@ class MessageBot extends Model
         return $this->getCleanChatSession()->coin_amount;
     }
 
+    public function setCoinAmountManualOrder(string $value)
+    {
+
+        $this->getCleanChatSession()->setCoinAmountManualOrder($value);
+    }
+
+    public function getSessionCoinAmountManualOrderAttribute()
+    {
+
+        return $this->getCleanChatSession()->coin_amount_manual_order;
+    }
+
     public function setTotalInvoice(string $value)
     {
 
@@ -287,6 +305,18 @@ class MessageBot extends Model
     {
 
         return $this->getCleanChatSession()->total_invoice;
+    }
+
+    public function setTotalInvoiceManualOrder(string $value)
+    {
+
+        $this->getCleanChatSession()->setTotalInvoiceManualOrder($value);
+    }
+
+    public function getSessionTotalInvoiceManualOrderAttribute()
+    {
+
+        return $this->getCleanChatSession()->total_invoice_manual_order;
     }
 
 
@@ -348,6 +378,102 @@ class MessageBot extends Model
     {
 
         return $this->getCleanChatSession()->balance_type;
+    }
+
+    public function setStartManualOrder(bool $value)
+    {
+
+        $this->getCleanChatSession()->setStartManualOrder($value);
+    }
+
+    public function getSessionStartManualOrderAttribute()
+    {
+
+        return $this->getCleanChatSession()->start_manual_order;
+    }
+
+    public function setUserIdManualOrder(int $value)
+    {
+
+        $this->getCleanChatSession()->setUserIdManualOrder($value);
+    }
+
+    public function getSessionUserIdManualOrderAttribute()
+    {
+
+        return $this->getCleanChatSession()->user_id_manual_order;
+    }
+
+    public function setItemManualOrder(string $value)
+    {
+
+        $this->getCleanChatSession()->setItemManualOrder($value);
+    }
+
+    public function getSessionItemManualOrderAttribute()
+    {
+
+        return $this->getCleanChatSession()->item_manual_order;
+    }
+
+    public function getSessionItemManualOrderFaAttribute()
+    {
+
+        return $this->session_item_manual_order === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$COIN ? 'سکه' : 'آبشده';
+    }
+
+    public function setTypeManualOrder(string $value)
+    {
+
+        $this->getCleanChatSession()->setTypeManualOrder($value);
+    }
+
+    public function getSessionTypeManualOrderAttribute()
+    {
+
+        return $this->getCleanChatSession()->type_manual_order;
+    }
+
+    public function getSessionTypeManualOrderFaAttribute()
+    {
+
+        return $this->session_type_manual_order === self::$SELL_US_ORDER ? 'فروش' : 'خرید';
+    }
+
+    public function setPriceManualOrder(float $value)
+    {
+
+        $this->getCleanChatSession()->setPriceManualOrder($value);
+    }
+
+    public function getSessionPriceManualOrderAttribute()
+    {
+
+        return $this->getCleanChatSession()->price_manual_order;
+    }
+
+    public function setAbshodeWeightManualOrder(float $value)
+    {
+
+        $this->getCleanChatSession()->setAbshodeWeightManualOrder($value);
+    }
+
+    public function getSessionAbshodeWeightManualOrderAttribute()
+    {
+
+        return $this->getCleanChatSession()->abshode_weight_manual_order;
+    }
+
+    public function setAbshodePriceManualOrder(float $value)
+    {
+
+        $this->getCleanChatSession()->setAbshodePriceManualOrder($value);
+    }
+
+    public function getSessionAbshodePriceManualOrderAttribute()
+    {
+
+        return $this->getCleanChatSession()->abshode_price_manual_order;
     }
 
 

@@ -252,4 +252,157 @@ class ChatSession extends Model
         $this->start_trade = $value;
         $this->save();
     }
+
+    public function setStartManualOrderAttribute(bool $value)
+    {
+        return $this->setAttribute('data->start_manual_order', $value);
+    }
+
+    public function getStartManualOrderAttribute()
+    {
+        return is_array($this->data) ? (array_key_exists('start_manual_order', $this->data) ? $this->data['start_manual_order'] : null) : null;
+    }
+
+
+    public function setStartManualOrder(bool $value)
+    {
+        $this->start_manual_order = $value;
+        $this->save();
+    }
+
+    public function setUserIdManualOrderAttribute(int $value)
+    {
+        return $this->setAttribute('data->user_id_manual_order', $value);
+    }
+
+    public function getUserIdManualOrderAttribute()
+    {
+        return is_array($this->data) ? (array_key_exists('user_id_manual_order', $this->data) ? $this->data['user_id_manual_order'] : null) : null;
+    }
+
+
+    public function setUserIdManualOrder(int $value)
+    {
+        $this->user_id_manual_order = $value;
+        $this->save();
+    }
+
+    public function setItemManualOrderAttribute(string $value)
+    {
+        return $this->setAttribute('data->item_manual_order', $value);
+    }
+
+    public function getItemManualOrderAttribute()
+    {
+        return is_array($this->data) ? (array_key_exists('item_manual_order', $this->data) ? $this->data['item_manual_order'] : null) : null;
+    }
+
+
+    public function setItemManualOrder(string $value)
+    {
+        $this->item_manual_order = $value;
+        $this->save();
+    }
+
+    public function setTypeManualOrderAttribute(string $value)
+    {
+        return $this->setAttribute('data->type_manual_order', $value);
+    }
+
+    public function getTypeManualOrderAttribute()
+    {
+        return is_array($this->data) ? (array_key_exists('type_manual_order', $this->data) ? $this->data['type_manual_order'] : null) : null;
+    }
+
+
+    public function setTypeManualOrder(string $value)
+    {
+        $this->type_manual_order = $value;
+        $this->save();
+    }
+
+    public function setPriceManualOrderAttribute(float $value)
+    {
+        return $this->setAttribute('data->price_manual_order', $value);
+    }
+
+    public function getPriceManualOrderAttribute()
+    {
+        return is_array($this->data) ? (array_key_exists('price_manual_order', $this->data) ? $this->data['price_manual_order'] : null) : null;
+    }
+
+
+    public function setPriceManualOrder(float $value)
+    {
+        $this->price_manual_order = $value;
+        $this->save();
+    }
+
+    public function setAbshodeWeightManualOrderAttribute(float $value)
+    {
+        return $this->setAttribute('data->abshode_weight_manual_order', $value);
+    }
+
+    public function getAbshodeWeightManualOrderAttribute()
+    {
+        return is_array($this->data) ? (array_key_exists('abshode_weight_manual_order', $this->data) ? $this->data['abshode_weight_manual_order'] : null) : null;
+    }
+
+
+    public function setAbshodeWeightManualOrder(float $value)
+    {
+        $this->abshode_weight_manual_order = $value;
+        $this->save();
+    }
+
+    public function setAbshodePriceManualOrderAttribute(float $value)
+    {
+        return $this->setAttribute('data->abshode_price_manual_order', $value);
+    }
+
+    public function getAbshodePriceManualOrderAttribute()
+    {
+        return is_array($this->data) ? (array_key_exists('abshode_price_manual_order', $this->data) ? $this->data['abshode_price_manual_order'] : null) : null;
+    }
+
+
+    public function setAbshodePriceManualOrder(float $value)
+    {
+        $this->abshode_price_manual_order = $value;
+        $this->save();
+    }
+
+    public function setTotalInvoiceManualOrderAttribute(string $value)
+    {
+        return $this->setAttribute('data->total_invoice_manual_order', $value);
+    }
+
+    public function getTotalInvoiceManualOrderAttribute()
+    {
+        return is_array($this->data) ? (array_key_exists('total_invoice_manual_order', $this->data) ? $this->data['total_invoice_manual_order'] : null) : null;
+    }
+
+
+    public function setTotalInvoiceManualOrder(string $value)
+    {
+        $this->total_invoice_manual_order = $value;
+        $this->save();
+    }
+
+    public function setCoinAmountManualOrderAttribute(string $value)
+    {
+        return $this->setAttribute('data->coin_amount_manual_order', $value);
+    }
+
+    public function getCoinAmountManualOrderAttribute()
+    {
+        return is_array($this->data) ? (array_key_exists('coin_amount_manual_order', $this->data) ? $this->data['coin_amount_manual_order'] : null) : null;
+    }
+
+
+    public function setCoinAmountManualOrder(string $value)
+    {
+        $this->coin_amount_manual_order = $value;
+        $this->save();
+    }
 }

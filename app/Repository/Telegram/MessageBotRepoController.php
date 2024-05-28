@@ -110,6 +110,16 @@ abstract class MessageBotRepoController
 
     public static $RECIVE_AND_START_MANUAL_ORDER_USER = 'receive_and_start_manual_order_user';
 
+    public static $RECEIVE_ORDER_ITEM = 'receive_order_item';
+
+    public static $RECEIVE_ORDER_TYPE = 'receive_order_type';
+
+    public static $RECEIVE_ORDER_PRICE = 'receive_order_price';
+
+    public static $SELL_US_ORDER = 'sell_us_order';
+
+    public static $BUY_FROM_US_ORDER = 'buy_from_us_order';
+
     public function __construct(MessageBot $message)
     {
 
@@ -128,4 +138,7 @@ abstract class MessageBotRepoController
     {
         return $this->message->chatSessionCheck();
     }
+
+
+
 }

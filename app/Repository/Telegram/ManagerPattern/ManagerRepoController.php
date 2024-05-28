@@ -81,6 +81,18 @@ class ManagerRepoController extends MessageBotRepoController
 
                     $this->startManualOrder();
                 }
+                if ($message->last_action === self::$RECIVE_AND_START_MANUAL_ORDER_USER && (trim($message->callback_query_text) === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$ABSHODE || trim($message->callback_query_text) === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$COIN)) {
+
+                    $this->receiveOrderItem();
+                }
+                if ($message->last_action === self::$RECEIVE_ORDER_PRICE && (trim($message->callback_query_text) === self::$SELL_US_ORDER || trim($message->callback_query_text) === self::$BUY_FROM_US_ORDER)) {
+
+                    $this->receiveTypeAndSelectOrderType();
+                }
+                if ($message->last_action === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$SETUP_COIN_TRADE && trim($message->callback_query_text) === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$CONFIRM) {
+
+                    $this->endSetupCoinManualOrder();
+                }
 
             } else {
 
@@ -101,6 +113,10 @@ class ManagerRepoController extends MessageBotRepoController
                     $this->receiveBalance();
                 } elseif ($message->last_action === self::$START_MANUAL_ORDER) {
                     $this->receiveManualOrderUser();
+                } elseif ($message->last_action === self::$RECEIVE_ORDER_ITEM) {
+                    $this->receivePriceAndSelectOrderType();
+                } elseif ($message->last_action === self::$RECEIVE_ORDER_TYPE) {
+                    $this->receiveManualOrderCoinAmount();
                 }
             }
 
@@ -403,6 +419,7 @@ class ManagerRepoController extends MessageBotRepoController
     public function startManualOrder()
     {
         $this->message->setRouteAction(self::$START_MANUAL_ORDER);
+        $this->message->setStartManualOrder(true);
         $this->message->sendAloneText("کاربر مورد نظر را جستجو کنید.", true);
     }
 
@@ -431,8 +448,9 @@ class ManagerRepoController extends MessageBotRepoController
 
             $user = User::find($id[1]);
             if (!is_null($user)) {
-
-
+                $this->message->setUserIdManualOrder($user->id);
+                $btns = ["آبشده" => self::$MANUAL_ORDER_SUBMISSION . '_' . self::$ABSHODE, 'سکه' => self::$MANUAL_ORDER_SUBMISSION . '_' . self::$COIN];
+                $this->message->sendTextWithInlineBtn('لطفا نوع معامله را مشخص کنید', $btns, true, true);
             } else {
 
                 $this->message->sendAloneText('کاربر یافت نشد!!!');
@@ -446,6 +464,193 @@ class ManagerRepoController extends MessageBotRepoController
             $this->redirectBack();
         }
     }
+
+    public function receiveOrderItem()
+    {
+        $this->message->setRouteAction(self::$RECEIVE_ORDER_ITEM);
+
+        $this->message->setItemManualOrder(trim($this->message->callback_query_text));
+
+        $this->message->sendAloneText('لطفا مظنه را تعیین کنید', true);
+    }
+
+    public function receivePriceAndSelectOrderType()
+    {
+        $this->message->setRouteAction(self::$RECEIVE_ORDER_PRICE);
+        $this->message->setPriceManualOrder((float)to_english_numbers(trim($this->message->callback_query_text)));
+
+        $btns = ["فروش به ما" => self::$SELL_US_ORDER, "خرید از ما" => self::$BUY_FROM_US_ORDER];
+
+        $this->message->sendTextWithInlineBtn('لطفا نحوه مبادله را مشخص کنید', $btns, true, true);
+    }
+
+    public function receiveTypeAndSelectOrderType()
+    {
+        $this->message->setRouteAction(self::$RECEIVE_ORDER_TYPE);
+        $this->message->setTypeManualOrder(trim($this->message->callback_query_text));
+
+        if ($this->message->session_item_manual_order === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$COIN) {
+
+            if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
+
+                $text = "قیمت فروش هر سکه امامی: {$this->message->getCoinPrice(self::$SELL)} 🔵";
+            } else {
+
+                $text = "قیمت خرید هر سکه امامی: {$this->message->getCoinPrice(self::$BUY)} 🔴";
+            }
+
+            $this->message->sendAloneText($text . "لطفا تعداد سکه را وارد نمایید\n👇👇👇\n", true);
+
+        } elseif (self::$MANUAL_ORDER_SUBMISSION . '_' . self::$ABSHODE) {
+
+            $btns = ["وزن" => self::$MANUAL_ORDER_SUBMISSION . '_' . self::$WEIGHT, "مبلغ" => self::$MANUAL_ORDER_SUBMISSION . '_' . self::$PRICE];
+
+            $this->message->sendTextWithInlineBtn("لطفا واحد عملیات مبادله را مشخص کنید.", $btns, true, true);
+
+        } else {
+
+            $this->message->sendAloneText('نوع معامله یافت نشد');
+
+            $this->redirectBack();
+        }
+    }
+
+//////////
+    public function setRequireOrderAbshode()
+    {
+
+
+        if (trim($this->message->callback_query_text) === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$WEIGHT) {
+
+            $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_WEIGHT);
+
+            $text = "لطفا وزن مورد نظر را وارد نمایید\n👇👇👇";
+        } else {
+            $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_PRICE);
+            $text = "لطفا مبلغ مورد نظر را وارد نمایید\n👇👇👇";
+        }
+
+        $this->message->sendAloneText($text, true);
+    }
+
+
+    public function receiveRequireOrderAbshode()
+    {
+
+        $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$RECEIVE_REQUIRE_TRADE_ABSHODE);
+
+        if ($this->message->last_action === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_WEIGHT) {
+
+            $this->message->setAbshodeWeightManualOrder((float)to_english_numbers(trim($this->message->callback_query_text)));
+            $text = 'وزن مورد نظر با موفقیت دریافت شد';
+        } else {
+            $this->message->setAbshodePriceManualOrder((float)to_english_numbers(trim($this->message->callback_query_text)));
+            $text = 'مبلغ مورد نظر با موفقیت دریافت شد';
+        }
+        $this->message->sendAloneText($text);
+
+        $this->setupAbshodeOrder();
+    }
+
+    public function setupAbshodeOrder()
+    {
+        if (is_null($this->message->session_abshode_price_manual_order)) {
+
+            $this->message->sendAloneText('قیمت یافت نشد!!!');
+
+
+            $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_PRICE);
+
+            $text = "لطفا مبلغ مورد نظر را وارد نمایید\n👇👇👇";
+            return $this->message->sendAloneText($text, true);
+        }
+        if (is_null($this->message->session_abshode_weight_manual_order)) {
+
+            $this->message->sendAloneText('وزن یافت نشد!!!');
+
+            $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_WEIGHT);
+
+            $text = "لطفا وزن مورد نظر را وارد نمایید\n👇👇👇";
+            return $this->message->sendAloneText($text, true);
+        }
+        $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$SETUP_ABSHODE_TRADE);
+
+        $gram = $this->message->getGramPrice($this->message->session_type_manual_order);
+        $abshode = $this->message->getAbshode($this->message->session_type_manual_order);
+        $totalAbshode = (float)$this->message->getTotalAbshode($this->message->session_type_manual_order) * (float)$this->message->session_abshode_weight_manual_order;
+
+        $this->message->setTotalInvoiceManualOrder($totalAbshode);
+
+        $lable = $this->message->session_type_manual_order === self::$SELL_US_ORDER ? "🔵" : "🔴";
+        $time = time_fa($this->message->created_at);
+        $user = $this->userFind($this->message->session_user_id_manual_order);
+        $text = "نوع خرید: {$this->message->session_item_manual_order_fa}\nعملیات مورد نظر: {$this->message->session_type_manual_order_fa}\nوزن: {$this->message->session_abshode_weight_manual_order}\nقیمت {$this->message->session_type_manual_order_fa} هر گرم: $gram $lable\nقیمت {$this->message->session_type_manual_order_fa} آبشده: {$abshode} $lable\nقیمت کل: $totalAbshode\nشماره مشتری: +$user?->mobile\nنام و نام خانوادگی مشتری: $user?->name\nتاریخ معامله: $time";
+
+        $this->message->sendTextWithInlineBtn($text, ["بله تایید میکنم" => self::$MANUAL_ORDER_SUBMISSION . '_' . self::$CONFIRM], true);
+    }
+
+    public function endSetupAbshodeOrder()
+    {
+        if ((float)$this->message->session_total_invoice_manual_order !== (float)$this->message->getTotalAbshode($this->message->session_type_manual_order)) {
+            $this->chatSessionClear();
+            return $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$MANUAL_ORDER_SUBMISSION]);
+        }
+        $this->chatSessionClear();
+        return $this->message->sendAloneText("معاملات شما با موفقیت انجام شد.");
+    }
+
+    /////
+
+    public function receiveManualOrderCoinAmount()
+    {
+
+        $text = (int)to_english_numbers($this->message->text);
+        if ($text === 0) {
+
+            return $this->message->sendAloneText("تعداد وارده معتبر نیست. لطفا دوباره تلاش کنید ...", true);
+        }
+
+        $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$RECIVE_COIN_AMOUNT);
+
+        if ($this->message->session_item_manual_order === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$COIN) {
+
+            $this->message->setCoinAmountManualOrder($text);
+
+            return $this->setupCoinManualOrder();
+        }
+    }
+
+    public function setupCoinManualOrder()
+    {
+        $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$SETUP_COIN_TRADE);
+
+
+        $this->message->setTotalInvoiceManualOrder($this->message->getTotalCoinPrice($this->message->session_type_manual_order));
+
+        $lable = $this->message->session_type_manual_order === self::$SELL_US_ORDER ? "🔵" : "🔴";
+        $time = time_fa($this->message->created_at);
+
+        $user = $this->userFind($this->message->session_user_id_manual_order);
+
+        $text = "نوع خرید: {$this->message->session_item_manual_order_fa}\nعملیات مورد نظر: {$this->message->session_type_manual_order_fa}\nتعداد: {$this->message->session_coin_amount_manual_order}\nقیمت {$this->message->session_type_manual_order_fa} هر سکه امامی: {$this->message->getCoinPrice($this->message->session_type_manual_order)}  $lable \nقیمت کل: {$this->message->getTotalCoinPrice($this->message->session_type_manual_order)}\nشماره مشتری: +$user?->mobile\nنام و نام خانوادگی مشتری: $user?->name\nتاریخ معامله: $time";
+
+
+        $this->message->sendTextWithInlineBtn($text, ["بله تایید میکنم" => self::$MANUAL_ORDER_SUBMISSION . '_' . self::$CONFIRM], true);
+    }
+
+    public function endSetupCoinManualOrder()
+    {
+
+        if ((float)$this->message->session_total_invoice_manual_order !== (float)$this->message->getTotalCoinPrice($this->message->session_type_manual_order)) {
+            $this->chatSessionClear();
+            return $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$MANUAL_ORDER_SUBMISSION]);
+        }
+        $this->chatSessionClear();
+        return $this->message->sendAloneText("معاملات شما با موفقیت انجام شد.");
+    }
+
+///////////
+
 
     public function redirectBack()
     {
@@ -510,5 +715,10 @@ class ManagerRepoController extends MessageBotRepoController
     private function userSearch(string $text)
     {
         return User::where('name', 'like', "%$text%")->get();
+    }
+
+    private function userFind($id)
+    {
+        return User::find($id);
     }
 }

@@ -100,7 +100,7 @@ class UserRepoController extends MessageBotRepoController
 
     public function endSetupAbshodeTrade()
     {
-        if ((int)$this->message->session_total_invoice !== (int)$this->message->getTotalCoinPrice($this->message->session_type)) {
+        if ((int)$this->message->session_total_invoice !== (int)$this->message->getTotalAbshode($this->message->session_type)) {
             $this->chatSessionClear();
             return $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$START_TRADE]);
         }
@@ -137,7 +137,7 @@ class UserRepoController extends MessageBotRepoController
 
         $lable = $this->message->session_type === self::$SELL ? "🔵" : "🔴";
         $time = time_fa($this->message->created_at);
-        $text = "نوع خرید: {$this->message->session_item_fa}\nعملیات مورد نظر: {$this->message->session_type_fa}\nوزن: {$this->message->session_weight}\nقیمت {$this->message->session_type_fa} هر گرم: $gram $lable\nقیمت {$this->message->session_type_fa} آبشده: {$abshode} $lable\nقیمت کل: $totalAbshode\nشماره مشتری: +{$this->message->chatBot?->user?->phone}\nنام و نام خانوادگی مشتری: {$this->message->chatBot?->user?->fullname}\nتاریخ معامله: $time";
+        $text = "نوع خرید: {$this->message->session_item_fa}\nعملیات مورد نظر: {$this->message->session_type_fa}\nوزن: {$this->message->session_weight}\nقیمت {$this->message->session_type_fa} هر گرم: $gram $lable\nقیمت {$this->message->session_type_fa} آبشده: {$abshode} $lable\nقیمت کل: $totalAbshode\nشماره مشتری: +{$this->message->chatBot?->user?->mobile}\nنام و نام خانوادگی مشتری: {$this->message->chatBot?->user?->name}\nتاریخ معامله: $time";
 
         $this->message->sendTextWithInlineBtn($text, ["بله تایید میکنم" => self::$CONFIRM], true);
 
@@ -246,7 +246,7 @@ class UserRepoController extends MessageBotRepoController
 
         $lable = $this->message->session_type === self::$SELL ? "🔵" : "🔴";
         $time = time_fa($this->message->created_at);
-        $text = "نوع خرید: {$this->message->session_item_fa}\nعملیات مورد نظر: {$this->message->session_type_fa}\nتعداد: {$this->message->session_coin_amount}\nقیمت {$this->message->session_type_fa} هر سکه امامی: {$this->message->getCoinPrice($this->message->session_type)}  $lable \nقیمت کل: {$this->message->getTotalCoinPrice($this->message->session_type)}\nشماره مشتری: +{$this->message->chatBot?->user?->phone}\nنام و نام خانوادگی مشتری: {$this->message->chatBot?->user?->fullname}\nتاریخ معامله: $time";
+        $text = "نوع خرید: {$this->message->session_item_fa}\nعملیات مورد نظر: {$this->message->session_type_fa}\nتعداد: {$this->message->session_coin_amount}\nقیمت {$this->message->session_type_fa} هر سکه امامی: {$this->message->getCoinPrice($this->message->session_type)}  $lable \nقیمت کل: {$this->message->getTotalCoinPrice($this->message->session_type)}\nشماره مشتری: +{$this->message->chatBot?->user?->mobile}\nنام و نام خانوادگی مشتری: {$this->message->chatBot?->user?->name}\nتاریخ معامله: $time";
 
 
         $this->message->sendTextWithInlineBtn($text, ["بله تایید میکنم" => self::$CONFIRM], true);
@@ -274,7 +274,7 @@ class UserRepoController extends MessageBotRepoController
         $phone = explode(':', $this->message->text);
         if (array_key_exists(1, $phone) && !$this->message->has_user) {
 
-            $user = \App\Models\User::create(['phone' => str_replace('_98', '0', $phone[1]), 'last_chat_id' => $this->message->chatBot?->chat_id]);
+            $user = \App\Models\User::create(['mobile' => str_replace('_98', '0', $phone[1]), 'last_chat_id' => $this->message->chatBot?->chat_id]);
             $this->message->chatBot?->user()->associate($user)->save();
         }
 
