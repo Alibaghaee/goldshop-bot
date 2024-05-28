@@ -52,9 +52,10 @@ class TestController extends Controller
 //        }
 //        return \Storage::url('docments/test.pdf','test.pdf');
 //        return asset('docments/test.pdf');
+
         $messageSend= $telegram->sendDocument([
             'chat_id' => '6259458432',
-            'document' =>InputFile::create(asset('docments/test2.pdf'),'test2.pdf') ,
+            'document' =>InputFile::create(asset('/storage/docments/test2.pdf'),'test2.pdf') ,
             'caption' => 'test',
         ]);
         return $messageSend;
