@@ -21,7 +21,13 @@ class TelegramServiceController
 
         $this->bot->send($data);
     }
-    public function deleteMessage($chatId,$messageId)
+
+    public function sendDocument($data)
+    {
+        $this->bot->sendDocument($data);
+    }
+
+    public function deleteMessage($chatId, $messageId)
     {
 
 

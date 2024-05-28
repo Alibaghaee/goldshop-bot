@@ -8,6 +8,7 @@ use App\Observers\GoldScraperObserver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Spatie\Crawler\Crawler;
+use Telegram\Bot\FileUpload\InputFile;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
@@ -22,23 +23,23 @@ class TestController extends Controller
 //        dd($telegram->getUpdates()[0]['message']['chat']['id']);
 
 
-        $reply_markup = Keyboard::make()
-            ->setResizeKeyboard(true)
-            ->setOneTimeKeyboard(true)
-            ->inline()
-            ->row([
-                Keyboard::inlineButton(['text' => 'به اشتراک گذاری شماره تلفن همراه', 'request_contact' => true, 'callback_data' => '/request_contact']),
+//        $reply_markup = Keyboard::make()
+//            ->setResizeKeyboard(true)
+//            ->setOneTimeKeyboard(true)
+//            ->inline()
+//            ->row([
+//                Keyboard::inlineButton(['text' => 'به اشتراک گذاری شماره تلفن همراه', 'request_contact' => true, 'callback_data' => '/request_contact']),
+//
+//            ]);
 
-            ]);
 
-
-        $messageSend = $telegram->sendMessage([
-
-            'chat_id' => '6259458432',
-            'text' => 'با سلام خدمت شما دوست عزیز. از طریق این بات می توانید سفارش خود را به سادگی ثبت کنید. برای بازگشت بین مراحل از دستور /back کنید. اگر آماده هستید با فشردن دکمه اشتراگ گذاری شماره همراه ادامه دهید.',
-            'reply_markup' => $reply_markup
-
-        ]);
+//        $messageSend = $telegram->sendMessage([
+//
+//            'chat_id' => '6259458432',
+//            'text' => 'با سلام خدمت شما دوست عزیز. از طریق این بات می توانید سفارش خود را به سادگی ثبت کنید. برای بازگشت بین مراحل از دستور /back کنید. اگر آماده هستید با فشردن دکمه اشتراگ گذاری شماره همراه ادامه دهید.',
+//            'reply_markup' => $reply_markup
+//
+//        ]);
 //        $messageSend = [];
 //        if (array_key_exists(0, $telegram->getUpdates())) {
 //
@@ -49,6 +50,13 @@ class TestController extends Controller
 //                'reply_markup' => $reply_markup
 //            ]);
 //        }
+//        return \Storage::url('docments/test.pdf','test.pdf');
+//        return asset('docments/test.pdf');
+        $messageSend= $telegram->sendDocument([
+            'chat_id' => '6259458432',
+            'document' =>InputFile::create(asset('docments/test2.pdf'),'test2.pdf') ,
+            'caption' => 'test',
+        ]);
         return $messageSend;
     }
 

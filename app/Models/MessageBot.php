@@ -563,6 +563,18 @@ class MessageBot extends Model
         (new TelegramServiceController())->send($data);
     }
 
+    public function sendDocument($file, $caption = '')
+    {
+
+        $data = [
+            'chat_id' => $this->chatBot->chat_id,
+            'document' => $file,
+            'caption' => $caption,
+        ];
+
+
+        (new TelegramServiceController())->sendDocument($data);
+    }
 
     /**
      * Define an inverse one-to-one or many relationship to ChatBot.

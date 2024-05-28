@@ -23,4 +23,9 @@ class Telegram implements TelegramBot
     {
         $this->bot->sendMessage($data);
     }
+
+    public function sendDocument($data)
+    {
+        $this->bot->sendDocument($data);
+    }
 }
