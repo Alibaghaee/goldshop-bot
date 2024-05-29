@@ -99,17 +99,19 @@ class UserRepoController extends MessageBotRepoController
     }
 
 
-    public function endSetupAbshodeTrade()
+    public function endSetupAbshodeTrade(): void
     {
         if ((int)$this->message->session_total_invoice !== (int)$this->message->getTotalAbshode($this->message->session_type)) {
             $this->chatSessionClear();
-            return $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$START_TRADE]);
+            $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$START_TRADE]);
+            return;
         }
         $this->chatSessionClear();
-        return $this->message->sendAloneText("معاملات شما با موفقیت انجام شد. از حسن اعتماد شما متشکریم. منتظر تماس پشتیبانی باشید.");
+        $this->message->sendAloneText("معاملات شما با موفقیت انجام شد. از حسن اعتماد شما متشکریم. منتظر تماس پشتیبانی باشید.");
+        return;
     }
 
-    public function setupAbshodeTrade()
+    public function setupAbshodeTrade(): void
     {
         if (is_null($this->message->session_price)) {
 
@@ -119,7 +121,8 @@ class UserRepoController extends MessageBotRepoController
             $this->message->setRouteAction(self::$REQUIRE_TRADE_ABSHODE_PRICE);
 
             $text = "لطفا مبلغ مورد نظر را وارد نمایید\n👇👇👇";
-            return $this->message->sendAloneText($text, true);
+            $this->message->sendAloneText($text, true);
+            return;
         }
         if (is_null($this->message->session_weight)) {
 
@@ -128,7 +131,8 @@ class UserRepoController extends MessageBotRepoController
             $this->message->setRouteAction(self::$REQUIRE_TRADE_ABSHODE_WEIGHT);
 
             $text = "لطفا وزن مورد نظر را وارد نمایید\n👇👇👇";
-            return $this->message->sendAloneText($text, true);
+            $this->message->sendAloneText($text, true);
+            return;
         }
         $this->message->setRouteAction(self::$SETUP_ABSHODE_TRADE);
 
@@ -144,7 +148,7 @@ class UserRepoController extends MessageBotRepoController
 
     }
 
-    public function receiveRequireTradeAbshode()
+    public function receiveRequireTradeAbshode(): void
     {
 
         $this->message->setRouteAction(self::$RECEIVE_REQUIRE_TRADE_ABSHODE);
@@ -164,7 +168,7 @@ class UserRepoController extends MessageBotRepoController
     }
 
 
-    public function setRequireTradeAbshode()
+    public function setRequireTradeAbshode(): void
     {
 
 
@@ -182,7 +186,7 @@ class UserRepoController extends MessageBotRepoController
     }
 
 
-    public function needPhone()
+    public function needPhone(): void
     {
         $this->message->setRouteAction(self::$NEED_PHONE);
 
@@ -196,7 +200,7 @@ class UserRepoController extends MessageBotRepoController
 
     }
 
-    public function needUserCheck()
+    public function needUserCheck(): void
     {
         $this->message->setRouteAction(self::$NEED_USER_CHECK);
 
@@ -206,13 +210,13 @@ class UserRepoController extends MessageBotRepoController
             true);
     }
 
-    public function lockConversation()
+    public function lockConversation(): void
     {
         $this->message->sendAloneText('همکار گرامی زمان معامله به پایان رسیده لطفا با شماره 09381807373 تماس حاصل نمایید');
 
     }
 
-    public function receiveName()
+    public function receiveName(): void
     {
         $this->message->chatBot?->user->tryActiveMobile();
         $this->message->sendAloneText("با تشکر بابت اطلاعات ثبت شده. مشخصات شما برای ادمین ارسال شد. منتظر تماس پشتیبانی بمانید", true);
@@ -220,7 +224,7 @@ class UserRepoController extends MessageBotRepoController
 
     }
 
-    public function receiveTradeCoinAmount()
+    public function receiveTradeCoinAmount(): void
     {
 
         $text = (int)to_english_numbers($this->message->text);
@@ -228,7 +232,8 @@ class UserRepoController extends MessageBotRepoController
 
         if ($text === 0) {
 
-            return $this->message->sendAloneText("تعداد وارده معتبر نیست. لطفا دوباره تلاش کنید ...", true);
+            $this->message->sendAloneText("تعداد وارده معتبر نیست. لطفا دوباره تلاش کنید ...", true);
+            return;
         }
 
         $this->message->setRouteAction(self::$RECIVE_COIN_AMOUNT);
@@ -237,11 +242,12 @@ class UserRepoController extends MessageBotRepoController
 
             $this->message->setCoinAmount($text);
 
-            return $this->setupCoinTrade();
+            $this->setupCoinTrade();
+            return;
         }
     }
 
-    public function setupCoinTrade()
+    public function setupCoinTrade(): void
     {
         $this->message->setRouteAction(self::$SETUP_COIN_TRADE);
 
@@ -258,20 +264,21 @@ class UserRepoController extends MessageBotRepoController
 
     }
 
-    public function endSetupCoinTrade()
+    public function endSetupCoinTrade(): void
     {
 
         if ((int)$this->message->session_total_invoice !== (int)$this->message->getTotalCoinPrice($this->message->session_type)) {
             $this->chatSessionClear();
-            return $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$START_TRADE]);
+            $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$START_TRADE]);
+            return;
         }
         $this->chatSessionClear();
-        return $this->message->sendAloneText("معاملات شما با موفقیت انجام شد. از حسن اعتماد شما متشکریم. منتظر تماس پشتیبانی باشید.");
-
+        $this->message->sendAloneText("معاملات شما با موفقیت انجام شد. از حسن اعتماد شما متشکریم. منتظر تماس پشتیبانی باشید.");
+        return;
     }
 
 
-    public function receivePhone()
+    public function receivePhone(): void
     {
         $this->message->setRouteAction(self::$RECIVE_PHONE);
 
@@ -285,24 +292,24 @@ class UserRepoController extends MessageBotRepoController
         $this->startBot();
     }
 
-    public function setTradeItem()
+    public function setTradeItem(): void
     {
 
         $this->message->setItem(trim($this->message->callback_query_text));
 
-        return $this->tradeType();
+        $this->tradeType();
     }
 
-    public function setTradeType()
+    public function setTradeType(): void
     {
 
         $this->message->setType(trim($this->message->callback_query_text));
 
-        return $this->tradeAmount();
+        $this->tradeAmount();
     }
 
 
-    public function startBot()
+    public function startBot(): void
     {
         $this->message->setRouteAction(self::$START_ACTION);
         $this->message->setStartBot(true);
@@ -313,21 +320,22 @@ class UserRepoController extends MessageBotRepoController
 
     }
 
-    public function startTrade()
+    public function startTrade(): void
     {
         $this->message->setRouteAction(self::$START_TRADE_ACTION);
 
 
         if (!$this->message->has_user) {
 
-            return $this->needPhone();
-
+            $this->needPhone();
+            return;
         }
 
         if (!$this->message->valid_user) {
 
 
-            return $this->needUserCheck();
+            $this->needUserCheck();
+            return;
         }
 
         $this->message->setStartTrade(true);
@@ -337,14 +345,14 @@ class UserRepoController extends MessageBotRepoController
         $this->message->sendTextWithInlineBtn('لطفا نوع معامله را مشخص کنید', ["آبشده" => self::$ABSHODE, 'سکه' => self::$COIN], true);
     }
 
-    public function tradeType()
+    public function tradeType(): void
     {
         $this->message->setRouteAction(self::$SET_TRADE_TYPE);
 
         $this->message->sendTextWithInlineBtn('لطفا نحوه مبادله را مشخص کنید', ["فروش به ما" => self::$SELL, "خرید از ما" => self::$BUY], true);
     }
 
-    public function tradeAmount()
+    public function tradeAmount(): void
     {
         $this->message->setRouteAction(self::$SET_TRADE_AMOUNT);
 
