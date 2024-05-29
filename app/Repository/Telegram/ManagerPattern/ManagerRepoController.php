@@ -171,7 +171,7 @@ class ManagerRepoController extends MessageBotRepoController
         ];
         $this->message->sendTextWithInlineBtn("لطفا عملیات مورد نظر را انتخاب کنید", $btns, false, true);
 
-
+        $this->message->sendBtn([self::$START]);
     }
 
     public function changeLockTime()
