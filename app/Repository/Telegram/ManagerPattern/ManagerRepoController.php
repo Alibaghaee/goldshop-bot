@@ -411,7 +411,7 @@ class ManagerRepoController extends MessageBotRepoController
     {
         $this->message->setRouteAction(self::$RECEIVE_BALANCE);
 
-        $this->validUnsignedFloatAndInt(to_english_numbers($this->message->text));
+        $this->validUnsignedFloatAndInt($this->message->text);
 
         $setting = $this->settingBot();
 
@@ -493,7 +493,7 @@ class ManagerRepoController extends MessageBotRepoController
     {
         $this->message->setRouteAction(self::$RECEIVE_ORDER_PRICE);
 
-        $this->validUnsignedFloatAndInt(to_english_numbers($this->message->callback_query_text));
+        $this->validUnsignedFloatAndInt($this->message->callback_query_text);
         $this->message->setPriceManualOrder((float)to_english_numbers($this->message->callback_query_text));
 
         $btns = ["فروش به ما" => self::$SELL_US_ORDER, "خرید از ما" => self::$BUY_FROM_US_ORDER];
@@ -554,7 +554,7 @@ class ManagerRepoController extends MessageBotRepoController
     public function receiveRequireOrderAbshode()
     {
         $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$RECEIVE_REQUIRE_TRADE_ABSHODE);
-        $this->validUnsignedFloatAndInt(to_english_numbers($this->message->callback_query_text));
+        $this->validUnsignedFloatAndInt($this->message->callback_query_text);
         if ($this->message->last_action === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_WEIGHT) {
 
             $this->message->setAbshodeWeightManualOrder((float)to_english_numbers($this->message->callback_query_text));
@@ -619,7 +619,7 @@ class ManagerRepoController extends MessageBotRepoController
 
     public function receiveManualOrderCoinAmount()
     {
-        $this->validUnsignedFloatAndInt(to_english_numbers($this->message->text));
+        $this->validUnsignedFloatAndInt($this->message->text);
         $text = (int)to_english_numbers($this->message->text);
         if ($text === 0) {
 
@@ -741,7 +741,7 @@ class ManagerRepoController extends MessageBotRepoController
 
     public function validUnsignedFloatAndInt($value)
     {
-        if (!self::hasUnsignedFloatAndInt($value)) {
+        if (!self::hasUnsignedFloatAndInt(to_english_numbers($value)) || is_null($value)) {
 
             $this->message->sendAloneText('فرمت ورودی اشتباه است!!!');
 
