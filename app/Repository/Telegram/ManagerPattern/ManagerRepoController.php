@@ -108,26 +108,43 @@ class ManagerRepoController extends MessageBotRepoController
 
                     $this->startBot();
                 } elseif ($message->last_action === self::$CHANGE_START_LOCK) {
+
                     $this->receiveStartLockTime();
                 } elseif ($message->last_action === self::$CHANGE_STOP_LOCK) {
+
                     $this->receiveStopLockTime();
                 } elseif ($message->last_action === self::$ADD_USER) {
+
                     $this->receiveUserMobile();
                 } elseif ($message->last_action === self::$ADD_USER_MOBILE) {
+
                     $this->receiveUserName();
                 } elseif ($message->last_action === self::$SET_MARGIN) {
+
                     $this->receiveMargin();
                 } elseif ($message->last_action === self::$SET_BALANCE) {
-                    $this->receiveBalance();
+                    if ($this->validUnsignedFloatAndInt($this->message->text)) {
+
+                        $this->receiveBalance();
+                    }
                 } elseif ($message->last_action === self::$START_MANUAL_ORDER) {
+
                     $this->receiveManualOrderUser();
                 } elseif ($message->last_action === self::$RECEIVE_ORDER_ITEM) {
-                    $this->receivePriceAndSelectOrderType();
-                } elseif ($message->last_action === self::$RECEIVE_ORDER_TYPE) {
-                    $this->receiveManualOrderCoinAmount();
-                } elseif (($message->last_action === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_WEIGHT || $message->last_action === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_PRICE) && $message->session_item_manual_order === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$ABSHODE) {
+                    if ($this->validUnsignedFloatAndInt($this->message->text)) {
 
-                    $this->receiveRequireOrderAbshode();
+                        $this->receivePriceAndSelectOrderType();
+                    }
+                } elseif ($message->last_action === self::$RECEIVE_ORDER_TYPE) {
+                    if ($this->validUnsignedFloatAndInt($this->message->text)) {
+
+                        $this->receiveManualOrderCoinAmount();
+                    }
+                } elseif (($message->last_action === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_WEIGHT || $message->last_action === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_PRICE) && $message->session_item_manual_order === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$ABSHODE) {
+                    if ($this->validUnsignedFloatAndInt($this->message->text)) {
+
+                        $this->receiveRequireOrderAbshode();
+                    }
                 }
             }
 
@@ -411,7 +428,6 @@ class ManagerRepoController extends MessageBotRepoController
     {
         $this->message->setRouteAction(self::$RECEIVE_BALANCE);
 
-        $this->validUnsignedFloatAndInt($this->message->text);
 
         $setting = $this->settingBot();
 
@@ -493,7 +509,7 @@ class ManagerRepoController extends MessageBotRepoController
     {
         $this->message->setRouteAction(self::$RECEIVE_ORDER_PRICE);
 
-        $this->validUnsignedFloatAndInt($this->message->text);
+
         $this->message->setPriceManualOrder((float)to_english_numbers($this->message->text));
 
         $btns = ["فروش به ما" => self::$SELL_US_ORDER, "خرید از ما" => self::$BUY_FROM_US_ORDER];
@@ -554,13 +570,13 @@ class ManagerRepoController extends MessageBotRepoController
     public function receiveRequireOrderAbshode()
     {
         $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$RECEIVE_REQUIRE_TRADE_ABSHODE);
-        $this->validUnsignedFloatAndInt($this->message->callback_query_text);
+
         if ($this->message->last_action === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_WEIGHT) {
 
-            $this->message->setAbshodeWeightManualOrder((float)to_english_numbers($this->message->callback_query_text));
+            $this->message->setAbshodeWeightManualOrder((float)to_english_numbers($this->message->text));
             $text = 'وزن مورد نظر با موفقیت دریافت شد';
         } else {
-            $this->message->setAbshodePriceManualOrder((float)to_english_numbers($this->message->callback_query_text));
+            $this->message->setAbshodePriceManualOrder((float)to_english_numbers($this->message->text));
             $text = 'مبلغ مورد نظر با موفقیت دریافت شد';
         }
         $this->message->sendAloneText($text);
@@ -619,7 +635,7 @@ class ManagerRepoController extends MessageBotRepoController
 
     public function receiveManualOrderCoinAmount()
     {
-        $this->validUnsignedFloatAndInt($this->message->text);
+
         $text = (int)to_english_numbers($this->message->text);
         if ($text === 0) {
 
@@ -739,14 +755,16 @@ class ManagerRepoController extends MessageBotRepoController
     }
 
 
-    public function validUnsignedFloatAndInt($value)
+    public function validUnsignedFloatAndInt($value): bool
     {
 
         if (is_null($value) || !self::hasUnsignedFloatAndInt(to_english_numbers($value))) {
 
             $this->message->sendAloneText('فرمت ورودی اشتباه است!!!');
 
-            return $this->redirectBack();
+            $this->redirectBack();
+            return false;
         }
+        return true;
     }
 }
