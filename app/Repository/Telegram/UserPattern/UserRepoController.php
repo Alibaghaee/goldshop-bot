@@ -324,7 +324,8 @@ class UserRepoController extends MessageBotRepoController
     {
         $this->message->setRouteAction(self::$START_TRADE_ACTION);
 
-
+        $this->message->sendTextWithBtn('شروع',[self::$START]);
+        
         if (!$this->message->has_user) {
 
             $this->needPhone();
