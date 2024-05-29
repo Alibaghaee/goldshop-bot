@@ -493,8 +493,8 @@ class ManagerRepoController extends MessageBotRepoController
     {
         $this->message->setRouteAction(self::$RECEIVE_ORDER_PRICE);
 
-        $this->validUnsignedFloatAndInt($this->message->callback_query_text);
-        $this->message->setPriceManualOrder((float)to_english_numbers($this->message->callback_query_text));
+        $this->validUnsignedFloatAndInt($this->message->text);
+        $this->message->setPriceManualOrder((float)to_english_numbers($this->message->text));
 
         $btns = ["فروش به ما" => self::$SELL_US_ORDER, "خرید از ما" => self::$BUY_FROM_US_ORDER];
 
