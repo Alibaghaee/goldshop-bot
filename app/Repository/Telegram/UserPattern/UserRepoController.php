@@ -72,11 +72,15 @@ class UserRepoController extends MessageBotRepoController
                 } elseif ($message->last_action === self::$NEED_USER_CHECK) {
                     $this->receiveName();
                 } elseif ($message->last_action === self::$SET_TRADE_AMOUNT && $message->session_item === self::$COIN) {
+                    if ($this->validUnsignedFloatAndInt($this->message->text)) {
 
-                    $this->receiveTradeCoinAmount();
+                        $this->receiveTradeCoinAmount();
+                    }
                 } elseif (($message->last_action === self::$REQUIRE_TRADE_ABSHODE_WEIGHT || $message->last_action === self::$REQUIRE_TRADE_ABSHODE_PRICE) && $message->session_item === self::$ABSHODE) {
+                    if ($this->validUnsignedFloatAndInt($this->message->text)) {
 
-                    $this->receiveRequireTradeAbshode();
+                        $this->receiveRequireTradeAbshode();
+                    }
                 }
             }
 
@@ -144,14 +148,14 @@ class UserRepoController extends MessageBotRepoController
     {
 
         $this->message->setRouteAction(self::$RECEIVE_REQUIRE_TRADE_ABSHODE);
-        $incomText = to_english_numbers($this->message->callback_query_text);
-        $this->validUnsignedFloatAndInt($incomText);
+
+
         if ($this->message->last_action === self::$REQUIRE_TRADE_ABSHODE_WEIGHT) {
 
-            $this->message->setWeight($incomText);
+            $this->message->setWeight(to_english_numbers($this->message->text));
             $text = 'وزن مورد نظر با موفقیت دریافت شد';
         } else {
-            $this->message->setPrice($incomText);
+            $this->message->setPrice(to_english_numbers($this->message->text));
             $text = 'مبلغ مورد نظر با موفقیت دریافت شد';
         }
         $this->message->sendAloneText($text);
@@ -221,7 +225,7 @@ class UserRepoController extends MessageBotRepoController
 
         $text = (int)to_english_numbers($this->message->text);
 
-        $this->validUnsignedFloatAndInt($text);
+
         if ($text === 0) {
 
             return $this->message->sendAloneText("تعداد وارده معتبر نیست. لطفا دوباره تلاش کنید ...", true);
@@ -404,13 +408,16 @@ class UserRepoController extends MessageBotRepoController
         return $action;
     }
 
-    public function validUnsignedFloatAndInt($value)
+    public function validUnsignedFloatAndInt($value): bool
     {
-        if (!self::hasUnsignedFloatAndInt($value)) {
+
+        if (is_null($value) || !self::hasUnsignedFloatAndInt(to_english_numbers($value))) {
 
             $this->message->sendAloneText('فرمت ورودی اشتباه است!!!');
 
-            return $this->redirectBack();
+            $this->redirectBack();
+            return false;
         }
+        return true;
     }
 }

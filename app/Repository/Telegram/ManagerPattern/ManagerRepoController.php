@@ -584,7 +584,7 @@ class ManagerRepoController extends MessageBotRepoController
         $this->setupAbshodeOrder();
     }
 
-    public function setupAbshodeOrder()
+    public function setupAbshodeOrder(): void
     {
         if (is_null($this->message->session_abshode_price_manual_order)) {
 
@@ -594,7 +594,8 @@ class ManagerRepoController extends MessageBotRepoController
             $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_PRICE);
 
             $text = "لطفا مبلغ مورد نظر را وارد نمایید\n👇👇👇";
-            return $this->message->sendAloneText($text, true);
+            $this->message->sendAloneText($text, true);
+            return;
         }
         if (is_null($this->message->session_abshode_weight_manual_order)) {
 
@@ -603,7 +604,10 @@ class ManagerRepoController extends MessageBotRepoController
             $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_WEIGHT);
 
             $text = "لطفا وزن مورد نظر را وارد نمایید\n👇👇👇";
-            return $this->message->sendAloneText($text, true);
+
+
+            $this->message->sendAloneText($text, true);
+            return;
         }
         $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$SETUP_ABSHODE_TRADE);
 
@@ -621,14 +625,16 @@ class ManagerRepoController extends MessageBotRepoController
         $this->message->sendTextWithInlineBtn($text, ["بله تایید میکنم" => self::$MANUAL_ORDER_SUBMISSION . '_' . self::$CONFIRM], true);
     }
 
-    public function endSetupAbshodeOrder()
+    public function endSetupAbshodeOrder(): void
     {
         if ((float)$this->message->session_total_invoice_manual_order !== (float)$this->message->getTotalAbshode($this->message->session_type_manual_order)) {
             $this->chatSessionClear();
-            return $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$MANUAL_ORDER_SUBMISSION]);
+            $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$MANUAL_ORDER_SUBMISSION]);
+            return;
         }
         $this->chatSessionClear();
-        return $this->message->sendAloneText("معاملات شما با موفقیت انجام شد.");
+        $this->message->sendAloneText("معاملات شما با موفقیت انجام شد.");
+        return;
     }
 
     /////
@@ -648,7 +654,8 @@ class ManagerRepoController extends MessageBotRepoController
 
             $this->message->setCoinAmountManualOrder($text);
 
-            return $this->setupCoinManualOrder();
+            $this->setupCoinManualOrder();
+            return;
         }
     }
 
@@ -670,15 +677,17 @@ class ManagerRepoController extends MessageBotRepoController
         $this->message->sendTextWithInlineBtn($text, ["بله تایید میکنم" => self::$MANUAL_ORDER_SUBMISSION . '_' . self::$CONFIRM], true);
     }
 
-    public function endSetupCoinManualOrder()
+    public function endSetupCoinManualOrder(): void
     {
 
         if ((float)$this->message->session_total_invoice_manual_order !== (float)$this->message->getTotalCoinPrice($this->message->session_type_manual_order)) {
             $this->chatSessionClear();
-            return $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$MANUAL_ORDER_SUBMISSION]);
+            $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$MANUAL_ORDER_SUBMISSION]);
+            return;
         }
         $this->chatSessionClear();
-        return $this->message->sendAloneText("معاملات شما با موفقیت انجام شد.");
+        $this->message->sendAloneText("معاملات شما با موفقیت انجام شد.");
+        return;
     }
 
 ///////////
@@ -767,4 +776,6 @@ class ManagerRepoController extends MessageBotRepoController
         }
         return true;
     }
+
+
 }
