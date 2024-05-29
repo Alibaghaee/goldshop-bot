@@ -741,7 +741,8 @@ class ManagerRepoController extends MessageBotRepoController
 
     public function validUnsignedFloatAndInt($value)
     {
-        if (!self::hasUnsignedFloatAndInt(to_english_numbers($value)) || is_null($value)) {
+
+        if (is_null($value) || !self::hasUnsignedFloatAndInt(to_english_numbers($value))) {
 
             $this->message->sendAloneText('فرمت ورودی اشتباه است!!!');
 
