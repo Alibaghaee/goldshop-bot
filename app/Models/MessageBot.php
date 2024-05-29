@@ -577,26 +577,7 @@ class MessageBot extends Model
         (new TelegramServiceController())->sendDocument($data);
     }
 
-    public function sendBtn($btns)
-    {
-        $list = [];
-        foreach ($btns as $btn) {
 
-            $list[] = Keyboard::button(['text' => $btn, 'request_contact' => false]);
-        }
-        $reply_markup = Keyboard::make()
-            ->setResizeKeyboard(true)
-            ->setOneTimeKeyboard(false)
-            ->row($list);
-
-        $data = [
-            'chat_id' => $this->chatBot->chat_id,
-            'text' => null,
-            'reply_markup' => $reply_markup
-        ];
-
-        (new TelegramServiceController())->send($data);
-    }
 
     /**
      * Define an inverse one-to-one or many relationship to ChatBot.

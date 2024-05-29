@@ -160,6 +160,8 @@ class ManagerRepoController extends MessageBotRepoController
         $this->message->setRouteAction(self::$START_ACTION);
         $this->message->setStartBot(true);
 
+        $this->message->sendTextWithBtn('شروع',[self::$START]);
+
         $btns = [
             'تغییر زمان قفل' => self::$CHANGE_LOCK,
             'اضافه کردن کاربر' => self::$ADD_USER,
@@ -171,7 +173,7 @@ class ManagerRepoController extends MessageBotRepoController
         ];
         $this->message->sendTextWithInlineBtn("لطفا عملیات مورد نظر را انتخاب کنید", $btns, false, true);
 
-        $this->message->sendBtn([self::$START]);
+
     }
 
     public function changeLockTime()
