@@ -140,5 +140,10 @@ abstract class MessageBotRepoController
     }
 
 
+    public static function hasUnsignedFloatAndInt($value)
+    {
+        return preg_match("/^[0-9]{1,100}(\.[0-9]{1,10})?$/", trim($value));
+    }
+
 
 }

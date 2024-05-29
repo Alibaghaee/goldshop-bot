@@ -9,7 +9,6 @@ class UserRepoController extends MessageBotRepoController
 {
 
 
-
     public function __construct(MessageBot $message)
     {
         parent::__construct($message);
@@ -96,8 +95,6 @@ class UserRepoController extends MessageBotRepoController
     }
 
 
-
-
     public function endSetupAbshodeTrade()
     {
         if ((int)$this->message->session_total_invoice !== (int)$this->message->getTotalAbshode($this->message->session_type)) {
@@ -147,13 +144,14 @@ class UserRepoController extends MessageBotRepoController
     {
 
         $this->message->setRouteAction(self::$RECEIVE_REQUIRE_TRADE_ABSHODE);
-
+        $incomText = to_english_numbers($this->message->callback_query_text);
+        $this->validUnsignedFloatAndInt($incomText);
         if ($this->message->last_action === self::$REQUIRE_TRADE_ABSHODE_WEIGHT) {
 
-            $this->message->setWeight(trim($this->message->callback_query_text));
+            $this->message->setWeight($incomText);
             $text = 'وزن مورد نظر با موفقیت دریافت شد';
         } else {
-            $this->message->setPrice(trim($this->message->callback_query_text));
+            $this->message->setPrice($incomText);
             $text = 'مبلغ مورد نظر با موفقیت دریافت شد';
         }
         $this->message->sendAloneText($text);
@@ -222,6 +220,8 @@ class UserRepoController extends MessageBotRepoController
     {
 
         $text = (int)to_english_numbers($this->message->text);
+
+        $this->validUnsignedFloatAndInt($text);
         if ($text === 0) {
 
             return $this->message->sendAloneText("تعداد وارده معتبر نیست. لطفا دوباره تلاش کنید ...", true);
@@ -404,4 +404,13 @@ class UserRepoController extends MessageBotRepoController
         return $action;
     }
 
+    public function validUnsignedFloatAndInt($value)
+    {
+        if (!self::hasUnsignedFloatAndInt($value)) {
+
+            $this->message->sendAloneText('فرمت ورودی اشتباه است!!!');
+
+            return $this->redirectBack();
+        }
+    }
 }

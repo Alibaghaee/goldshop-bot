@@ -8,6 +8,7 @@ use App\Service\TellBot\TelegramServiceController;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Telegram\Bot\FileUpload\InputFile;
 use Telegram\Bot\Keyboard\Keyboard;
 
 class MessageBot extends Model
@@ -568,7 +569,7 @@ class MessageBot extends Model
 
         $data = [
             'chat_id' => $this->chatBot->chat_id,
-            'document' => $file,
+            'document' => InputFile::create(asset($file), 'test2.pdf'),
             'caption' => $caption,
         ];
 
