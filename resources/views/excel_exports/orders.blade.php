@@ -70,7 +70,7 @@
             <strong>تعداد </strong>
         </td>
         <td style="background-color: #dae1e7; height: 40px; vertical-align: center; text-align: center;">
-            <strong>{{ $orders->count() }}</strong>
+            <strong>{{ $orders?->count() }}</strong>
         </td>
     </tr>
 

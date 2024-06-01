@@ -715,7 +715,7 @@ class ManagerRepoController extends MessageBotRepoController
         $name = 'ReportOrders__' . now_fa() . '__.xlsx';
         $path = 'documents/' . $name;
 
-        (new OrdersExport($orders))->store($path);
+        (new OrdersExport($orders))->store($path,'public');
 
         $path = '/storage/' . $path;
 
