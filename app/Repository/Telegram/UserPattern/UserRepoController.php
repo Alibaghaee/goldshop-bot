@@ -106,6 +106,7 @@ class UserRepoController extends MessageBotRepoController
             $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$START_TRADE]);
             return;
         }
+        $this->submitOrder();
         $this->chatSessionClear();
         $this->message->sendAloneText("معاملات شما با موفقیت انجام شد. از حسن اعتماد شما متشکریم. منتظر تماس پشتیبانی باشید.");
         return;
@@ -272,6 +273,7 @@ class UserRepoController extends MessageBotRepoController
             $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$START_TRADE]);
             return;
         }
+        $this->submitOrder();
         $this->chatSessionClear();
         $this->message->sendAloneText("معاملات شما با موفقیت انجام شد. از حسن اعتماد شما متشکریم. منتظر تماس پشتیبانی باشید.");
         return;
@@ -324,8 +326,8 @@ class UserRepoController extends MessageBotRepoController
     {
         $this->message->setRouteAction(self::$START_TRADE_ACTION);
 
-        $this->message->sendTextWithBtn('شروع',[self::$START]);
-        
+        $this->message->sendTextWithBtn('شروع', [self::$START]);
+
         if (!$this->message->has_user) {
 
             $this->needPhone();
@@ -428,5 +430,19 @@ class UserRepoController extends MessageBotRepoController
             return false;
         }
         return true;
+    }
+
+    private function submitOrder()
+    {
+
+        $data = [];
+        $data['user_id'] = $this->message->chatBot?->user->id;
+        $data['type'] = $this->message->session_type;
+        $data['item'] = $this->message->session_item;
+        $data['price'] = $this->message->session_price;
+        $data['weight'] = $this->message->session_weight;
+        $data['count'] = $this->message->session_coin_amount;
+
+        self::createOrder($data);
     }
 }

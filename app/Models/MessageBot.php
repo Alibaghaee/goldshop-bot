@@ -564,19 +564,18 @@ class MessageBot extends Model
         (new TelegramServiceController())->send($data);
     }
 
-    public function sendDocument($file, $caption = '')
+    public function sendDocument($file, $caption = '', $fileName = '')
     {
 
         $data = [
             'chat_id' => $this->chatBot->chat_id,
-            'document' => InputFile::create(asset($file), 'test2.pdf'),
+            'document' => InputFile::create(asset($file), $fileName),
             'caption' => $caption,
         ];
 
 
         (new TelegramServiceController())->sendDocument($data);
     }
-
 
 
     /**

@@ -2,7 +2,9 @@
 
 namespace App\Repository\Telegram\ManagerPattern;
 
+use App\Exports\OrdersExport;
 use App\Models\MessageBot;
+use App\Models\OrderBot;
 use App\Models\SettingBot;
 use App\Models\User;
 use App\Repository\Telegram\MessageBotRepoController;
@@ -102,6 +104,11 @@ class ManagerRepoController extends MessageBotRepoController
                     $this->setRequireOrderAbshode();
                 }
 
+                if (trim($message->callback_query_text) === self::$REPORT) {
+
+                    $this->reportOrders();
+                }
+
             } else {
 
                 if (trim($message->text) === self::$START) {
@@ -160,7 +167,7 @@ class ManagerRepoController extends MessageBotRepoController
         $this->message->setRouteAction(self::$START_ACTION);
         $this->message->setStartBot(true);
 
-        $this->message->sendTextWithBtn('شروع',[self::$START]);
+        $this->message->sendTextWithBtn('شروع', [self::$START]);
 
         $btns = [
             'تغییر زمان قفل' => self::$CHANGE_LOCK,
@@ -241,8 +248,8 @@ class ManagerRepoController extends MessageBotRepoController
     {
         $text = explode(':', $this->message->text);
         if (array_key_exists(1, $text)) {
-            $text[0] = (int)to_english_numbers($text[0]);
-            $text[1] = (int)to_english_numbers($text[1]);
+            $text[0] = to_english_numbers($text[0]);
+            $text[1] = to_english_numbers($text[1]);
 
             $text = implode(':', $text);
 
@@ -636,6 +643,7 @@ class ManagerRepoController extends MessageBotRepoController
             $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$MANUAL_ORDER_SUBMISSION]);
             return;
         }
+        $this->submitOrder();
         $this->chatSessionClear();
         $this->message->sendAloneText("معاملات شما با موفقیت انجام شد.");
         return;
@@ -643,13 +651,14 @@ class ManagerRepoController extends MessageBotRepoController
 
     /////
 
-    public function receiveManualOrderCoinAmount()
+    public function receiveManualOrderCoinAmount(): void
     {
 
         $text = (int)to_english_numbers($this->message->text);
         if ($text === 0) {
 
-            return $this->message->sendAloneText("تعداد وارده معتبر نیست. لطفا دوباره تلاش کنید ...", true);
+            $this->message->sendAloneText("تعداد وارده معتبر نیست. لطفا دوباره تلاش کنید ...", true);
+            return;
         }
 
         $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$RECIVE_COIN_AMOUNT);
@@ -689,6 +698,7 @@ class ManagerRepoController extends MessageBotRepoController
             $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$MANUAL_ORDER_SUBMISSION]);
             return;
         }
+        $this->submitOrder();
         $this->chatSessionClear();
         $this->message->sendAloneText("معاملات شما با موفقیت انجام شد.");
         return;
@@ -697,6 +707,22 @@ class ManagerRepoController extends MessageBotRepoController
 ///////////
 
 
+    public function reportOrders()
+    {
+        $this->message->setRouteAction(self::$REPORT);
+
+        $orders = OrderBot::with('user')->orderByDesc('created_at')->get();
+        $name = 'ReportOrders__' . now_fa() . '__.xlsx';
+        $path = 'documents/' . $name;
+
+        (new OrdersExport($orders))->store($path);
+
+        $path = '/storage/' . $path;
+
+        $this->message->sendDocument($path, now_fa(), $name);
+    }
+
+////////
     public function redirectBack()
     {
 
@@ -781,5 +807,17 @@ class ManagerRepoController extends MessageBotRepoController
         return true;
     }
 
+    private function submitOrder()
+    {
 
+        $data = [];
+        $data['user_id'] = $this->message->session_user_id_manual_order;
+        $data['type'] = $this->message->session_type_manual_order;
+        $data['item'] = $this->message->session_item_manual_order;
+        $data['price'] = $this->message->session_abshode_price_manual_order;
+        $data['weight'] = $this->message->session_abshode_weight_manual_order;
+        $data['count'] = $this->message->session_coin_amount_manual_order;
+
+        self::createOrder($data);
+    }
 }

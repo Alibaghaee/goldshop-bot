@@ -3,6 +3,7 @@
 namespace App\Repository\Telegram;
 
 use App\Models\MessageBot;
+use App\Models\OrderBot;
 
 abstract class MessageBotRepoController
 {
@@ -145,5 +146,8 @@ abstract class MessageBotRepoController
         return preg_match("/^[0-9]{1,100}(\.[0-9]{1,10})?$/", trim($value));
     }
 
-
+    public static function createOrder(array $data)
+    {
+        return OrderBot::create($data);
+    }
 }
