@@ -121,6 +121,16 @@ abstract class MessageBotRepoController
 
     public static $BUY_FROM_US_ORDER = 'buy_from_us_order';
 
+    public static $CHANGE_COIN_PRICE = 'change_coin_price';
+
+    public static $CHANGE_ABSHODE_PRICE = 'change_abshode_price';
+
+    public static $CHANGE_PRICE = 'change_price';
+
+    public static $RECEIVE_PRICE = 'receive_price';
+
+    public static $CHANNEL_CHAT_ID = '6259458432';
+
     public function __construct(MessageBot $message)
     {
 

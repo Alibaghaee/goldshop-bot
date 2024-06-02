@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Repository\Telegram\ManagerPattern\ManagerRepoController;
+use App\Repository\Telegram\PriceManagerPattern\PriceManagerRepoController;
 use App\Repository\Telegram\UserPattern\UserRepoController;
 use App\Service\TellBot\TelegramServiceController;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -112,6 +113,9 @@ class MessageBot extends Model
             if ($message->is_manager) {
 
                 new ManagerRepoController($message);
+            } elseif ($message->is_price_manager) {
+
+                new PriceManagerRepoController($message);
             } else {
 
                 new UserRepoController($message);
@@ -122,6 +126,12 @@ class MessageBot extends Model
 
 
     public function getIsManagerAttribute()
+    {
+        $ids = [['id' => '6259458432']];
+        return collect($ids)->where('id', $this->chatBot?->chat_id)->isNotEmpty();
+    }
+
+    public function getIsPriceManagerAttribute()
     {
         $ids = [['id' => '6259458432']];
         return collect($ids)->where('id', $this->chatBot?->chat_id)->isNotEmpty();
@@ -557,6 +567,36 @@ class MessageBot extends Model
 
         $data = [
             'chat_id' => $this->chatBot->chat_id,
+            'text' => $text,
+            'reply_markup' => $reply_markup
+        ];
+
+        (new TelegramServiceController())->send($data);
+    }
+
+    public function sendCustomChatTextWithBtnUrl($chatId, $text, $btns, $rowList = false)
+    {
+        $list = [];
+        foreach ($btns as $key => $value) {
+
+            $list[] = Keyboard::inlineButton(['text' => $key, 'request_contact' => false, 'url' => $value]);
+        }
+        $reply_markup = Keyboard::make()
+            ->setResizeKeyboard(true)
+            ->setOneTimeKeyboard(true)
+            ->inline();
+
+        if ($rowList) {
+            foreach ($list as $item) {
+
+                $reply_markup->row([$item]);
+            }
+        } else {
+
+            $reply_markup->row($list);
+        }
+        $data = [
+            'chat_id' => $chatId,
             'text' => $text,
             'reply_markup' => $reply_markup
         ];

@@ -69,6 +69,102 @@ class SettingBot extends Model
         $this->save();
     }
 
+    public function setSellingAbshodeAttribute($value)
+    {
+        return $this->setAttribute('main->selling_abshode', $value);
+    }
+
+    public function getSellingAbshodeAttribute()
+    {
+        return is_array($this->main) ? (array_key_exists('selling_abshode', $this->main) ? $this->main['selling_abshode'] : null) : null;
+    }
+
+    public function setSellingAbshode(string $value)
+    {
+        $this->selling_abshode = $value;
+        $this->save();
+    }
+
+    public function setBuyingAbshodeAttribute($value)
+    {
+        return $this->setAttribute('main->buying_abshode', $value);
+    }
+
+    public function getBuyingAbshodeAttribute()
+    {
+        return is_array($this->main) ? (array_key_exists('buying_abshode', $this->main) ? $this->main['buying_abshode'] : null) : null;
+    }
+
+    public function setBuyingAbshode($value)
+    {
+        $this->buying_abshode = $value;
+        $this->save();
+    }
+
+    public function setSellingGramAttribute($value)
+    {
+        return $this->setAttribute('main->selling_gram', $value);
+    }
+
+    public function getSellingGramAttribute()
+    {
+        return is_array($this->main) ? (array_key_exists('selling_gram', $this->main) ? $this->main['selling_gram'] : null) : null;
+    }
+
+    public function setSellingGram($value)
+    {
+        $this->selling_gram = $value;
+        $this->save();
+    }
+
+    public function setBuyingGramAttribute($value)
+    {
+        return $this->setAttribute('main->buying_gram', $value);
+    }
+
+    public function getBuyingGramAttribute()
+    {
+        return is_array($this->main) ? (array_key_exists('buying_gram', $this->main) ? $this->main['buying_gram'] : null) : null;
+    }
+
+    public function setBuyingGram($value)
+    {
+        $this->buying_gram = $value;
+        $this->save();
+    }
+
+    public function setSellingCoinAttribute($value)
+    {
+        return $this->setAttribute('main->selling_coin', $value);
+    }
+
+    public function getSellingCoinAttribute()
+    {
+        return is_array($this->main) ? (array_key_exists('selling_coin', $this->main) ? $this->main['selling_coin'] : null) : null;
+    }
+
+    public function setSellingCoin($value)
+    {
+        $this->selling_coin = $value;
+        $this->save();
+    }
+
+    public function setBuyingCoinAttribute($value)
+    {
+        return $this->setAttribute('main->buying_coin', $value);
+    }
+
+    public function getBuyingCoinAttribute()
+    {
+        return is_array($this->main) ? (array_key_exists('buying_coin', $this->main) ? $this->main['buying_coin'] : null) : null;
+    }
+
+    public function setBuyingCoin($value)
+    {
+        $this->buying_coin = $value;
+        $this->save();
+    }
+
     public function setAbshodeMarginAttribute(string $value)
     {
         return $this->setAttribute('main->abshode_margin', $value);
