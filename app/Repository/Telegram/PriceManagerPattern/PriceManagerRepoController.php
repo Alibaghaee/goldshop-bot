@@ -66,9 +66,9 @@ class PriceManagerRepoController extends MessageBotRepoController
     {
         $this->message->setRouteAction(self::$START_ACTION);
         $this->message->setStartBot(true);
-
+        $this->message->sendTextWithBtn('شروع', [self::$START]);
         $btns = ['سکه' => self::$CHANGE_COIN_PRICE, 'آبشده' => self::$CHANGE_ABSHODE_PRICE, 'مارجین' => self::$CHANGE_MARGIN];
-        $this->message->sendTextWithInlineBtn("به ربات معامله گر خوش آمدید \n پس از آمادگی دکمه شروع معامله را انتخاب کنید. ", $btns, false, true);
+        $this->message->sendTextWithInlineBtn("به ربات معامله گر خوش آمدید \n گزینه مورد نظر خود را انتخاب کنید. ", $btns, false, true);
     }
 
 
@@ -136,10 +136,10 @@ class PriceManagerRepoController extends MessageBotRepoController
             $this->settingBot()->setSellingGram(number_format(round($roof / 4.3318, 3), 3));
             $this->settingBot()->setBuyingGram(number_format(round($base / 4.3318, 3), 3));
 
-            $text = "قیمت خرید آبشده:  " . to_english_numbers(number_format($base, 3)) . "  🔴\\n" .
-                "قیمت فروش آبشده:  " . to_english_numbers(number_format($roof, 3)) . " 🔵\\n" .
-                "قیمت خرید گرم:  " . to_english_numbers(number_format(round($base / 4.3318, 3), 3)) . "  🔴\\n" .
-                "قیمت فروش گرم:  " . to_english_numbers(number_format(round($roof / 4.3318, 3), 3)) . " 🔵\\n" . "@wwwabshodeir";
+            $text = "قیمت خرید آبشده:  " . to_english_numbers(number_format($base, 3)) . "  🔴\n" .
+                "قیمت فروش آبشده:  " . to_english_numbers(number_format($roof, 3)) . " 🔵\n" .
+                "قیمت خرید گرم:  " . to_english_numbers(number_format(round($base / 4.3318, 3), 3)) . "  🔴\n" .
+                "قیمت فروش گرم:  " . to_english_numbers(number_format(round($roof / 4.3318, 3), 3)) . " 🔵\n" . "@wwwabshodeir";
 
         } else {
             $base = ($number - ($this->settingBot()->coin_margin));
@@ -147,8 +147,8 @@ class PriceManagerRepoController extends MessageBotRepoController
             $this->settingBot()->setSellingCoin(number_format($roof, 3));
             $this->settingBot()->setBuyingCoin(number_format($base, 3));
 
-            $text = "خرید سکه امامی:  " . to_english_numbers(number_format($base, 3)) . "  🔴\\n" .
-                "فروش سکه امامی:  " . to_english_numbers(number_format($roof, 3)) . " 🔵\\n" . "@wwwabshodeir";
+            $text = "خرید سکه امامی:  " . to_english_numbers(number_format($base, 3)) . "  🔴\n" .
+                "فروش سکه امامی:  " . to_english_numbers(number_format($roof, 3)) . " 🔵\n" . "@wwwabshodeir";
         }
         $btns = ["ربات معاملات" => "t.me/abshodeirbot"];
 
