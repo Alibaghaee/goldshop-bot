@@ -218,6 +218,23 @@ class ChatSession extends Model
         $this->save();
     }
 
+  public function setFactorAttribute(string $value)
+    {
+        return $this->setAttribute('data->factor', $value);
+    }
+
+    public function getFactorAttribute()
+    {
+        return is_array($this->data) ? (array_key_exists('factor', $this->data) ? $this->data['factor'] : null) : null;
+    }
+
+
+    public function setFactor(string $value)
+    {
+        $this->factor = $value;
+        $this->save();
+    }
+
 
     public function setStartBotAttribute(bool $value)
     {

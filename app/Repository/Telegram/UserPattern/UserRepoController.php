@@ -3,6 +3,7 @@
 namespace App\Repository\Telegram\UserPattern;
 
 use App\Models\MessageBot;
+use App\Models\SettingBot;
 use App\Repository\Telegram\MessageBotRepoController;
 
 class UserRepoController extends MessageBotRepoController
@@ -137,6 +138,13 @@ class UserRepoController extends MessageBotRepoController
         }
         $this->message->setRouteAction(self::$SETUP_ABSHODE_TRADE);
 
+        if ($this->message->session_type === self::$SELL) {
+
+            $factor = $this->getFactorPrice('buying_gram');
+        } else {
+
+            $factor = $this->getFactorPrice('selling_gram');
+        }
         $gram = $this->message->getGramPrice($this->message->session_type);
         $abshode = $this->message->getAbshode($this->message->session_type);
         $totalAbshode = (int)$this->message->getTotalAbshode($this->message->session_type) * (int)$this->message->session_weight;
@@ -252,12 +260,22 @@ class UserRepoController extends MessageBotRepoController
     {
         $this->message->setRouteAction(self::$SETUP_COIN_TRADE);
 
+        if ($this->message->session_type === self::$SELL) {
+            $coinFactor = (float)$this->getFactorPrice("buying_coin");
 
-        $this->message->setTotalInvoice($this->message->getTotalCoinPrice($this->message->session_type));
+        } else {
+
+            $coinFactor = (float)$this->getFactorPrice("selling_coin");
+        }
+
+        $count = (int)$this->message->session_coin_amount;
+        $totalPrice = $count * $coinFactor;
+        $this->message->setTotalInvoice($totalPrice);
+        $this->message->setFactor($coinFactor);
 
         $lable = $this->message->session_type === self::$SELL ? "🔵" : "🔴";
         $time = time_fa($this->message->created_at);
-        $text = "نوع خرید: {$this->message->session_item_fa}\nعملیات مورد نظر: {$this->message->session_type_fa}\nتعداد: {$this->message->session_coin_amount}\nقیمت {$this->message->session_type_fa} هر سکه امامی: {$this->message->getCoinPrice($this->message->session_type)}  $lable \nقیمت کل: {$this->message->getTotalCoinPrice($this->message->session_type)}\nشماره مشتری: +{$this->message->chatBot?->user?->mobile}\nنام و نام خانوادگی مشتری: {$this->message->chatBot?->user?->name}\nتاریخ معامله: $time";
+        $text = "نوع خرید: {$this->message->session_item_fa}\nعملیات مورد نظر: {$this->message->session_type_fa}\nتعداد: {$this->message->session_coin_amount}\nقیمت {$this->message->session_type_fa} هر سکه امامی: $coinFactor  $lable \nقیمت کل: $totalPrice \nشماره مشتری: +{$this->message->chatBot?->user?->mobile}\nنام و نام خانوادگی مشتری: {$this->message->chatBot?->user?->name}\nتاریخ معامله: $time";
 
 
         $this->message->sendTextWithInlineBtn($text, ["بله تایید میکنم" => self::$CONFIRM], true);
@@ -267,12 +285,30 @@ class UserRepoController extends MessageBotRepoController
 
     public function endSetupCoinTrade(): void
     {
+        if ($this->message->session_type === self::$SELL) {
+            $coinFactor = (float)$this->getFactorPrice("buying_coin");
 
-        if ((int)$this->message->session_total_invoice !== (int)$this->message->getTotalCoinPrice($this->message->session_type)) {
+        } else {
+
+            $coinFactor = (float)$this->getFactorPrice("selling_coin");
+        }
+
+        if ($coinFactor !== $this->message->session_factor) {
             $this->chatSessionClear();
             $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$START_TRADE]);
             return;
         }
+
+        $coinBalance = $this->settingBot()->coin_balance;
+
+        if ($this->message->session_type === self::$SELL) {
+
+            $coinBalance += $this->message->session_coin_amount;
+        } else {
+            $coinBalance -= $this->message->session_coin_amount;
+        }
+        $this->settingBot()->setCoinBalance($coinBalance);
+
         $this->submitOrder();
         $this->chatSessionClear();
         $this->message->sendAloneText("معاملات شما با موفقیت انجام شد. از حسن اعتماد شما متشکریم. منتظر تماس پشتیبانی باشید.");
@@ -444,5 +480,16 @@ class UserRepoController extends MessageBotRepoController
         $data['count'] = $this->message->session_coin_amount;
 
         self::createOrder($data);
+    }
+
+    private function settingBot()
+    {
+        return SettingBot::where('bot_tag', SettingBot::$MMD_TALA)->firstOrCreate(['bot_tag' => SettingBot::$MMD_TALA]);
+    }
+
+    public function getFactorPrice(string $type)
+    {
+
+        return $this->settingBot()->main[$type];
     }
 }

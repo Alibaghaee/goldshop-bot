@@ -171,6 +171,8 @@ class MessageBot extends Model
         }
     }
 
+
+
     public function getCoinPrice(string $type)
     {
         return '1000000';
@@ -230,6 +232,18 @@ class MessageBot extends Model
     {
 
         return $this->getCleanChatSession()->item;
+    }
+
+    public function setFactor(string $value)
+    {
+
+        $this->getCleanChatSession()->setFactor($value);
+    }
+
+    public function getSessionFactorAttribute()
+    {
+
+        return $this->getCleanChatSession()->factor;
     }
 
     public function getSessionItemFaAttribute()
