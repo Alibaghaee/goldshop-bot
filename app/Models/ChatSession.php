@@ -150,6 +150,23 @@ class ChatSession extends Model
         $this->save();
     }
 
+    public function setUnitAttribute(string $value)
+    {
+        return $this->setAttribute('data->unit', $value);
+    }
+
+    public function getUnitAttribute()
+    {
+        return is_array($this->data) ? (array_key_exists('unit', $this->data) ? $this->data['unit'] : null) : null;
+    }
+
+
+    public function setUnit(string $value)
+    {
+        $this->unit = $value;
+        $this->save();
+    }
+
     public function setUserMobileAttribute(string $value)
     {
         return $this->setAttribute('data->user_mobile', $value);
