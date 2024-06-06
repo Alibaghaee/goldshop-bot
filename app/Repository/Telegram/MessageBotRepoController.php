@@ -160,4 +160,9 @@ abstract class MessageBotRepoController
     {
         return OrderBot::create($data);
     }
+
+    public static function beautyCurrency($price)
+    {
+        return number_format($price, 3, '.', ',');
+    }
 }

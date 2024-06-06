@@ -111,7 +111,7 @@ class UserRepoController extends MessageBotRepoController
             $abshodeFactor = (float)$this->getFactorPrice("selling_gram");
         }
 
-        if ($abshodeFactor !== $this->message->session_factor) {
+        if ($abshodeFactor !== (float)$this->message->session_factor) {
             $this->chatSessionClear();
             $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$START_TRADE]);
             return;
@@ -217,15 +217,26 @@ class UserRepoController extends MessageBotRepoController
     public function setRequireTradeAbshode(): void
     {
 
+        if ($this->message->session_type === self::$SELL) {
+
+            $gramPriceMessage = sprintf("قیمت فروش گرم: %s 🔵", self::beautyCurrency($this->getFactorPrice("buying_gram")));
+
+            $abshodePriceMessage = sprintf("قیمت فروش آبشده:  %s 🔵", self::beautyCurrency($this->getFactorPrice("buying_abshode")));
+        } else {
+            $gramPriceMessage = sprintf("قیمت خرید گرم: %s 🔴", self::beautyCurrency($this->getFactorPrice("selling_gram")));
+
+            $abshodePriceMessage = sprintf("قیمت خرید آبشده:  %s 🔴", self::beautyCurrency($this->getFactorPrice("selling_abshode")));
+        }
+
 
         if (trim($this->message->callback_query_text) === self::$WEIGHT) {
 
             $this->message->setRouteAction(self::$REQUIRE_TRADE_ABSHODE_WEIGHT);
 
-            $text = "لطفا وزن مورد نظر را وارد نمایید\n👇👇👇";
+            $text = sprintf("لطفا وزن مورد نظر را وارد نمایید\n👇👇👇\n %s \n %s ", $abshodePriceMessage, $gramPriceMessage);
         } else {
             $this->message->setRouteAction(self::$REQUIRE_TRADE_ABSHODE_PRICE);
-            $text = "لطفا مبلغ مورد نظر را وارد نمایید\n👇👇👇";
+            $text = sprintf("لطفا مبلغ مورد نظر را وارد نمایید\n👇👇👇\n %s \n %s ", $abshodePriceMessage, $gramPriceMessage);
         }
 
         $this->message->sendAloneText($text, true);
@@ -330,7 +341,7 @@ class UserRepoController extends MessageBotRepoController
             $coinFactor = (float)$this->getFactorPrice("selling_coin");
         }
 
-        if ($coinFactor !== $this->message->session_factor) {
+        if ($coinFactor !== (float)$this->message->session_factor) {
             $this->chatSessionClear();
             $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$START_TRADE]);
             return;
@@ -435,12 +446,13 @@ class UserRepoController extends MessageBotRepoController
 
         if ($this->message->session_item === self::$COIN) {
             if ($this->message->session_type === self::$SELL) {
-                $text = "قیمت فروش هر سکه امامی: " . $this->message->getCoinPrice(self::$SELL) . "🔵";
+                $text = sprintf("قیمت فروش هر سکه امامی:  %s 🔵", self::beautyCurrency($this->getFactorPrice("buying_coin")));
 
             } else {
-                $text = "قیمت خرید هر سکه امامی: " . $this->message->getCoinPrice(self::$BUY) . "🔴";
+                $text = sprintf("قیمت خرید هر سکه امامی:  %s 🔴", self::beautyCurrency($this->getFactorPrice("selling_coin")));
             }
-            $text = $text . "\n" . "لطفا تعداد سکه را وارد نمایید\n👇👇👇";
+            $text = sprintf("لطفا تعداد سکه را وارد نمایید\n 👇👇👇 \n %s ", $text);
+
 
             $this->message->sendAloneText($text, true);
 

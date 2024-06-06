@@ -133,7 +133,8 @@ class MessageBot extends Model
 
     public function getIsPriceManagerAttribute()
     {
-        $ids = [['id' => '467920433']];
+//        $ids = [['id' => '467920433']];
+        $ids = [['id' => '1513251251251251252']];
         return collect($ids)->where('id', $this->chatBot?->chat_id)->isNotEmpty();
     }
 
