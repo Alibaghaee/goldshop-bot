@@ -715,7 +715,7 @@ class ManagerRepoController extends MessageBotRepoController
         $name = 'ReportOrders__' . now_fa() . '__.xlsx';
         $path = 'documents/' . $name;
 
-        (new OrdersExport($orders))->store($path,'public');
+        (new OrdersExport($orders))->store($path, 'public');
 
         $path = '/storage/' . $path;
 
@@ -809,7 +809,6 @@ class ManagerRepoController extends MessageBotRepoController
 
     private function submitOrder()
     {
-
         $data = [];
         $data['user_id'] = $this->message->session_user_id_manual_order;
         $data['type'] = $this->message->session_type_manual_order;
