@@ -15,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'h/23124/hook',
         ]);
+        $middleware->alias([
+            'verify.telegram.token' => \App\Http\Middleware\VerifyTelegramToken::class
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

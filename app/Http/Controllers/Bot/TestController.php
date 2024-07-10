@@ -107,14 +107,14 @@ class TestController extends Controller
 //
 //
 //        }
-        $url = 'https://www.estjt.ir/price/';
-        Crawler::create()
-            ->setCrawlObserver(new GoldScraperObserver())
-            ->setMaximumDepth(0)
-            ->setTotalCrawlLimit(1)
-            ->startCrawling($url);
+//        $url = 'https://www.estjt.ir/price/';
+//        Crawler::create()
+//            ->setCrawlObserver(new GoldScraperObserver())
+//            ->setMaximumDepth(0)
+//            ->setTotalCrawlLimit(1)
+//            ->startCrawling($url);
 
-        return 'ok';
+//        return 'ok';
     }
 
 
