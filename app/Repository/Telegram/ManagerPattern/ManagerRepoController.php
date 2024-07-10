@@ -537,10 +537,14 @@ class ManagerRepoController extends MessageBotRepoController
 
             if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
 
-                $text = "قیمت فروش هر سکه امامی: {$this->message->getCoinPrice(self::$SELL)} 🔵";
+//                $text = "قیمت فروش هر سکه امامی: {$this->message->getCoinPrice(self::$SELL)} 🔵";
+                $text = sprintf("قیمت فروش هر سکه امامی:  %s 🔵", self::beautyCurrency($this->getFactorPrice("buying_coin")));
+
             } else {
 
-                $text = "قیمت خرید هر سکه امامی: {$this->message->getCoinPrice(self::$BUY)} 🔴";
+//                $text = "قیمت خرید هر سکه امامی: {$this->message->getCoinPrice(self::$BUY)} 🔴";
+                $text = sprintf("قیمت خرید هر سکه امامی:  %s 🔴", self::beautyCurrency($this->getFactorPrice("selling_coin")));
+
             }
 
             $this->message->sendAloneText($text . "لطفا تعداد سکه را وارد نمایید\n👇👇👇\n", true);
@@ -563,15 +567,30 @@ class ManagerRepoController extends MessageBotRepoController
     public function setRequireOrderAbshode()
     {
 
+        if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
 
+
+            $gramPriceMessage = sprintf("قیمت فروش گرم: %s 🔵", self::beautyCurrency($this->getFactorPrice("buying_gram")));
+
+            $abshodePriceMessage = sprintf("قیمت فروش آبشده:  %s 🔵", self::beautyCurrency($this->getFactorPrice("buying_abshode")));
+        } else {
+            $gramPriceMessage = sprintf("قیمت خرید گرم: %s 🔴", self::beautyCurrency($this->getFactorPrice("selling_gram")));
+
+            $abshodePriceMessage = sprintf("قیمت خرید آبشده:  %s 🔴", self::beautyCurrency($this->getFactorPrice("selling_abshode")));
+        }
         if (trim($this->message->callback_query_text) === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$WEIGHT) {
 
             $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_WEIGHT);
 
-            $text = "لطفا وزن مورد نظر را وارد نمایید\n👇👇👇";
+//            $text = "لطفا وزن مورد نظر را وارد نمایید\n👇👇👇";
+
+            $text = sprintf("لطفا وزن مورد نظر را وارد نمایید\n👇👇👇\n %s \n %s ", $abshodePriceMessage, $gramPriceMessage);
+
         } else {
             $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_PRICE);
-            $text = "لطفا مبلغ مورد نظر را وارد نمایید\n👇👇👇";
+//            $text = "لطفا مبلغ مورد نظر را وارد نمایید\n👇👇👇";
+            $text = sprintf("لطفا مبلغ مورد نظر را وارد نمایید\n👇👇👇\n %s \n %s ", $abshodePriceMessage, $gramPriceMessage);
+
         }
 
         $this->message->sendAloneText($text, true);
@@ -584,9 +603,11 @@ class ManagerRepoController extends MessageBotRepoController
 
         if ($this->message->last_action === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_WEIGHT) {
 
+            $this->message->setUnitManualOrder(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$WEIGHT);
             $this->message->setAbshodeWeightManualOrder((float)to_english_numbers($this->message->text));
             $text = 'وزن مورد نظر با موفقیت دریافت شد';
         } else {
+            $this->message->setUnitManualOrder(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$PRICE);
             $this->message->setAbshodePriceManualOrder((float)to_english_numbers($this->message->text));
             $text = 'مبلغ مورد نظر با موفقیت دریافت شد';
         }
@@ -597,52 +618,86 @@ class ManagerRepoController extends MessageBotRepoController
 
     public function setupAbshodeOrder(): void
     {
-        if (is_null($this->message->session_abshode_price_manual_order)) {
+        if ($this->message->session_unit_manual_order === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$WEIGHT) {
+            if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
 
-            $this->message->sendAloneText('قیمت یافت نشد!!!');
+                $gramFactor = $this->getFactorPrice('buying_gram');
+                $abshodeFactor = $this->getFactorPrice('buying_abshode');
 
-
-            $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_PRICE);
-
-            $text = "لطفا مبلغ مورد نظر را وارد نمایید\n👇👇👇";
-            $this->message->sendAloneText($text, true);
-            return;
-        }
-        if (is_null($this->message->session_abshode_weight_manual_order)) {
-
-            $this->message->sendAloneText('وزن یافت نشد!!!');
-
-            $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_WEIGHT);
-
-            $text = "لطفا وزن مورد نظر را وارد نمایید\n👇👇👇";
+            } else {
 
 
-            $this->message->sendAloneText($text, true);
+                $gramFactor = $this->getFactorPrice('selling_gram');
+                $abshodeFactor = $this->getFactorPrice('selling_abshode');
+            }
+
+
+            $this->message->setAbshodePriceManualOrder((float)$gramFactor * (float)$this->message->session_abshode_weight_manual_order);
+
+        } elseif ($this->message->session_unit_manual_order === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$PRICE) {
+
+            if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
+
+                $gramFactor = $this->getFactorPrice('buying_gram');
+                $abshodeFactor = $this->getFactorPrice('buying_abshode');
+
+            } else {
+
+
+                $gramFactor = $this->getFactorPrice('selling_gram');
+                $abshodeFactor = $this->getFactorPrice('selling_abshode');
+            }
+
+            $this->message->setAbshodeWeightManualOrder((float)$this->message->session_abshode_price_manual_order / ((float)$gramFactor * 1000));
+        } else {
+            $this->message->sendAloneText('وزن یا مبلغ یافت نشد!!!');
+
+            $this->redirectBack();
             return;
         }
         $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$SETUP_ABSHODE_TRADE);
 
-        $gram = $this->message->getGramPrice($this->message->session_type_manual_order);
-        $abshode = $this->message->getAbshode($this->message->session_type_manual_order);
-        $totalAbshode = (float)$this->message->getTotalAbshode($this->message->session_type_manual_order) * (float)$this->message->session_abshode_weight_manual_order;
-
-        $this->message->setTotalInvoiceManualOrder($totalAbshode);
-
+        $this->message->setFactor($gramFactor);
         $lable = $this->message->session_type_manual_order === self::$SELL_US_ORDER ? "🔵" : "🔴";
         $time = time_fa($this->message->created_at);
+
+
+        ///////
+
+
         $user = $this->userFind($this->message->session_user_id_manual_order);
-        $text = "نوع خرید: {$this->message->session_item_manual_order_fa}\nعملیات مورد نظر: {$this->message->session_type_manual_order_fa}\nوزن: {$this->message->session_abshode_weight_manual_order}\nقیمت {$this->message->session_type_manual_order_fa} هر گرم: $gram $lable\nقیمت {$this->message->session_type_manual_order_fa} آبشده: {$abshode} $lable\nقیمت کل: $totalAbshode\nشماره مشتری: +$user?->mobile\nنام و نام خانوادگی مشتری: $user?->name\nتاریخ معامله: $time";
+        $text = "نوع خرید: {$this->message->session_item_manual_order_fa}\nعملیات مورد نظر: {$this->message->session_type_manual_order_fa}\nوزن: {$this->message->session_abshode_weight_manual_order}\nقیمت {$this->message->session_type_manual_order_fa} هر گرم: $gramFactor $lable\nقیمت {$this->message->session_type_manual_order_fa} آبشده: {$abshodeFactor} $lable\n  قیمت کل: {$this->message->session_abshode_price_manual_order}  \nشماره مشتری: +$user?->mobile\nنام و نام خانوادگی مشتری: $user?->name\nتاریخ معامله: $time";
 
         $this->message->sendTextWithInlineBtn($text, ["بله تایید میکنم" => self::$MANUAL_ORDER_SUBMISSION . '_' . self::$CONFIRM], true);
     }
 
     public function endSetupAbshodeOrder(): void
     {
-        if ((float)$this->message->session_total_invoice_manual_order !== (float)$this->message->getTotalAbshode($this->message->session_type_manual_order)) {
+        if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
+            $abshodeFactor = (float)$this->getFactorPrice("buying_gram");
+
+        } else {
+
+            $abshodeFactor = (float)$this->getFactorPrice("selling_gram");
+        }
+
+
+
+        if ($abshodeFactor !== (float)$this->message->session_factor) {
             $this->chatSessionClear();
             $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$MANUAL_ORDER_SUBMISSION]);
             return;
         }
+        $abshodeBalance = $this->settingBot()->abshode_balance;
+
+        if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
+
+            $abshodeBalance += $this->message->session_abshode_weight_manual_order;
+        } else {
+            $abshodeBalance -= $this->message->session_abshode_weight_manual_order;
+        }
+        $this->settingBot()->setAbshodeBalance($abshodeBalance);
+
         $this->submitOrder();
         $this->chatSessionClear();
         $this->message->sendAloneText("معاملات شما با موفقیت انجام شد.");
@@ -778,10 +833,6 @@ class ManagerRepoController extends MessageBotRepoController
         return $action;
     }
 
-    private function settingBot()
-    {
-        return SettingBot::where('bot_tag', SettingBot::$MMD_TALA)->firstOrCreate(['bot_tag' => SettingBot::$MMD_TALA]);
-    }
 
     private function userSearch(string $text)
     {
@@ -818,5 +869,17 @@ class ManagerRepoController extends MessageBotRepoController
         $data['count'] = $this->message->session_coin_amount_manual_order;
 
         self::createOrder($data);
+    }
+
+    private function settingBot()
+    {
+        return SettingBot::where('bot_tag', SettingBot::$MMD_TALA)->firstOrCreate(['bot_tag' => SettingBot::$MMD_TALA]);
+    }
+
+
+    public function getFactorPrice(string $type)
+    {
+
+        return $this->settingBot()->main[$type];
     }
 }

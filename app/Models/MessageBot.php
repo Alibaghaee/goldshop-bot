@@ -382,6 +382,19 @@ class MessageBot extends Model
         return $this->getCleanChatSession()->unit;
     }
 
+
+    public function setUnitManualOrder(string $value)
+    {
+
+        $this->getCleanChatSession()->setUnitManualOrder($value);
+    }
+
+    public function getSessionUnitManualOrderAttribute()
+    {
+
+        return $this->getCleanChatSession()->unit_manual_order;
+    }
+
     public function setUserMobile(string $value)
     {
 

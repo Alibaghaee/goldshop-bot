@@ -15,9 +15,14 @@ class VerifyTelegramToken
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $token = $request->header('X-Telegram-Bot-Token');
+        $token = $request->header('X-Telegram-Bot-Api-Secret-Token');
 
-        info($token);
+        if ($token !== env('TELEGRAM_SECRET_HEADER')) {
+
+            return response('Unauthorized', 401);
+        }
+
+
 
         return $next($request);
     }

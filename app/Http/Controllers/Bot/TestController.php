@@ -63,20 +63,20 @@ class TestController extends Controller
 
     public function test2()
     {
-        $token = '6949811914:AAFefAuniK7H8t8zrj3AhQsLm30phgTWH64';
-        $send = Http::get('https://api.telegram.org/bot' . $token . '/getMe');
-        $body = $send->json();
-        $id = $body['result']['id'];
-        $message = Http::get('https://api.telegram.org/bot' . $token . '/getMe');
-
-        dd($body);
+//        $token = '6949811914:AAFefAuniK7H8t8zrj3AhQsLm30phgTWH64';
+//        $send = Http::get('https://api.telegram.org/bot' . $token . '/getMe');
+//        $body = $send->json();
+//        $id = $body['result']['id'];
+//        $message = Http::get('https://api.telegram.org/bot' . $token . '/getMe');
+//
+//        dd($body);
     }
 
 
     public function setHook()
     {
         Telegram::bot('mmd_tala_bot')->removeWebhook();
-        $telegram = Telegram::bot('mmd_tala_bot')->setWebhook(['url' => 'https://gold.rahco.ir/api/h/23124/hook']);
+        $telegram = Telegram::bot('mmd_tala_bot')->setWebhook(['url' => 'https://gold.rahco.ir/api/h/23124/hook','secret_token'=>env('TELEGRAM_SECRET_HEADER')]);
 
         return $telegram;
     }

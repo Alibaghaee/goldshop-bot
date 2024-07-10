@@ -167,6 +167,23 @@ class ChatSession extends Model
         $this->save();
     }
 
+    public function setUnitManualOrderAttribute(string $value)
+    {
+        return $this->setAttribute('data->unit_manual_order', $value);
+    }
+
+    public function getUnitManualOrderAttribute()
+    {
+        return is_array($this->data) ? (array_key_exists('unit_manual_order', $this->data) ? $this->data['unit_manual_order'] : null) : null;
+    }
+
+
+    public function setUnitManualOrder(string $value)
+    {
+        $this->unit_manual_order = $value;
+        $this->save();
+    }
+
     public function setUserMobileAttribute(string $value)
     {
         return $this->setAttribute('data->user_mobile', $value);
