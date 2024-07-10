@@ -537,12 +537,12 @@ class ManagerRepoController extends MessageBotRepoController
 
             if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
 
-//                $text = "قیمت فروش هر سکه امامی: {$this->message->getCoinPrice(self::$SELL)} 🔵";
+
                 $text = sprintf("قیمت فروش هر سکه امامی:  %s 🔵", self::beautyCurrency($this->getFactorPrice("buying_coin")));
 
             } else {
 
-//                $text = "قیمت خرید هر سکه امامی: {$this->message->getCoinPrice(self::$BUY)} 🔴";
+
                 $text = sprintf("قیمت خرید هر سکه امامی:  %s 🔴", self::beautyCurrency($this->getFactorPrice("selling_coin")));
 
             }
@@ -582,13 +582,12 @@ class ManagerRepoController extends MessageBotRepoController
 
             $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_WEIGHT);
 
-//            $text = "لطفا وزن مورد نظر را وارد نمایید\n👇👇👇";
 
             $text = sprintf("لطفا وزن مورد نظر را وارد نمایید\n👇👇👇\n %s \n %s ", $abshodePriceMessage, $gramPriceMessage);
 
         } else {
             $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$REQUIRE_TRADE_ABSHODE_PRICE);
-//            $text = "لطفا مبلغ مورد نظر را وارد نمایید\n👇👇👇";
+
             $text = sprintf("لطفا مبلغ مورد نظر را وارد نمایید\n👇👇👇\n %s \n %s ", $abshodePriceMessage, $gramPriceMessage);
 
         }
@@ -682,7 +681,6 @@ class ManagerRepoController extends MessageBotRepoController
         }
 
 
-
         if ($abshodeFactor !== (float)$this->message->session_factor) {
             $this->chatSessionClear();
             $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$MANUAL_ORDER_SUBMISSION]);
@@ -732,14 +730,29 @@ class ManagerRepoController extends MessageBotRepoController
         $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$SETUP_COIN_TRADE);
 
 
-        $this->message->setTotalInvoiceManualOrder($this->message->getTotalCoinPrice($this->message->session_type_manual_order));
+        if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
+            $coinFactor = (float)$this->getFactorPrice("buying_coin");
+
+        } else {
+
+            $coinFactor = (float)$this->getFactorPrice("selling_coin");
+        }
+
+
+        $count = (int)$this->message->session_coin_amount_manual_order;
+        $totalPrice = $count * $coinFactor;
+        $this->message->setTotalInvoiceManualOrder($totalPrice);
+
+
+        $this->message->setFactor($coinFactor);
+
 
         $lable = $this->message->session_type_manual_order === self::$SELL_US_ORDER ? "🔵" : "🔴";
         $time = time_fa($this->message->created_at);
 
         $user = $this->userFind($this->message->session_user_id_manual_order);
 
-        $text = "نوع خرید: {$this->message->session_item_manual_order_fa}\nعملیات مورد نظر: {$this->message->session_type_manual_order_fa}\nتعداد: {$this->message->session_coin_amount_manual_order}\nقیمت {$this->message->session_type_manual_order_fa} هر سکه امامی: {$this->message->getCoinPrice($this->message->session_type_manual_order)}  $lable \nقیمت کل: {$this->message->getTotalCoinPrice($this->message->session_type_manual_order)}\nشماره مشتری: +$user?->mobile\nنام و نام خانوادگی مشتری: $user?->name\nتاریخ معامله: $time";
+        $text = "نوع خرید: {$this->message->session_item_manual_order_fa}\nعملیات مورد نظر: {$this->message->session_type_manual_order_fa}\nتعداد: {$this->message->session_coin_amount_manual_order}\nقیمت {$this->message->session_type_manual_order_fa} هر سکه امامی: $coinFactor  $lable \nقیمت کل: $totalPrice \nشماره مشتری: +$user?->mobile\nنام و نام خانوادگی مشتری: $user?->name\nتاریخ معامله: $time";
 
 
         $this->message->sendTextWithInlineBtn($text, ["بله تایید میکنم" => self::$MANUAL_ORDER_SUBMISSION . '_' . self::$CONFIRM], true);
@@ -747,12 +760,32 @@ class ManagerRepoController extends MessageBotRepoController
 
     public function endSetupCoinManualOrder(): void
     {
+        if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
+            $coinFactor = (float)$this->getFactorPrice("buying_coin");
 
-        if ((float)$this->message->session_total_invoice_manual_order !== (float)$this->message->getTotalCoinPrice($this->message->session_type_manual_order)) {
+        } else {
+
+            $coinFactor = (float)$this->getFactorPrice("selling_coin");
+        }
+
+
+        if ($coinFactor !== (float)$this->message->session_factor) {
             $this->chatSessionClear();
             $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$MANUAL_ORDER_SUBMISSION]);
             return;
         }
+
+        $coinBalance = $this->settingBot()->coin_balance;
+
+        if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
+
+            $coinBalance += $this->message->session_coin_amount_manual_order;
+        } else {
+            $coinBalance -= $this->message->session_coin_amount_manual_order;
+        }
+        $this->settingBot()->setCoinBalance($coinBalance);
+
+
         $this->submitOrder();
         $this->chatSessionClear();
         $this->message->sendAloneText("معاملات شما با موفقیت انجام شد.");
