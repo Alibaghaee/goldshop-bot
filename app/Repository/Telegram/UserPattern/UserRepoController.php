@@ -253,8 +253,6 @@ class UserRepoController extends MessageBotRepoController
             ['به اشتراک گذاری شماره تلفن همراه'],
             true
         );
-
-
     }
 
     public function needUserCheck(): void
@@ -275,10 +273,23 @@ class UserRepoController extends MessageBotRepoController
 
     public function receiveName(): void
     {
-        $this->message->chatBot?->user->tryActiveMobile();
+        $this->message->setRouteAction(self::$RECEIVE_NAME);
+
+//        $this->message->chatBot?->user->tryActiveMobile();
+        $this->message->chatBot?->user?->updateName(trim($this->message->text));
+
+
+        $text = sprintf( "کاربر جدید شماره و نام خود را به اشتراک گذاشت\nشماره:%s"." \nنام مشتری:%s" , $this->message->chatBot?->user?->mobile,$this->message->chatBot?->user?->name);
+
+
+        collect(MessageBot::managerIds())->each(function ($botId) use ($text) {
+            $this->message->sendCustomChatAloneText($botId, $text);
+        });
+
+
         $this->message->sendAloneText("با تشکر بابت اطلاعات ثبت شده. مشخصات شما برای ادمین ارسال شد. منتظر تماس پشتیبانی بمانید", true);
 
-
+        $this->startBot();
     }
 
     public function receiveTradeCoinAmount(): void

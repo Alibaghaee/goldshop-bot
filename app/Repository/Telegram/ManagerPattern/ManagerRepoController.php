@@ -624,7 +624,7 @@ class ManagerRepoController extends MessageBotRepoController
 
         } elseif ($this->message->session_unit_manual_order === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$PRICE) {
 
-            $gramFactor =  (float)$this->message->session_price_manual_order;
+            $gramFactor = (float)$this->message->session_price_manual_order;
             $this->message->setAbshodeWeightManualOrder((float)$this->message->session_abshode_price_manual_order / ($gramFactor * 1000));
         } else {
             $this->message->sendAloneText('وزن یا مبلغ یافت نشد!!!');
@@ -652,7 +652,7 @@ class ManagerRepoController extends MessageBotRepoController
     {
 
 
-        $abshodeFactor=(float)$this->message->session_price_manual_order;
+        $abshodeFactor = (float)$this->message->session_price_manual_order;
         if ($abshodeFactor !== (float)$this->message->session_factor) {
             $this->chatSessionClear();
             $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$MANUAL_ORDER_SUBMISSION]);
@@ -702,13 +702,6 @@ class ManagerRepoController extends MessageBotRepoController
         $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$SETUP_COIN_TRADE);
 
 
-//        if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
-//            $coinFactor = (float)$this->getFactorPrice("buying_coin");
-//
-//        } else {
-//
-//            $coinFactor = (float)$this->getFactorPrice("selling_coin");
-//        }
         $coinFactor = (float)$this->message->session_price_manual_order;
 
         $count = (int)$this->message->session_coin_amount_manual_order;
@@ -732,13 +725,7 @@ class ManagerRepoController extends MessageBotRepoController
 
     public function endSetupCoinManualOrder(): void
     {
-//        if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
-//            $coinFactor = (float)$this->getFactorPrice("buying_coin");
-//
-//        } else {
-//
-//            $coinFactor = (float)$this->getFactorPrice("selling_coin");
-//        }
+
 
         $coinFactor = (float)$this->message->session_price_manual_order;
 

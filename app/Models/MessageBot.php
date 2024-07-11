@@ -124,11 +124,14 @@ class MessageBot extends Model
         });
     }
 
-
+    public static function managerIds()
+    {
+        return [['id' => '6259458432']];
+    }
     public function getIsManagerAttribute()
     {
-        $ids = [['id' => '6259458432']];
-        return collect($ids)->where('id', $this->chatBot?->chat_id)->isNotEmpty();
+
+        return collect(self::managerIds())->where('id', $this->chatBot?->chat_id)->isNotEmpty();
     }
 
     public function getIsPriceManagerAttribute()
@@ -639,6 +642,17 @@ class MessageBot extends Model
             'chat_id' => $chatId,
             'text' => $text,
             'reply_markup' => $reply_markup
+        ];
+
+        (new TelegramServiceController())->send($data);
+    }
+
+   public function sendCustomChatAloneText($chatId, $text)
+    {
+
+        $data = [
+            'chat_id' => $chatId,
+            'text' => $text,
         ];
 
         (new TelegramServiceController())->send($data);

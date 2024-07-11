@@ -27,6 +27,8 @@ abstract class MessageBotRepoController
 
     public static $NEED_USER_CHECK = 'need_user_check';
 
+    public static $RECEIVE_NAME = 'receive_name';
+
     public static $WEIGHT = '/weight';
 
     public static $PRICE = '/price';
