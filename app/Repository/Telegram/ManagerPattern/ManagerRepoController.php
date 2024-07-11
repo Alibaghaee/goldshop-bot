@@ -618,36 +618,14 @@ class ManagerRepoController extends MessageBotRepoController
     public function setupAbshodeOrder(): void
     {
         if ($this->message->session_unit_manual_order === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$WEIGHT) {
-            if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
 
-                $gramFactor = $this->getFactorPrice('buying_gram');
-                $abshodeFactor = $this->getFactorPrice('buying_abshode');
-
-            } else {
-
-
-                $gramFactor = $this->getFactorPrice('selling_gram');
-                $abshodeFactor = $this->getFactorPrice('selling_abshode');
-            }
-
-
-            $this->message->setAbshodePriceManualOrder((float)$gramFactor * (float)$this->message->session_abshode_weight_manual_order);
+            $gramFactor = (float)$this->message->session_price_manual_order;
+            $this->message->setAbshodePriceManualOrder($gramFactor * (float)$this->message->session_abshode_weight_manual_order);
 
         } elseif ($this->message->session_unit_manual_order === self::$MANUAL_ORDER_SUBMISSION . '_' . self::$PRICE) {
 
-            if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
-
-                $gramFactor = $this->getFactorPrice('buying_gram');
-                $abshodeFactor = $this->getFactorPrice('buying_abshode');
-
-            } else {
-
-
-                $gramFactor = $this->getFactorPrice('selling_gram');
-                $abshodeFactor = $this->getFactorPrice('selling_abshode');
-            }
-
-            $this->message->setAbshodeWeightManualOrder((float)$this->message->session_abshode_price_manual_order / ((float)$gramFactor * 1000));
+            $gramFactor =  (float)$this->message->session_price_manual_order;
+            $this->message->setAbshodeWeightManualOrder((float)$this->message->session_abshode_price_manual_order / ($gramFactor * 1000));
         } else {
             $this->message->sendAloneText('وزن یا مبلغ یافت نشد!!!');
 
@@ -665,22 +643,16 @@ class ManagerRepoController extends MessageBotRepoController
 
 
         $user = $this->userFind($this->message->session_user_id_manual_order);
-        $text = "نوع خرید: {$this->message->session_item_manual_order_fa}\nعملیات مورد نظر: {$this->message->session_type_manual_order_fa}\nوزن: {$this->message->session_abshode_weight_manual_order}\nقیمت {$this->message->session_type_manual_order_fa} هر گرم: $gramFactor $lable\nقیمت {$this->message->session_type_manual_order_fa} آبشده: {$abshodeFactor} $lable\n  قیمت کل: {$this->message->session_abshode_price_manual_order}  \nشماره مشتری: +$user?->mobile\nنام و نام خانوادگی مشتری: $user?->name\nتاریخ معامله: $time";
+        $text = "نوع خرید: {$this->message->session_item_manual_order_fa}\nعملیات مورد نظر: {$this->message->session_type_manual_order_fa}\nوزن: {$this->message->session_abshode_weight_manual_order}\nقیمت {$this->message->session_type_manual_order_fa} هر گرم: $gramFactor $lable\nقیمت {$this->message->session_type_manual_order_fa}  $lable\n  قیمت کل: {$this->message->session_abshode_price_manual_order}  \nشماره مشتری: +$user?->mobile\nنام و نام خانوادگی مشتری: $user?->name\nتاریخ معامله: $time";
 
         $this->message->sendTextWithInlineBtn($text, ["بله تایید میکنم" => self::$MANUAL_ORDER_SUBMISSION . '_' . self::$CONFIRM], true);
     }
 
     public function endSetupAbshodeOrder(): void
     {
-        if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
-            $abshodeFactor = (float)$this->getFactorPrice("buying_gram");
-
-        } else {
-
-            $abshodeFactor = (float)$this->getFactorPrice("selling_gram");
-        }
 
 
+        $abshodeFactor=(float)$this->message->session_price_manual_order;
         if ($abshodeFactor !== (float)$this->message->session_factor) {
             $this->chatSessionClear();
             $this->message->sendTextWithInlineBtn("قیمت ها به روزرسانی شده اند لطفا دوباره تلاش کنید", ["شروع مجدد" => self::$MANUAL_ORDER_SUBMISSION]);
@@ -730,14 +702,14 @@ class ManagerRepoController extends MessageBotRepoController
         $this->message->setRouteAction(self::$MANUAL_ORDER_SUBMISSION . '_' . self::$SETUP_COIN_TRADE);
 
 
-        if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
-            $coinFactor = (float)$this->getFactorPrice("buying_coin");
-
-        } else {
-
-            $coinFactor = (float)$this->getFactorPrice("selling_coin");
-        }
-
+//        if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
+//            $coinFactor = (float)$this->getFactorPrice("buying_coin");
+//
+//        } else {
+//
+//            $coinFactor = (float)$this->getFactorPrice("selling_coin");
+//        }
+        $coinFactor = (float)$this->message->session_price_manual_order;
 
         $count = (int)$this->message->session_coin_amount_manual_order;
         $totalPrice = $count * $coinFactor;
@@ -760,14 +732,15 @@ class ManagerRepoController extends MessageBotRepoController
 
     public function endSetupCoinManualOrder(): void
     {
-        if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
-            $coinFactor = (float)$this->getFactorPrice("buying_coin");
+//        if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
+//            $coinFactor = (float)$this->getFactorPrice("buying_coin");
+//
+//        } else {
+//
+//            $coinFactor = (float)$this->getFactorPrice("selling_coin");
+//        }
 
-        } else {
-
-            $coinFactor = (float)$this->getFactorPrice("selling_coin");
-        }
-
+        $coinFactor = (float)$this->message->session_price_manual_order;
 
         if ($coinFactor !== (float)$this->message->session_factor) {
             $this->chatSessionClear();
@@ -783,6 +756,7 @@ class ManagerRepoController extends MessageBotRepoController
         } else {
             $coinBalance -= $this->message->session_coin_amount_manual_order;
         }
+
         $this->settingBot()->setCoinBalance($coinBalance);
 
 
