@@ -283,7 +283,7 @@ class UserRepoController extends MessageBotRepoController
 
 
         collect(MessageBot::managerIds())->each(function ($botId) use ($text) {
-            $this->message->sendCustomChatAloneText($botId, $text);
+            $this->message->sendCustomChatAloneText($botId['id'], $text);
         });
 
 
@@ -535,7 +535,7 @@ class UserRepoController extends MessageBotRepoController
         $data['user_id'] = $this->message->chatBot?->user->id;
         $data['type'] = $this->message->session_type;
         $data['item'] = $this->message->session_item;
-        $data['price'] = $this->message->session_price;
+        $data['price'] = $this->message->session_factor;
         $data['weight'] = $this->message->session_weight;
         $data['count'] = $this->message->session_coin_amount;
 

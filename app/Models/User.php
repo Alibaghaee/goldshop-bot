@@ -498,4 +498,10 @@ class User extends Authenticatable
         $this->active_mobile = true;
         $this->save();
     }
+
+
+    public function updateName(string $name)
+    {
+        $this->update(['name' => $name]);
+    }
 }

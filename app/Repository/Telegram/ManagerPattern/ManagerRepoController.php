@@ -855,6 +855,7 @@ class ManagerRepoController extends MessageBotRepoController
     private function submitOrder()
     {
         $data = [];
+        $data['admin_id'] = $this->message->chatBot?->user?->id;
         $data['user_id'] = $this->message->session_user_id_manual_order;
         $data['type'] = $this->message->session_type_manual_order;
         $data['item'] = $this->message->session_item_manual_order;
