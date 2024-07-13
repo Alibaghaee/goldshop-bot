@@ -658,6 +658,17 @@ class MessageBot extends Model
         (new TelegramServiceController())->send($data);
     }
 
+    public static function sendGlobalCustomChatAloneText($chatId, $text)
+    {
+
+        $data = [
+            'chat_id' => $chatId,
+            'text' => $text,
+        ];
+
+        (new TelegramServiceController())->send($data);
+    }
+
     public function sendDocument($file, $caption = '', $fileName = '')
     {
 
