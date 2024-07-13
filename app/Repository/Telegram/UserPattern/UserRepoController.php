@@ -281,9 +281,10 @@ class UserRepoController extends MessageBotRepoController
 
         $text = sprintf( "کاربر جدید شماره و نام خود را به اشتراک گذاشت\nشماره:%s"." \nنام مشتری:%s" , $this->message->chatBot?->user?->mobile,$this->message->chatBot?->user?->name);
 
+        $btns = [ 'فعال کردن' => 'activeate_user:'.$this->message->chatBot?->user?->id];
 
-        collect(MessageBot::managerIds())->each(function ($botId) use ($text) {
-            $this->message->sendCustomChatAloneText($botId['id'], $text);
+        collect(MessageBot::managerIds())->each(function ($botId) use ($text,$btns) {
+            $this->message->sendCustomChatTextWithBtn($botId['id'], $text,$btns);
         });
 
 

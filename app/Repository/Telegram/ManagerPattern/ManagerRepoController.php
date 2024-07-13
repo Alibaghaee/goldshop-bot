@@ -109,6 +109,11 @@ class ManagerRepoController extends MessageBotRepoController
                     $this->reportOrders();
                 }
 
+                if (str_contains(trim($message->callback_query_text), 'activeate_user:')) {
+
+                    $this->activeateUser();
+                }
+
             } else {
 
                 if (trim($message->text) === self::$START) {
@@ -395,6 +400,34 @@ class ManagerRepoController extends MessageBotRepoController
                 $user->delete();
 
                 $this->message->sendAloneText('کاربر با موفقیت حذف شد');
+
+                $this->redirectBack();
+            } else {
+
+                $this->message->sendAloneText('کاربر یافت نشد!!!');
+
+                $this->redirectBack();
+            }
+        } else {
+
+            $this->message->sendAloneText('کاربر یافت نشد!!!');
+
+            $this->redirectBack();
+        }
+    }
+
+    public function activeateUser()
+    {
+
+        $id = explode(':', trim($this->message->callback_query_text));
+        if (array_key_exists(1, $id)) {
+
+            $user = User::find($id[1]);
+            if (!is_null($user)) {
+
+                $user->tryActiveMobile();
+
+                $this->message->sendAloneText('کاربر با موفقیت فعال شد');
 
                 $this->redirectBack();
             } else {

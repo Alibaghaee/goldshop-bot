@@ -647,6 +647,36 @@ class MessageBot extends Model
         (new TelegramServiceController())->send($data);
     }
 
+    public function sendCustomChatTextWithBtn($chatId, $text, $btns, $rowList = false)
+    {
+        $list = [];
+        foreach ($btns as $key => $value) {
+
+            $list[] = Keyboard::inlineButton(['text' => $key, 'request_contact' => false, 'callback_data' => $value]);
+        }
+        $reply_markup = Keyboard::make()
+            ->setResizeKeyboard(true)
+            ->setOneTimeKeyboard(true)
+            ->inline();
+
+        if ($rowList) {
+            foreach ($list as $item) {
+
+                $reply_markup->row([$item]);
+            }
+        } else {
+
+            $reply_markup->row($list);
+        }
+        $data = [
+            'chat_id' => $chatId,
+            'text' => $text,
+            'reply_markup' => $reply_markup
+        ];
+
+        (new TelegramServiceController())->send($data);
+    }
+
    public function sendCustomChatAloneText($chatId, $text)
     {
 
