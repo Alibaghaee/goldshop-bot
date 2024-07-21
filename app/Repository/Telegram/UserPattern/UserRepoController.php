@@ -96,7 +96,7 @@ class UserRepoController extends MessageBotRepoController
     public static function checkLockConversation()
     {
 
-        return true;
+        return SettingBot::isLockConversation();
     }
 
 
@@ -275,7 +275,7 @@ class UserRepoController extends MessageBotRepoController
     {
         $this->message->setRouteAction(self::$RECEIVE_NAME);
 
-//        $this->message->chatBot?->user->tryActiveMobile();
+
         $this->message->chatBot?->user?->updateName(trim($this->message->text));
 
 

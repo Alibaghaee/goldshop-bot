@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Jobs\SendSettingBotUpdated;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class SettingBot extends Model
 {
@@ -19,6 +21,17 @@ class SettingBot extends Model
     ];
 
     public static $MMD_TALA = 'mmd_tala';
+
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::updated(function (SettingBot $settingBot) {
+
+            SendSettingBotUpdated::dispatch($settingBot)->onQueue('update_setting_bot');
+        });
+    }
 
     public function setStartLockTimeAttribute(string $value)
     {
@@ -213,4 +226,10 @@ class SettingBot extends Model
         $this->save();
     }
 
+
+    public static function isLockConversation()
+    {
+        $setting = self::where('bot_tag', self::$MMD_TALA)->orderByDesc('created_at')->first();
+        return Carbon::parse($setting->main['start_lock_time']) <= now() && now() <= Carbon::parse($setting->main['stop_lock_time']);
+    }
 }
