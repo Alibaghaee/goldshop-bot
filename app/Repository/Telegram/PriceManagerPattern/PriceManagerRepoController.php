@@ -131,10 +131,10 @@ class PriceManagerRepoController extends MessageBotRepoController
             $base = ($number - ($this->settingBot()->abshode_margin));
             $roof = ($number + ($this->settingBot()->abshode_margin));
 
-            $this->settingBot()->setSellingAbshode(number_format($roof, 3));
-            $this->settingBot()->setBuyingAbshode(number_format($base, 3));
-            $this->settingBot()->setSellingGram(number_format(round($roof / 4.3318, 3), 3));
-            $this->settingBot()->setBuyingGram(number_format(round($base / 4.3318, 3), 3));
+            $this->settingBot()->setSellingAbshode($roof);
+            $this->settingBot()->setBuyingAbshode($base);
+            $this->settingBot()->setSellingGram(round($roof / 4.3318, 3));
+            $this->settingBot()->setBuyingGram(round($base / 4.3318, 3));
 
             $text = "قیمت خرید آبشده:  " . to_english_numbers(number_format($base, 3)) . "  🔴\n" .
                 "قیمت فروش آبشده:  " . to_english_numbers(number_format($roof, 3)) . " 🔵\n" .
@@ -144,8 +144,8 @@ class PriceManagerRepoController extends MessageBotRepoController
         } else {
             $base = ($number - ($this->settingBot()->coin_margin));
             $roof = ($number + ($this->settingBot()->coin_margin));
-            $this->settingBot()->setSellingCoin(number_format($roof, 3));
-            $this->settingBot()->setBuyingCoin(number_format($base, 3));
+            $this->settingBot()->setSellingCoin($roof);
+            $this->settingBot()->setBuyingCoin($base);
 
             $text = "خرید سکه امامی:  " . to_english_numbers(number_format($base, 3)) . "  🔴\n" .
                 "فروش سکه امامی:  " . to_english_numbers(number_format($roof, 3)) . " 🔵\n" . "@wwwabshodeir";

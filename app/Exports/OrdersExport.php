@@ -5,23 +5,24 @@ namespace App\Exports;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class OrdersExport implements FromView, WithEvents
+class OrdersExport implements FromView, WithEvents,ShouldAutoSize
 {
-    use Exportable;
+    use Exportable ;
+
+    public  $orders;
 
     public function __construct($orders)
     {
         $this->orders = $orders;
     }
 
-    public function collection()
-    {
-        return $this->orders;
-    }
+
 
     public function view(): View
     {

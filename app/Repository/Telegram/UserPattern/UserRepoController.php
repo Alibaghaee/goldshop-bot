@@ -151,7 +151,7 @@ class UserRepoController extends MessageBotRepoController
             }
 
 
-            $this->message->setPrice((float)$gramFactor * (float)$this->message->session_weight);
+            $this->message->setPrice(round(((float)$gramFactor * (float)$this->message->session_weight),3));
         } elseif ($this->message->session_unit === self::$PRICE) {
 
 
@@ -167,7 +167,7 @@ class UserRepoController extends MessageBotRepoController
                 $abshodeFactor = $this->getFactorPrice('selling_abshode');
             }
 
-            $this->message->setWeight((float)$this->message->session_price / ((float)$gramFactor * 1000));
+            $this->message->setWeight(round(((float)$this->message->session_price / ((float)$gramFactor * 1000)),3));
         } else {
 
 
@@ -186,7 +186,12 @@ class UserRepoController extends MessageBotRepoController
 
         $lable = $this->message->session_type === self::$SELL ? "🔵" : "🔴";
         $time = time_fa($this->message->created_at);
-        $text = "نوع خرید: {$this->message->session_item_fa}\nعملیات مورد نظر: {$this->message->session_type_fa}\nوزن: {$this->message->session_weight}\nقیمت {$this->message->session_type_fa} هر گرم: $gramFactor $lable\nقیمت {$this->message->session_type_fa} آبشده: {$abshodeFactor} $lable\nقیمت کل: {$this->message->session_price}\nشماره مشتری: +{$this->message->chatBot?->user?->mobile}\nنام و نام خانوادگی مشتری: {$this->message->chatBot?->user?->name}\nتاریخ معامله: $time";
+
+        $gramFactor=self::beautyCurrency($gramFactor);
+        $abshodeFactor=self::beautyCurrency($abshodeFactor);
+        $totalPrice=self::beautyCurrency($this->message->session_price);
+
+        $text = "نوع خرید: {$this->message->session_item_fa}\nعملیات مورد نظر: {$this->message->session_type_fa}\nوزن: {$this->message->session_weight}\nقیمت {$this->message->session_type_fa} هر گرم: $gramFactor $lable\nقیمت {$this->message->session_type_fa} آبشده: {$abshodeFactor} $lable\nقیمت کل: {$totalPrice}\nشماره مشتری: +{$this->message->chatBot?->user?->mobile}\nنام و نام خانوادگی مشتری: {$this->message->chatBot?->user?->name}\nتاریخ معامله: $time";
 
         $this->message->sendTextWithInlineBtn($text, ["بله تایید میکنم" => self::$CONFIRM], true);
 
@@ -201,11 +206,11 @@ class UserRepoController extends MessageBotRepoController
         if ($this->message->last_action === self::$REQUIRE_TRADE_ABSHODE_WEIGHT) {
 
             $this->message->setUnit(self::$WEIGHT);
-            $this->message->setWeight(to_english_numbers($this->message->text));
+            $this->message->setWeight(round(to_english_numbers($this->message->text),3));
             $text = 'وزن مورد نظر با موفقیت دریافت شد';
         } else {
             $this->message->setUnit(self::$PRICE);
-            $this->message->setPrice(to_english_numbers($this->message->text));
+            $this->message->setPrice(round(to_english_numbers($this->message->text),3));
             $text = 'مبلغ مورد نظر با موفقیت دریافت شد';
         }
         $this->message->sendAloneText($text);
@@ -335,8 +340,9 @@ class UserRepoController extends MessageBotRepoController
 
         $lable = $this->message->session_type === self::$SELL ? "🔵" : "🔴";
         $time = time_fa($this->message->created_at);
+        $coinFactor=self::beautyCurrency($coinFactor);
+        $totalPrice=self::beautyCurrency($totalPrice);
         $text = "نوع خرید: {$this->message->session_item_fa}\nعملیات مورد نظر: {$this->message->session_type_fa}\nتعداد: {$this->message->session_coin_amount}\nقیمت {$this->message->session_type_fa} هر سکه امامی: $coinFactor  $lable \nقیمت کل: $totalPrice \nشماره مشتری: +{$this->message->chatBot?->user?->mobile}\nنام و نام خانوادگی مشتری: {$this->message->chatBot?->user?->name}\nتاریخ معامله: $time";
-
 
         $this->message->sendTextWithInlineBtn($text, ["بله تایید میکنم" => self::$CONFIRM], true);
 

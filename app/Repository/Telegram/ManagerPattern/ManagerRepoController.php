@@ -571,9 +571,11 @@ class ManagerRepoController extends MessageBotRepoController
             if ($this->message->session_type_manual_order === self::$SELL_US_ORDER) {
 
 
+
                 $text = sprintf("قیمت فروش هر سکه امامی:  %s 🔵", self::beautyCurrency($this->getFactorPrice("buying_coin")));
 
             } else {
+
 
 
                 $text = sprintf("قیمت خرید هر سکه امامی:  %s 🔴", self::beautyCurrency($this->getFactorPrice("selling_coin")));
@@ -750,8 +752,9 @@ class ManagerRepoController extends MessageBotRepoController
 
         $user = $this->userFind($this->message->session_user_id_manual_order);
 
+        $coinFactor=self::beautyCurrency($coinFactor);
+        $totalPrice=self::beautyCurrency($totalPrice);
         $text = "نوع خرید: {$this->message->session_item_manual_order_fa}\nعملیات مورد نظر: {$this->message->session_type_manual_order_fa}\nتعداد: {$this->message->session_coin_amount_manual_order}\nقیمت {$this->message->session_type_manual_order_fa} هر سکه امامی: $coinFactor  $lable \nقیمت کل: $totalPrice \nشماره مشتری: +$user?->mobile\nنام و نام خانوادگی مشتری: $user?->name\nتاریخ معامله: $time";
-
 
         $this->message->sendTextWithInlineBtn($text, ["بله تایید میکنم" => self::$MANUAL_ORDER_SUBMISSION . '_' . self::$CONFIRM], true);
     }
@@ -892,7 +895,7 @@ class ManagerRepoController extends MessageBotRepoController
         $data['user_id'] = $this->message->session_user_id_manual_order;
         $data['type'] = $this->message->session_type_manual_order;
         $data['item'] = $this->message->session_item_manual_order;
-        $data['price'] = $this->message->session_abshode_price_manual_order;
+        $data['price'] = $this->message->session_factor;
         $data['weight'] = $this->message->session_abshode_weight_manual_order;
         $data['count'] = $this->message->session_coin_amount_manual_order;
 

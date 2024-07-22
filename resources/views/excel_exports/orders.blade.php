@@ -36,14 +36,14 @@
                 {{ $order?->user->name ?? '-' }}
             </td>
             <td style="height: 30px; vertical-align: center; text-align: center;">
-                {{ $order->type ?? '-'}}
+                {{ $order->type_fa ?? '-'}}
             </td>
             <td style="height: 30px; vertical-align: center; text-align: center;">
-                {{ $order->item ?? '-'}}
+                {{ $order->item_fa ?? '-'}}
             </td>
 
             <td style="height: 30px; vertical-align: center; text-align: center;">
-                {{ $order->price ?? '-'}}
+                {{ $order->price_be ?? '-'}}
             </td>
 
             <td style="height: 30px; vertical-align: center; text-align: center;">

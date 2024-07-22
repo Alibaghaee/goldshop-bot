@@ -230,6 +230,13 @@ class SettingBot extends Model
     public static function isLockConversation()
     {
         $setting = self::where('bot_tag', self::$MMD_TALA)->orderByDesc('created_at')->first();
-        return Carbon::parse($setting->main['start_lock_time']) <= now() && now() <= Carbon::parse($setting->main['stop_lock_time']);
+
+        $start = explode(':', $setting->main['start_lock_time']);
+        $end = explode(':', $setting->main['stop_lock_time']);
+        $startLockTime = Carbon::createFromTime($start[0], $start[1], 0);
+        $endLockTime = Carbon::createFromTime($end[0], $end[1], 0);
+
+
+        return !(Carbon::now()->between($startLockTime, $endLockTime));
     }
 }

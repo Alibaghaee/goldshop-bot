@@ -165,6 +165,6 @@ abstract class MessageBotRepoController
 
     public static function beautyCurrency($price)
     {
-        return number_format($price, 3, '.', ',');
+        return number_format((float)$price, 3, '.', ',');
     }
 }
