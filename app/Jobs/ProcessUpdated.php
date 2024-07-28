@@ -17,13 +17,15 @@ class ProcessUpdated implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $updates;
+    public $botRole;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($updates)
+    public function __construct($updates,$botRole)
     {
         $this->updates = $updates;
+        $this->botRole = $botRole;
     }
 
     /**
@@ -35,6 +37,7 @@ class ProcessUpdated implements ShouldQueue
         $message = MessageBot::make();
 
         $message->update_id = $this->updates->get('update_id');
+        $message->bot_role = $this->botRole;
 
         if ($this->updates->has('message')) {
 

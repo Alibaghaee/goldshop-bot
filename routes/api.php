@@ -1,19 +1,13 @@
 <?php
 
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+
+Route::get('set-hook', [\App\Http\Controllers\Bot\TelegramController::class, 'setHook']);
 
 
+Route::post('first/23124/hook', [\App\Http\Controllers\Bot\TelegramController::class, 'firstHook'])->middleware('verify.telegram.token');
+Route::post('second/23124/hook', [\App\Http\Controllers\Bot\TelegramController::class, 'secondHook'])->middleware('verify.telegram.token');
+Route::post('third/23124/hook', [\App\Http\Controllers\Bot\TelegramController::class, 'thirdHook'])->middleware('verify.telegram.token');
 
-
-
-
-//Route::get('test1', [\App\Http\Controllers\Bot\TestController::class, 'test1']);
-//Route::get('test2', [\App\Http\Controllers\Bot\TestController::class, 'test2']);
-Route::get('set-hook', [\App\Http\Controllers\Bot\TestController::class, 'setHook']);
-Route::post('h/23124/hook', [\App\Http\Controllers\Bot\TestController::class, 'hook'])->middleware('verify.telegram.token');
-//Route::get('testTala', [\App\Http\Controllers\Bot\TestController::class, 'testTala']);

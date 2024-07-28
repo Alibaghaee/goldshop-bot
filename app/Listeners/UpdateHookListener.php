@@ -24,7 +24,7 @@ class UpdateHookListener
     {
         if (!is_null($event->updates->get('update_id'))) {
 
-            ProcessUpdated::dispatch($event->updates)->onQueue('processing_updated');
+            ProcessUpdated::dispatch($event->updates,$event->botRole)->onQueue('processing_updated');
         }
     }
 }

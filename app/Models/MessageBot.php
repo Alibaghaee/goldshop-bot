@@ -23,6 +23,7 @@ class MessageBot extends Model
      */
     protected $fillable = [
         'update_id',
+        'bot_role',
         'message_id',
         'from_id',
         'from_is_bot',
@@ -99,6 +100,12 @@ class MessageBot extends Model
 
     public static $MANUAL_ORDER_SUBMISSION = 'manual_order_submission';
 
+
+    public static $MANAGER = 'manager';
+    public static $PRICE_MANAGER = 'price_manager';
+
+    public static $USER = 'user';
+
     /**
      * Bootstrap the model and its traits.
      *
@@ -116,12 +123,33 @@ class MessageBot extends Model
             } elseif ($message->is_price_manager) {
 
                 new PriceManagerRepoController($message);
-            } else {
+            } elseif ($message->is_user) {
 
                 new UserRepoController($message);
             }
-
         });
+    }
+
+
+    public static function userRole(MessageBot $message)
+    {
+        if ($message->is_manager) {
+
+            $role = 'manager';
+        } elseif ($message->is_price_manager) {
+
+            $role = 'price_manager';
+        } else {
+
+            $role = 'user';
+        }
+        return $role;
+    }
+
+    public static function telegramBot($USER_ROLE)
+    {
+
+        return (new TelegramServiceController($USER_ROLE));
     }
 
     public static function managerIds()
@@ -136,14 +164,20 @@ class MessageBot extends Model
     public function getIsManagerAttribute()
     {
 
-        return collect(self::managerIds())->where('id', $this->chatBot?->chat_id)->isNotEmpty();
+        return collect(self::managerIds())->where('id', $this->chatBot?->chat_id)->isNotEmpty() && ($this->bot_role === self::$MANAGER);
     }
 
     public function getIsPriceManagerAttribute()
     {
         $ids = [['id' => '467920433']];
 //        $ids = [['id' => '1513251251251251252']];
-        return collect($ids)->where('id', $this->chatBot?->chat_id)->isNotEmpty();
+        return collect($ids)->where('id', $this->chatBot?->chat_id)->isNotEmpty() && ($this->bot_role === self::$PRICE_MANAGER);
+    }
+
+    public function getIsUserAttribute()
+    {
+
+        return $this->bot_role === self::$USER;
     }
 
     public function setRouteAction(string $value)
@@ -537,7 +571,7 @@ class MessageBot extends Model
 
     public function destroyMessage()
     {
-        (new TelegramServiceController())->deleteMessage($this->chatBot->chat_id, $this->message_id);
+        self::telegramBot(self::userRole($this))->deleteMessage($this->chatBot->chat_id, $this->message_id);
     }
 
 
@@ -560,7 +594,7 @@ class MessageBot extends Model
             $data['reply_markup'] = $reply_markup;
         }
 
-        (new TelegramServiceController())->send($data);
+        self::telegramBot(self::userRole($this))->send($data);
     }
 
     public function sendTextWithInlineBtn($text, $btns, $withBackBtn = false, $rowList = false)
@@ -597,7 +631,7 @@ class MessageBot extends Model
             'reply_markup' => $reply_markup
         ];
 
-        (new TelegramServiceController())->send($data);
+        self::telegramBot(self::userRole($this))->send($data);
     }
 
     public function sendTextWithBtn($text, $btns, $request_contact = false)
@@ -618,7 +652,7 @@ class MessageBot extends Model
             'reply_markup' => $reply_markup
         ];
 
-        (new TelegramServiceController())->send($data);
+        self::telegramBot(self::userRole($this))->send($data);
     }
 
     public function sendCustomChatTextWithBtnUrl($chatId, $text, $btns, $rowList = false)
@@ -648,7 +682,7 @@ class MessageBot extends Model
             'reply_markup' => $reply_markup
         ];
 
-        (new TelegramServiceController())->send($data);
+        self::telegramBot(self::userRole($this))->send($data);
     }
 
     public function sendCustomChatTextWithBtn($chatId, $text, $btns, $rowList = false)
@@ -678,7 +712,7 @@ class MessageBot extends Model
             'reply_markup' => $reply_markup
         ];
 
-        (new TelegramServiceController())->send($data);
+        self::telegramBot(self::userRole($this))->send($data);
     }
 
     public function sendCustomChatAloneText($chatId, $text)
@@ -689,10 +723,10 @@ class MessageBot extends Model
             'text' => $text,
         ];
 
-        (new TelegramServiceController())->send($data);
+        self::telegramBot(self::userRole($this))->send($data);
     }
 
-    public static function sendGlobalCustomChatAloneText($chatId, $text)
+    public static function sendGlobalCustomChatAloneText($chatId, $text,$botRole)
     {
 
         $data = [
@@ -700,7 +734,7 @@ class MessageBot extends Model
             'text' => $text,
         ];
 
-        (new TelegramServiceController())->send($data);
+        self::telegramBot($botRole)->send($data);
     }
 
     public function sendDocument($file, $caption = '', $fileName = '')
@@ -713,7 +747,7 @@ class MessageBot extends Model
         ];
 
 
-        (new TelegramServiceController())->sendDocument($data);
+        self::telegramBot(self::userRole($this))->sendDocument($data);
     }
 
 

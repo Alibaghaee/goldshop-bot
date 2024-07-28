@@ -118,7 +118,7 @@ class OrderBot extends Model
             $text = $text . "تراز کنونی:" . $balance . "\n";
 
             collect(MessageBot::managerIds())->each(function ($botId) use ($text) {
-                MessageBot::sendGlobalCustomChatAloneText($botId['id'], $text);
+                MessageBot::sendGlobalCustomChatAloneText($botId['id'], $text,botRole: 'manager');
             });
         });
     }

@@ -2,18 +2,19 @@
 
 namespace App\Service\TellBot;
 
-use App\Bot\Telegram;
+use App\Bot\Factory\FactoryBot;
 
 
 class TelegramServiceController
 {
-    private Telegram $bot;
+    protected $bot;
+    protected string $botRole;
 
 
-    public function __construct()
+    public function __construct(string $botRole)
     {
-
-        $this->bot = new Telegram();
+        $this->bot = FactoryBot::createBot($botRole);
+        $this->botRole = $botRole;
     }
 
     public function send($data)
@@ -32,7 +33,17 @@ class TelegramServiceController
 
 
 // Define your bot token and the message_id of the bot message to be deleted
-        $botToken = env('TELEGRAM_BOT_TOKEN');
+        $botToken = '';
+        if ($this->botRole === 'user') {
+
+            $botToken = env('TELEGRAM_BOT_TOKEN_USER');
+        } elseif ($this->botRole === 'manager') {
+
+            $botToken = env('TELEGRAM_BOT_TOKEN_MANAGER');
+        } elseif ($this->botRole === 'price_manager') {
+
+            $botToken = env('TELEGRAM_BOT_TOKEN_PRICE_MANAGER');
+        }
 
 
 // Set the API endpoint URL for deleting a message

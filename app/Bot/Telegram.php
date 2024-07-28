@@ -9,6 +9,7 @@ class Telegram implements TelegramBot
 
     public $bot;
 
+
     public function __construct()
     {
         $this->config('mmd_tala_bot');

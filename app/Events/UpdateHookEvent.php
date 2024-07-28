@@ -15,13 +15,15 @@ class UpdateHookEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $updates;
+    public $botRole;
 
     /**
      * Create a new event instance.
      */
-    public function __construct($updates)
+    public function __construct($updates,$botRole)
     {
         $this->updates = $updates;
+        $this->botRole = $botRole;
     }
 
     /**
