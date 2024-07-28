@@ -126,8 +126,13 @@ class MessageBot extends Model
 
     public static function managerIds()
     {
-        return [['id' => '6259458432']];
+        return [
+            ['id' => '6259458432'],
+            ['id' => '7303273877'],
+            ['id' => '995540520'],
+        ];
     }
+
     public function getIsManagerAttribute()
     {
 
@@ -136,8 +141,8 @@ class MessageBot extends Model
 
     public function getIsPriceManagerAttribute()
     {
-//        $ids = [['id' => '467920433']];
-        $ids = [['id' => '1513251251251251252']];
+        $ids = [['id' => '467920433']];
+//        $ids = [['id' => '1513251251251251252']];
         return collect($ids)->where('id', $this->chatBot?->chat_id)->isNotEmpty();
     }
 
@@ -174,7 +179,6 @@ class MessageBot extends Model
             return $this->chatBot?->chatSession;
         }
     }
-
 
 
     public function getCoinPrice(string $type)
@@ -677,7 +681,7 @@ class MessageBot extends Model
         (new TelegramServiceController())->send($data);
     }
 
-   public function sendCustomChatAloneText($chatId, $text)
+    public function sendCustomChatAloneText($chatId, $text)
     {
 
         $data = [

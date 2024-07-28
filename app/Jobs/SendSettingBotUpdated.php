@@ -29,10 +29,25 @@ class SendSettingBotUpdated implements ShouldQueue
      */
     public function handle(): void
     {
-        $data = json_encode($this->settingBot->main);
+        $data = $this->settingBot->main;
 
-        $header = ['X-SHOP-SECRET'=>env('SHOP_SECRET')];
+        $header = ['X-SHOP-SECRET' => env('SHOP_SECRET')];
 
-        Http::withHeaders($header)->post(env('SETTING_SHOP_API_URL') . '/settings/bots', $data);
+        $response = Http::withHeaders($header)->post(env('SETTING_SHOP_API_URL') . '/settings/bots', $data);
+
+        if ($response->successful()) {
+
+
+            info($response->json());
+            info( $response->status());
+            // Process the data
+        } else {
+            // Handle the error
+            $status = $response->status();
+            $error = $response->body();
+
+            info("Error: $status");
+            info("Error: $error");
+        }
     }
 }

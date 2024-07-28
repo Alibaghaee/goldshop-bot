@@ -11,7 +11,7 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class OrdersExport implements FromView, WithEvents,ShouldAutoSize
+class OrdersExport implements FromView, WithEvents,ShouldAutoSize,WithColumnWidths
 {
     use Exportable ;
 
@@ -41,6 +41,21 @@ class OrdersExport implements FromView, WithEvents,ShouldAutoSize
                 $event->sheet->getDelegate()->setRightToLeft(true);
             },
 
+        ];
+    }
+
+    public function columnWidths():array
+    {
+        return [
+            'A' => 20,
+            'B' => 30,
+            'C' => 40,
+            'D' => 20,
+            'E' => 20,
+            'F' => 30,
+            'G' => 30,
+            'H' => 30,
+            'I' => 30,
         ];
     }
 }
