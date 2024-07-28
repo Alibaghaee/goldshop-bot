@@ -214,8 +214,8 @@ class ManagerRepoController extends MessageBotRepoController
     {
         $text = explode(':', $this->message->text);
         if (array_key_exists(1, $text)) {
-            $text[0] = (int)to_english_numbers($text[0]);
-            $text[1] = (int)to_english_numbers($text[1]);
+            $text[0] = to_english_numbers($text[0]);
+            $text[1] = to_english_numbers($text[1]);
 
             $text = implode(':', $text);
 
