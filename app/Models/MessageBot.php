@@ -155,6 +155,7 @@ class MessageBot extends Model
     public static function managerIds()
     {
         return [
+            ['id' => '467920433'],
             ['id' => '6259458432'],
             ['id' => '7303273877'],
             ['id' => '995540520'],
@@ -169,8 +170,13 @@ class MessageBot extends Model
 
     public function getIsPriceManagerAttribute()
     {
-        $ids = [['id' => '467920433']];
-//        $ids = [['id' => '1513251251251251252']];
+        $ids = [
+            ['id' => '467920433'],
+            ['id' => '6259458432'],
+            ['id' => '7303273877'],
+            ['id' => '995540520'],
+        ];
+
         return collect($ids)->where('id', $this->chatBot?->chat_id)->isNotEmpty() && ($this->bot_role === self::$PRICE_MANAGER);
     }
 
@@ -726,7 +732,7 @@ class MessageBot extends Model
         self::telegramBot(self::userRole($this))->send($data);
     }
 
-    public static function sendGlobalCustomChatAloneText($chatId, $text,$botRole)
+    public static function sendGlobalCustomChatAloneText($chatId, $text, $botRole)
     {
 
         $data = [
