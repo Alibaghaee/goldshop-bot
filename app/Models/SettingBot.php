@@ -237,6 +237,6 @@ class SettingBot extends Model
         $endLockTime = Carbon::createFromTime($end[0], $end[1], 0);
 
 
-        return !(Carbon::now()->between($startLockTime, $endLockTime));
+        return Carbon::now()->between($startLockTime, $endLockTime);
     }
 }

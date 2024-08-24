@@ -691,7 +691,7 @@ class MessageBot extends Model
         self::telegramBot(self::userRole($this))->send($data);
     }
 
-    public function sendCustomChatTextWithBtn($chatId, $text, $btns, $rowList = false)
+    public function sendCustomChatTextWithBtn($chatId, $text, $btns, $rowList = false, $role = null)
     {
         $list = [];
         foreach ($btns as $key => $value) {
@@ -718,7 +718,12 @@ class MessageBot extends Model
             'reply_markup' => $reply_markup
         ];
 
-        self::telegramBot(self::userRole($this))->send($data);
+        if (is_null($role)) {
+
+            $role = self::userRole($this);
+        }
+
+        self::telegramBot($role)->send($data);
     }
 
     public function sendCustomChatAloneText($chatId, $text)
