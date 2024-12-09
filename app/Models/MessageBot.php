@@ -155,10 +155,9 @@ class MessageBot extends Model
     public static function managerIds()
     {
         return [
-            ['id' => '467920433'],
-            ['id' => '6259458432'],
-            ['id' => '7303273877'],
             ['id' => '995540520'],
+            ['id' => '7303273877'],
+            ['id' => '467920433'],
         ];
     }
 
@@ -171,10 +170,9 @@ class MessageBot extends Model
     public function getIsPriceManagerAttribute()
     {
         $ids = [
-            ['id' => '467920433'],
-            ['id' => '6259458432'],
-            ['id' => '7303273877'],
             ['id' => '995540520'],
+            ['id' => '7303273877'],
+            ['id' => '467920433'],
         ];
 
         return collect($ids)->where('id', $this->chatBot?->chat_id)->isNotEmpty() && ($this->bot_role === self::$PRICE_MANAGER);

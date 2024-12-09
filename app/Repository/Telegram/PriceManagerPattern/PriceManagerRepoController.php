@@ -150,7 +150,7 @@ class PriceManagerRepoController extends MessageBotRepoController
             $text = "خرید سکه امامی:  " . to_english_numbers(number_format($base, 3)) . "  🔴\n" .
                 "فروش سکه امامی:  " . to_english_numbers(number_format($roof, 3)) . " 🔵\n" . "@wwwabshodeir";
         }
-        $btns = ["ربات معاملات" => "t.me/abshodeirbot"];
+        $btns = ["ربات معاملات" => "t.me/mmd_tala_user_bot"];
 
         $this->message->sendCustomChatTextWithBtnUrl(self::$CHANNEL_CHAT_ID, $text, $btns, true);
 

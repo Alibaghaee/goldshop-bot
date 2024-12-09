@@ -131,7 +131,7 @@ abstract class MessageBotRepoController
 
     public static $RECEIVE_PRICE = 'receive_price';
 
-    public static $CHANNEL_CHAT_ID = '@abshodehgold'; ///"@wwwabshodeir"
+    public static $CHANNEL_CHAT_ID = '@wwwabshodeir'; ///"@wwwabshodeir" ///abshodehgold
 
     public function __construct(MessageBot $message)
     {
