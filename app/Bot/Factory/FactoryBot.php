@@ -14,6 +14,10 @@ class FactoryBot
                 return new ManagerBot();
             case 'price_manager':
                 return new PriceManagerBot();
+            case 'price_abshode_manager':
+                return new PriceAbshodeManagerBot();
+            case 'price_coin_manager':
+                return new PriceCoinManagerBot();
             default:
                 throw new \Exception("Unknown bot type");
         }

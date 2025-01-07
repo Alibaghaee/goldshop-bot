@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Repository\Telegram\ManagerPattern\ManagerRepoController;
+use App\Repository\Telegram\PriceAbshodeManagerPattern\PriceAbshodeManagerRepoController;
+use App\Repository\Telegram\PriceCoinManagerPattern\PriceCoinManagerRepoController;
 use App\Repository\Telegram\PriceManagerPattern\PriceManagerRepoController;
 use App\Repository\Telegram\UserPattern\UserRepoController;
 use App\Service\TellBot\TelegramServiceController;
@@ -104,6 +106,10 @@ class MessageBot extends Model
     public static $MANAGER = 'manager';
     public static $PRICE_MANAGER = 'price_manager';
 
+    public static $PRICE_ABSHODE_MANAGER = 'price_abshode_manager';
+
+    public static $PRICE_COIN_MANAGER = 'price_coin_manager';
+
     public static $USER = 'user';
 
     /**
@@ -123,6 +129,12 @@ class MessageBot extends Model
             } elseif ($message->is_price_manager) {
 
                 new PriceManagerRepoController($message);
+            } elseif ($message->is_price_abshode_manager) {
+
+                new PriceAbshodeManagerRepoController($message);
+            } elseif ($message->is_price_coin_manager) {
+
+                new PriceCoinManagerRepoController($message);
             } elseif ($message->is_user) {
 
                 new UserRepoController($message);
@@ -139,6 +151,12 @@ class MessageBot extends Model
         } elseif ($message->is_price_manager) {
 
             $role = 'price_manager';
+        } elseif ($message->is_price_abshode_manager) {
+
+            $role = 'price_abshode_manager';
+        }  elseif ($message->is_price_coin_manager) {
+
+            $role = 'price_coin_manager';
         } else {
 
             $role = 'user';
@@ -161,6 +179,33 @@ class MessageBot extends Model
         ];
     }
 
+    public static function priceManagerIds()
+    {
+        return [
+            ['id' => '995540520'],
+            ['id' => '7303273877'],
+            ['id' => '467920433'],
+        ];
+    }
+
+    public static function priceAbshodeManagerIds()
+    {
+        return [
+            ['id' => '995540520'],
+            ['id' => '7303273877'],
+            ['id' => '467920433'],
+        ];
+    }
+
+    public static function priceCoinManagerIds()
+    {
+        return [
+            ['id' => '995540520'],
+            ['id' => '7303273877'],
+            ['id' => '467920433'],
+        ];
+    }
+
     public function getIsManagerAttribute()
     {
 
@@ -169,13 +214,20 @@ class MessageBot extends Model
 
     public function getIsPriceManagerAttribute()
     {
-        $ids = [
-            ['id' => '995540520'],
-            ['id' => '7303273877'],
-            ['id' => '467920433'],
-        ];
 
-        return collect($ids)->where('id', $this->chatBot?->chat_id)->isNotEmpty() && ($this->bot_role === self::$PRICE_MANAGER);
+        return collect(self::priceManagerIds())->where('id', $this->chatBot?->chat_id)->isNotEmpty() && ($this->bot_role === self::$PRICE_MANAGER);
+    }
+
+    public function getIsPriceAbshodeManagerAttribute()
+    {
+
+        return collect(self::priceAbshodeManagerIds())->where('id', $this->chatBot?->chat_id)->isNotEmpty() && ($this->bot_role === self::$PRICE_ABSHODE_MANAGER);
+    }
+
+    public function getIsPriceCoinManagerAttribute()
+    {
+
+        return collect(self::priceCoinManagerIds())->where('id', $this->chatBot?->chat_id)->isNotEmpty() && ($this->bot_role === self::$PRICE_COIN_MANAGER);
     }
 
     public function getIsUserAttribute()

@@ -43,6 +43,12 @@ class TelegramServiceController
         } elseif ($this->botRole === 'price_manager') {
 
             $botToken = env('TELEGRAM_BOT_TOKEN_PRICE_MANAGER');
+        }elseif ($this->botRole === 'price_abshode_manager') {
+
+            $botToken = env('TELEGRAM_BOT_TOKEN_PRICE_ABSHODE');
+        }elseif ($this->botRole === 'price_coin_manager') {
+
+            $botToken = env('TELEGRAM_BOT_TOKEN_PRICE_COIN');
         }
 
 

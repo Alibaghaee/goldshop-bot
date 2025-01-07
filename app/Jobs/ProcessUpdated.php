@@ -22,7 +22,7 @@ class ProcessUpdated implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct($updates,$botRole)
+    public function __construct($updates, $botRole)
     {
         $this->updates = $updates;
         $this->botRole = $botRole;

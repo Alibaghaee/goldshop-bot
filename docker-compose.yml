@@ -44,5 +44,5 @@ services:
 networks:
   default:
     external:
-      name : mmd_tala_bot_master
+      name : locale_main_master
 

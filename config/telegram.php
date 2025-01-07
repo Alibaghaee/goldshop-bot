@@ -60,6 +60,23 @@ return [
             ],
         ],
 
+        'mmd_tala_bot_price_abshode' => [
+            'token' => env('TELEGRAM_BOT_TOKEN_PRICE_ABSHODE', 'YOUR-BOT-TOKEN'),
+            'certificate_path' => env('TELEGRAM_CERTIFICATE_PATH_PRICE_ABSHODE', 'YOUR-CERTIFICATE-PATH'),
+            'webhook_url' => env('TELEGRAM_WEBHOOK_URL_PRICE_ABSHODE', 'YOUR-BOT-WEBHOOK-URL'),
+            'commands' => [
+                //Acme\Project\Commands\MyTelegramBot\BotCommand::class
+            ],
+        ],
+
+        'mmd_tala_bot_price_coin' => [
+            'token' => env('TELEGRAM_BOT_TOKEN_PRICE_COIN', 'YOUR-BOT-TOKEN'),
+            'certificate_path' => env('TELEGRAM_CERTIFICATE_PATH_PRICE_COIN', 'YOUR-CERTIFICATE-PATH'),
+            'webhook_url' => env('TELEGRAM_WEBHOOK_URL_PRICE_COIN', 'YOUR-BOT-WEBHOOK-URL'),
+            'commands' => [
+                //Acme\Project\Commands\MyTelegramBot\BotCommand::class
+            ],
+        ],
         //        'mySecondBot' => [
         //            'token' => '123456:abc',
         //        ],
