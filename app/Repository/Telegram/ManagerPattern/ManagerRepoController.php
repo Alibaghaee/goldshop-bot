@@ -671,6 +671,7 @@ class ManagerRepoController extends MessageBotRepoController
 
         $this->message->setFactor($gramFactor);
         $lable = $this->message->session_type_manual_order === self::$SELL_US_ORDER ? "🔵" : "🔴";
+
         $time = time_fa($this->message->created_at);
 
 

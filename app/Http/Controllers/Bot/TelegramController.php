@@ -99,7 +99,7 @@ class TelegramController extends Controller
 
     public function fifthHook()
     {
-        $updates = Telegram::bot('mmd_tala_bot_price_abshode')->getWebhookUpdate();
+        $updates = Telegram::bot('mmd_tala_bot_price_coin')->getWebhookUpdate();
 
 
         info('######################__fifth__##################\n####\\n');

@@ -81,9 +81,15 @@ class OrderBot extends Model
             if ($orderBot->type === self::SELL || $orderBot->type === self::SELL_US_ORDER) {
 
                 $type = 'فروش به ما';
+                $typeFirst = 'فروش';
+                $label = "🔵";
+                $gram = "قیمت فروش هر گرم:".$setting->selling_gram;
 
             } else {
                 $type = 'خرید از ما';
+                $typeFirst = 'خرید';
+                $label = "🔴";
+                $gram = "قیمت خرید هر گرم:" . $setting->buying_gram;
             }
 
             if ($orderBot->item === self::COIN || $orderBot->item === self::MANUAL_ORDER_SUBMISSION . '_' . self::COIN) {
@@ -102,6 +108,7 @@ class OrderBot extends Model
                 $text = $text . "قیمت کل:" . self::beautyCurrency(((float)$orderBot->price * (float)$orderBot->weight)) . "\n";
                 $balance = $setting->abshode_balance;
 
+                $text = $text . $gram .$label. "\n";
             } else {
 
                 $text = $text . sprintf("تعداد:%s", $orderBot->count) . "\n";
@@ -109,16 +116,16 @@ class OrderBot extends Model
                 $balance = $setting->coin_balance;
 
             }
-            $text = $text . "قیمت خرید هر $item:" . self::beautyCurrency($orderBot->price) . "\n";
+            $text = $text . " قیمت {$typeFirst} هر $item:" . self::beautyCurrency($orderBot->price) . $label . "\n";
 
             $text = $text . "شماره مشتری:" . $orderBot->user->mobile . "\n";
             $text = $text . "نام نام خانوادگی مشتری:" . $orderBot->user->name . "\n";
             $text = $text . "تاریخ معامله:" . $orderBot->created_at_fa . "\n";
 
-            $text = $text . "تراز کنونی:" . $balance . "\n";
+            $text = $text . "تراز کنونی:" . $balance . " 🟡" . "\n";
 
             collect(MessageBot::managerIds())->each(function ($botId) use ($text) {
-                MessageBot::sendGlobalCustomChatAloneText($botId['id'], $text,botRole: 'manager');
+                MessageBot::sendGlobalCustomChatAloneText($botId['id'], $text, botRole: 'manager');
             });
         });
     }
