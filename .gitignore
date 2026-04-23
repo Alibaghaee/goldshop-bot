@@ -5,6 +5,8 @@
 /public/storage
 /storage/*.key
 /vendor
+/.mydb
+.env
 .env.backup
 .env.production
 .phpunit.result.cache
@@ -16,6 +18,5 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-/.mydb
 moadian_portal.zip
 
